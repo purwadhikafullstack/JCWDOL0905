@@ -27,6 +27,12 @@ module.exports = {
       gender: {
         type: Sequelize.ENUM("male", "female"),
       },
+      birthdate: {
+        type: DataTypes.DATEONLY
+      },
+      profile_picture: {
+        type: DataTypes.STRING,
+      },
       referral_code: {
         type: Sequelize.STRING,
       },

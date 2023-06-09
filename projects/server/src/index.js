@@ -6,28 +6,22 @@ const db = require("./models");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [process.env.WHITELISTED_DOMAIN && process.env.WHITELISTED_DOMAIN.split(",")],
-  })
-);
+// app.use(
+//   cors({
+//     origin: [process.env.WHITELISTED_DOMAIN && process.env.WHITELISTED_DOMAIN.split(",")],
+//   })
+// );
+
+app.use(cors())
 
 app.use(express.json());
 
 //#region API ROUTES
+// Import routes
+const { userRouter } = require("./routers")
 
-// ===========================
-// NOTE : Add your routes here
-
-app.get("/api", (req, res) => {
-  res.send(`Hello, this is my API`);
-});
-
-app.get("/api/greetings", (req, res, next) => {
-  res.status(200).json({
-    message: "Hello, Student !",
-  });
-});
+// Add routes
+app.use('/api/users', userRouter)
 
 // ===========================
 
@@ -64,10 +58,10 @@ app.get("*", (req, res) => {
 //#endregion
 
 app.listen(PORT, (err) => {
-  // db.sequelize.sync({ alter: true });
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
+    // db.sequelize.sync({alter: true})
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });

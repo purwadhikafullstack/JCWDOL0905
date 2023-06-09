@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       token_type: {
-        type: Sequelize.ENUM('verification', 'reset_password')
+        type: Sequelize.ENUM("VERIFICATION", "FORGOT_PASSWORD", "ACCESS_TOKEN")
       },
       createdAt: {
         allowNull: false,

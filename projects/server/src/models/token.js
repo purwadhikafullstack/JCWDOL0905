@@ -20,11 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       token: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       token_type: {
-        type: DataTypes.ENUM("verification", "reset_password"),
-        allowNull: false,
+        type: DataTypes.ENUM("VERIFICATION", "FORGOT_PASSWORD", "ACCESS_TOKEN"),
       },
     },
     {
