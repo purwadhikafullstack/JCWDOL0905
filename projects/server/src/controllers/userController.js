@@ -95,7 +95,8 @@ module.exports = {
         } else if (result) {
           const token = jwt.sign({id_user: resultUser.id, name: resultUser.name, email: resultUser.email, is_verified: resultUser.is_verified}, jwtKey)
           await tokens.update({token: token, token_type: "ACCESS_TOKEN"}, {where: {id_user: resultUser.id}});
-          res.status(200).send({isError: false, message: "Login Success", data: {access_token: token, id_user: resultUser.id}});
+          delete resultUser.dataValues.password;
+          res.status(200).send({isError: false, message: "Login Success", data: {access_token: token, id_user: resultUser.id, user : resultUser}});
         } else {
           return res.status(404).send({isError: true, message: "Invalid email or password"})}
       });
@@ -174,4 +175,13 @@ module.exports = {
       res.status(400).send({ error: "Invalid token" });
     }
   },
+  getUserByToken: async (req, res) => {
+    try{
+      const user = jwt.verify(req.params.token, jwtKey);
+      const getUser = await users.findOne({id: user.id_user})
+      res.send({code: 200, message: "Get user by token success", user: getUser})
+    } catch(error){
+      res.status(400).send({ error: "Invalid token" });
+    }
+  }
 };

@@ -18,10 +18,14 @@ app.use(express.json());
 
 //#region API ROUTES
 // Import routes
-const { userRouter } = require("./routers")
+const { userRouter, profileRouter, addressRouter, branchRouter, suggestionRouter } = require("./routers")
 
 // Add routes
 app.use('/api/users', userRouter)
+app.use('/api/profiles', profileRouter)
+app.use('/api/address', addressRouter)
+app.use('/api/branch', branchRouter)
+app.use('/api/suggest', suggestionRouter)
 
 // ===========================
 
@@ -49,6 +53,7 @@ app.use((err, req, res, next) => {
 //#region CLIENT
 const clientPath = "../../client/build";
 app.use(express.static(join(__dirname, clientPath)));
+app.use(express.static(__dirname + '/public'));
 
 // Serve the HTML page
 app.get("*", (req, res) => {
