@@ -27,6 +27,14 @@ app.use('/api/address', addressRouter)
 app.use('/api/branch', branchRouter)
 app.use('/api/suggest', suggestionRouter)
 
+app.use("/api/products", express.static(__dirname + "/public/products"));
+app.use("/api/categories", express.static(__dirname + "/public/categories"));
+
+const { categoryRouters, productRouters, inventoryRouters } = require("./routers");
+app.use("/api/category", categoryRouters);
+app.use("/api/product", productRouters);
+app.use("/api/inventory", inventoryRouters);
+
 // ===========================
 
 // not found
@@ -37,6 +45,7 @@ app.use((req, res, next) => {
     next();
   }
 });
+
 
 // error
 app.use((err, req, res, next) => {
@@ -63,6 +72,7 @@ app.get("*", (req, res) => {
 //#endregion
 
 app.listen(PORT, (err) => {
+
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {

@@ -21,7 +21,8 @@ const LandingPage = () => {
 
   const currentLocation = { userLocation, userLat, userLng };
   const branchId = localStorage.getItem("branchId");
-
+  const token = localStorage.getItem("token");
+  console.log("token", token)
   const dispatch = useDispatch();
 
   const [branchs, setBranch] = useState([]);
