@@ -48,14 +48,12 @@ let validateEmail = (value) => {
       const response = await api.post("users/login", {email: email, password: password});
       toast.success(response.data.message);
       localStorage.setItem("token", `${response.data.data.access_token}`);
-      // localStorage.setItem("userId", `${response.data.data.id_user}`);
-      console.log(response.data);
 
       dispatch(
        login(response.data.data.user)
       );
 
-      // setTimeout(() => {Navigate('/')}, 1500);
+      setTimeout(() => {Navigate('/')}, 1500);
     } catch (error) {
       toast.error(error.response.data.message);
     }

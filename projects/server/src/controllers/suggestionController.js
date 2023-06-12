@@ -8,7 +8,7 @@ module.exports = {
             FROM inventories
             join products pr on pr.id = inventories.id_product
             where id_branch=${req.params.id_branch}
-            limit 4;`;
+            limit 6;`;
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({

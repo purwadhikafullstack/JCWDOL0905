@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Button,
     Text,
@@ -17,11 +18,10 @@ import {
     FormHelperText,
     FormLabel,
 } from '@chakra-ui/react'
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Delivered(props) {
-    const addressId = localStorage.getItem("addressId")
-    const branchId = localStorage.getItem("branchId")
-
+    const Navigate = useNavigate()
     const branchsData = props.branchsData
     const addressData = props.addressData
     const currentLocation = props.currentLocation
@@ -30,11 +30,8 @@ export default function Delivered(props) {
     const usrLat = currentLocation.userLat
     const usrLng = currentLocation.userLng
 
-    if(localStorage.getItem("address")==undefined){
-        localStorage.setItem("address", usrLocation);
-    }
-
     const [location, setLocation] = useState(localStorage.getItem("address"));
+    const [branchId, setBranchId] = useState(0);
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const btnRef = useRef()
@@ -94,19 +91,38 @@ export default function Delivered(props) {
 
         localStorage.setItem("address", addressData[index].city);
         setLocation(addressData[index].city)
+        setTimeout(() => {Navigate('/')}, 500);
     }
 
-    useEffect(()=>{
-        if(addressData.length==0){
-            localStorage.setItem("addressId", 0);
-            localStorage.setItem("nearestAddressId", 0);
-            localStorage.setItem("branchId", 1)
+    useEffect(() => {
+        function setStoreBranchId() {
+          try{
+            if(addressData.length==0){
+                localStorage.setItem("addressId", 0);
+                localStorage.setItem("nearestAddressId", 0);
+            }else{
+                sortAddress(usrLat, usrLng)
+            }
 
-            // sortBranch(usrLat, usrLng)
-        }else{
-            sortAddress(usrLat, usrLng)
+            if(localStorage.getItem("branchId")==0 || localStorage.getItem("branchId")==undefined){
+                sortBranch(usrLat, usrLng)
+            }
+    
+            if(branchId==0){
+                setBranchId(localStorage.getItem("branchId"))
+                console.log("store", localStorage.getItem("branchId"))
+                setTimeout(() => {Navigate('/')}, 1000);
+            }
+
+            if(localStorage.getItem("address")==undefined){
+                localStorage.setItem("address", usrLocation);
+            }
+          }catch(error){
+            toast.error("Set branch failed");
+          }
         }
-    })
+        setStoreBranchId();
+    }, [branchId, addressData, branchsData]);
 
     return (
         <div>
@@ -147,7 +163,7 @@ export default function Delivered(props) {
                             <Select id="selectAddress">
                                 {addressData.map((address)=>{
                                     return(
-                                        <option  value={address.id}>{address.label} - {address.address_detail} - {address.city} {address.id == localStorage.getItem("nearestAddressId") ? "(Nearest)" : ""}</option>
+                                        <option value={address.id}>{address.label} - {address.address_detail} - {address.city} {address.id == localStorage.getItem("nearestAddressId") ? "(Nearest)" : ""}</option>
                                     )
                                 })}
                             </Select>

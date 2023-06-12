@@ -1,97 +1,93 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
-  ```
-*/
-import { StarIcon } from '@heroicons/react/20/solid'
-
-const products = [
-  {
-    id: 1,
-    name: 'Organize Basic Set (Walnut)',
-    price: '$149',
-    rating: 5,
-    reviewCount: 38,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-05-image-card-01.jpg',
-    imageAlt: 'TODO',
-    href: '#',
-  },
-  {
-    id: 2,
-    name: 'Organize Pen Holder',
-    price: '$15',
-    rating: 5,
-    reviewCount: 18,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-05-image-card-02.jpg',
-    imageAlt: 'TODO',
-    href: '#',
-  },
-  {
-    id: 3,
-    name: 'Organize Sticky Note Holder',
-    price: '$15',
-    rating: 5,
-    reviewCount: 14,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-05-image-card-03.jpg',
-    imageAlt: 'TODO',
-    href: '#',
-  },
-  {
-    id: 4,
-    name: 'Organize Phone Holder',
-    price: '$15',
-    rating: 4,
-    reviewCount: 21,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-05-image-card-04.jpg',
-    imageAlt: 'TODO',
-    href: '#',
-  },
-  // More products...
-]
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
+import Slider from "react-slick";
+import { useState } from "react";
+import { Box, Center, IconButton, useBreakpointValue, Text } from "@chakra-ui/react";
+import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../css/product.css";
 
 export default function Suggested(props) {
-    const productsData = props.productsData
-    return (
-        <div className="bg-white">
-        <div className="mx-auto max-w-7xl overflow-hidden sm:px-6 lg:px-8">
-            <h2 className="sr-only">Products</h2>
+  const cards = [
+    "https://web3.21cineplex.com/mobile-banner/mtix%20pay%20App.jpg",
+    "https://web3.21cineplex.com/mobile-banner/MakinDekatApps.jpg",
+    "https://web3.21cineplex.com/mobile-banner/Caramel%20SachetApps.jpg",
+    "https://web3.21cineplex.com/mobile-banner/mtix%20pay%20App.jpg",
+    "https://web3.21cineplex.com/mobile-banner/MakinDekatApps.jpg",
+    "https://web3.21cineplex.com/mobile-banner/Caramel%20SachetApps.jpg",
+  ];
 
-            <div className="-mx-px grid grid-cols-2 border-l border-gray-200 sm:mx-0 md:grid-cols-3 lg:grid-cols-4">
+  const productsData = props.productsData;
+
+  const settings = {
+    // fade: true,
+    dots: false,
+
+    infinite: true,
+    autoplay: true,
+    speed: 500,
+    autoplaySpeed: 4000,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    swipeToSlide: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 4,
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 3,
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+        }
+      }
+    ]
+  };
+
+  return (
+    <>
+      <Center>
+        <Text mt={'30px'} fontSize={'xl'} as='b'>Product Suggestion</Text>
+      </Center>
+      <Center>
+        <Box className="carousel-product" w={[370, 600, 775, 1000, 1200]}>
+          {/* Slider */}
+          <Slider {...settings}>
             {productsData.map((product) => (
-                <div key={product.id} className="group relative border-r border-b border-gray-200 p-4 sm:p-6">
+              <div
+                key={product.id}
+                className="group relative border-r border-b border-gray-200 p-4 sm:p-6"
+              >
                 <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75">
-                    <img
+                  <img
                     src={product.product_image}
-                    alt={"img"}
+                    alt={"product image"}
                     className="h-full w-full object-cover object-center"
-                    />
+                  />
                 </div>
                 <div className="pt-10 pb-4 text-center">
-                    <h3 className="text-sm font-medium text-gray-900">
+                  <h3 className="text-sm font-medium text-gray-900">
                     <a href={"#"}>
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {product.product_name}
+                      <span aria-hidden="true" className="absolute inset-0" />
+                      {product.product_name}
                     </a>
-                    </h3>
-                    <p className="mt-4 text-base font-medium text-gray-900">Rp. {product.product_price}</p>
+                  </h3>
+                  <p className="mt-4 text-base font-medium text-gray-900">
+                    Rp. {product.product_price}
+                  </p>
                 </div>
-                </div>
+              </div>
             ))}
-            </div>
-        </div>
-        </div>
-    )
+          </Slider>
+        </Box>
+      </Center>
+    </>
+  );
 }

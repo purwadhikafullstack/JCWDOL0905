@@ -4,14 +4,18 @@ import { Box, Center, IconButton, useBreakpointValue } from '@chakra-ui/react';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import '../css/style.css';
+import '../css/banner.css';
+import banner1 from '../assets/images/banner1.jpg'
+import banner2 from '../assets/images/banner2.jpg'
+import banner3 from '../assets/images/banner3.jpg'
+import banner4 from '../assets/images/banner4.jpg'
 
 export default function Carousel() {
  const cards = [
-  'https://assets.segari.id/thematic-banner/A-lii8p590.webp',
-  'https://assets.segari.id/thematic-banner/B-lii8qc4t.webp',
-  'https://assets.segari.id/thematic-banner/C-lii8qvs3.webp',
-  'https://assets.segari.id/thematic-banner/D-lii7vrdk.webp'
+    banner1,
+    banner2,
+    banner3,
+    banner4
  ];
 
  const settings = {
@@ -21,14 +25,15 @@ export default function Carousel() {
   infinite: true,
   autoplay: true,
   speed: 500,
-  autoplaySpeed: 5000,
+  autoplaySpeed: 7000,
   slidesToShow: 1,
-  slidesToScroll: 1
+  slidesToScroll: 1,
+  swipeToSlide: true,
  };
 
  return (
     <Center>
-        <Box className="carousel" w={[300, 400, 500, 700, 900]} padding={'10px'}>
+        <Box className="carousel" w={[350, 570, 755, 980, 1180]} padding={'10px'}>
         {/* Slider */}
             <Slider {...settings}>
                 {cards.map((url, index) => (
@@ -39,7 +44,7 @@ export default function Carousel() {
                     backgroundPosition="center"
                     backgroundRepeat="no-repeat"
                     backgroundSize="cover"
-                    h={[100, 110, 150, 200, 300]}
+                    h={[150, 180, 200, 270, 320]}
                     backgroundImage={`url('${url}')`}
                     />
                 ))}
