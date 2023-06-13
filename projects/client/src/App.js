@@ -15,20 +15,27 @@ import { api } from "./api/api";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/userSlice";
+import { setBranchId } from "./redux/branchSlice";
 import ProductsPage from "./pages/user/productsPage";
 import CategoryPage from "./pages/user/categoryPage";
 
 
 function App() {
 
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
   useEffect(()=>{
     const token = localStorage.getItem("token")
+    const branchId = localStorage.getItem("branchId")
+
+    dispatch(
+      setBranchId({
+        branchId: branchId,
+      })
+    );
 
     const fetchUser = async (token) => {
       await api.get(`/users/auth/${token}`).then((res)=>{
-        // console.log(res)
       dispatch(login(res.data.user))
       })
     }
