@@ -11,7 +11,6 @@ export const Category = () => {
     async function fetchCategories() {
       try {
         const categoriesData = await api.get("/category");
-        // console.log(categoriesData.data.data);
         setCategories(categoriesData.data.data);
       } catch (err) {
         console.log(err);

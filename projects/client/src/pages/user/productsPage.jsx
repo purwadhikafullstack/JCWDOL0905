@@ -18,7 +18,6 @@ export default function ProductsPage() {
   const searchedName = searchParams.get("product_name");
 
   const branchId = localStorage.getItem("branchId");
-  console.log(branchId)
   // pagination
   const [activePage, setActivePage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);

@@ -54,10 +54,7 @@ export default function Suggested(props) {
   return (
     <>
       <Center>
-        <Text mt={'30px'} fontSize={'xl'} as='b'>Product Suggestion</Text>
-      </Center>
-      <Center>
-        <Box className="carousel-product" w={[370, 600, 775, 1000, 1200]}>
+        <Box className="carousel-product" w={[350, 370, 600, 800, 950, 1100]}>
           {/* Slider */}
           <Slider {...settings}>
             {productsData.map((product) => (

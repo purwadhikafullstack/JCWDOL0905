@@ -1,6 +1,7 @@
 import NavBar from "../../component/NavBar";
 import Delivered from "../../component/Delivered";
 import Carousel from "../../component/StaticBanner";
+import { Category } from "../../component/category";
 import Footer from "../../component/Footer";
 import Suggested from "../../component/ProductSuggestion";
 import { useState, useEffect } from "react";
@@ -8,22 +9,25 @@ import axios from "axios";
 import { URL_GEO } from "../../helper";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsrLocation } from "../../redux/locationSlice";
+import { setBranchId } from "../../redux/branchSlice";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 
 const LandingPage = () => {
-  const userLocation = useSelector(
-    (state) => state.locationSlice.value.usrLocation
+  const dispatch = useDispatch();
+
+  dispatch(
+    setBranchId({
+      branchId: localStorage.getItem("branchId"),
+    })
   );
+
+  const userLocation = useSelector((state) => state.locationSlice.value.usrLocation);
   const userLat = useSelector((state) => state.locationSlice.value.usrLat);
   const userLng = useSelector((state) => state.locationSlice.value.usrLng);
-  const user = useSelector((state) => state.userSlice)
-
   const currentLocation = { userLocation, userLat, userLng };
-  const branchId = localStorage.getItem("branchId");
-  const token = localStorage.getItem("token");
-  console.log("token", token)
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.userSlice); 
+  const branchId = useSelector((state) => state.branchSlice.branchId);
 
   const [branchs, setBranch] = useState([]);
   const [address, setAddress] = useState([]);
@@ -33,26 +37,19 @@ const LandingPage = () => {
     function getLocation() {
       navigator.geolocation.getCurrentPosition(
         async function (position) {
-          console.log("Latitude is :", position.coords.latitude);
-          console.log("Longitude is :", position.coords.longitude);
-          console.log("Accuracy :", position.coords.accuracy);
           const urlGetLocation = `${URL_GEO}&q=${position.coords.latitude}%2C+${position.coords.longitude}`;
           const response = await axios.get(urlGetLocation);
-
-          let result = response.data.results[0].components.city;
-          if (!result) {
-            result = response.data.results[0].components.county;
-          } else if (!result) {
-            result = response.data.results[0].components.village;
-          } else if (!result) {
-            result = response.data.results[0].formatted;
-          }
 
           dispatch(
             setUsrLocation({
               usrLat: position.coords.latitude,
               usrLng: position.coords.longitude,
-              usrLocation: result,
+              usrLocation:
+                response.data.results[0].components.city ||
+                response.data.results[0].components.county ||
+                response.data.results[0].components.municipality ||
+                response.data.results[0].formatted ||
+                "...",
             })
           );
         },
@@ -65,7 +62,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     async function fetchData() {
-      try{
+      try {
         const responseBranch = await api.get(`branch`);
         const responseAddress = await api.get(`address/${user.id}`);
         const responseProduct = await api.get(`suggest/${branchId}`);
@@ -76,7 +73,7 @@ const LandingPage = () => {
         setBranch(branchsData);
         setAddress(addressData);
         setProduct(productData);
-      }catch(error){
+      } catch (error) {
         toast.error("Fetch data failed");
       }
     }
@@ -91,12 +88,16 @@ const LandingPage = () => {
         branchsData={branchs}
         addressData={address}
       />
-      <Carousel />
-      <Suggested productsData={products} />
+      <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6 bg-neutral-100">
+        <Carousel />
+        <Category/>
+        <span><strong className="text-lg font-bold sm:text-xl">Product Suggestion</strong>&emsp;<a href="/product" className="text-md sm:text-lg text-green-700">See All Products</a></span>
+        
+        <Suggested productsData={products} />
+      </div>
       <Footer />
     </div>
   );
- 
 };
 
 export default LandingPage;

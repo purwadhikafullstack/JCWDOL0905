@@ -34,11 +34,6 @@ function DisclosureMenu(props){
                         <img className="h-10 w-10 rounded-full" src={user.profile_picture} alt="" />
                     </button>
                 </div>
-                <div className="flex items-center px-4">
-                    <div className="ml-3">
-                        <div className="text-sm font-medium text-black-400">{"<"}{user.email}{">"}</div>
-                    </div>
-                </div>
                 <div className="mt-3 space-y-1 px-2">
                     <Disclosure.Button key={'Cart'} as="a" href={'/profile'} className="block rounded-md py-2 px-4 text-base font-medium text-gray-400 hover:bg-gray-300 hover:text-black">
                         Cart

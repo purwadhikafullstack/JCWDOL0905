@@ -19,9 +19,11 @@ import {
     FormLabel,
 } from '@chakra-ui/react'
 import toast, { Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Delivered(props) {
     const Navigate = useNavigate()
+    const dispatch = useDispatch()
     const branchsData = props.branchsData
     const addressData = props.addressData
     const currentLocation = props.currentLocation
@@ -65,8 +67,6 @@ export default function Delivered(props) {
         }
           
         let sortedArr = addressData.sort(function(a,b) {return a.distance - b.distance});
-        console.log(addressData)
-
         localStorage.setItem("nearestAddressId", sortedArr[0].id);
     }
 
@@ -77,15 +77,12 @@ export default function Delivered(props) {
         }
           
         let sortedArr = branchsData.sort(function(a,b) {return a.distance - b.distance});
-        console.log(branchsData)
-
         localStorage.setItem("branchId", sortedArr[0].id);
     }
 
     const setAddress = async () => {
         let addressId = document.getElementById("selectAddress").value;
         localStorage.setItem("addressId", addressId);
-
         var index = addressData.findIndex(item => item.id == addressId)
         sortBranch(addressData[index].latitude, addressData[index].longitude)
 
@@ -110,7 +107,6 @@ export default function Delivered(props) {
     
             if(branchId==0){
                 setBranchId(localStorage.getItem("branchId"))
-                console.log("store", localStorage.getItem("branchId"))
                 setTimeout(() => {Navigate('/')}, 1000);
             }
 
@@ -163,7 +159,7 @@ export default function Delivered(props) {
                             <Select id="selectAddress">
                                 {addressData.map((address)=>{
                                     return(
-                                        <option value={address.id}>{address.label} - {address.address_detail} - {address.city} {address.id == localStorage.getItem("nearestAddressId") ? "(Nearest)" : ""}</option>
+                                        <option key={address.id} selected={address.id==localStorage.getItem("addressId")} value={address.id}>{address.label} - {address.address_detail} - {address.city} {address.id == localStorage.getItem("nearestAddressId") ? "(Nearest)" : ""}</option>
                                     )
                                 })}
                             </Select>
