@@ -12,16 +12,17 @@ import VerificationBridge from "./pages/user/VerificationBridge";
 import VerificationPasswordBridge from "./pages/user/VerificationPasswordBridge";
 import EditProfile from "./pages/user/EditProfile";
 import { api } from "./api/api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/userSlice";
 import { setBranchId } from "./redux/branchSlice";
 import ProductsPage from "./pages/user/productsPage";
 import CategoryPage from "./pages/user/categoryPage";
+import { Loading } from "./pages/Loading";
 
 
 function App() {
-
+  const [isLoading, setIsLoading] = useState(true)
   const dispatch = useDispatch()
 
   useEffect(()=>{
@@ -34,6 +35,10 @@ function App() {
       })
     );
 
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+    
     const fetchUser = async (token) => {
       await api.get(`/users/auth/${token}`).then((res)=>{
       dispatch(login(res.data.user))
@@ -44,6 +49,7 @@ function App() {
   },[])
 
   return (
+    <>{isLoading ? <Loading /> : 
     <BrowserRouter>
       <Routes>
         <Route Component={Register} path="/register" />
@@ -61,7 +67,8 @@ function App() {
         <Route Component={CategoryPage} path="/category/:id" />
       </Routes>
     </BrowserRouter>
-
+    } 
+    </>
   );
 }
 

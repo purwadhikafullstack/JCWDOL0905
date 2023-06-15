@@ -49,9 +49,9 @@ let validateEmail = (value) => {
       toast.success(response.data.message);
       localStorage.setItem("token", `${response.data.data.access_token}`);
 
-      dispatch(
-       login(response.data.data.user)
-      );
+      // dispatch(
+      //  login(response.data.data.user)
+      // );
 
       setTimeout(() => {Navigate('/')}, 1500);
     } catch (error) {
