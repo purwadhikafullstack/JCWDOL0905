@@ -5,11 +5,6 @@ const { Op } = require("sequelize");
 
 module.exports = {
   addInventory: async (req, res) => {
-    // let token = req.headers.authorization;
-
-    // if (!token) {
-    //   return res.status(400).send("token unauthorized or expired");
-    // }
     try {
       const { id_product, id_branch, stock } = req.body;
 
@@ -38,7 +33,6 @@ module.exports = {
   fetchAllInventories: async (req, res) => {
     try {
       const branchId = req.query.branchId;
-      // console.log("branchId :", branchId)
       const page = parseInt(req.query.page) || 1;
       const pageSize = 12;
 
@@ -60,7 +54,7 @@ module.exports = {
         limit: pageSize,
         offset: (page - 1) * pageSize,
       });
-      console.log(allInventories);
+      
       res.status(200).send({
         isError: false,
         message: "Successfully fetch inventories",

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/api";
@@ -18,8 +17,9 @@ export const Category = () => {
     }
     fetchCategories();
   }, []);
+
   return (
-    <div className="flex my-12 h-fit px-5 py-auto bg-white rounded-lg border border-gray-200 drop-shadow-md overflow-x-auto justify-between">
+    <div className="flex my-12 h-fit px-5 py-auto bg-white rounded-lg border border-gray-200 drop-shadow-md overflow-x-auto justify-between scrollbar-hide">
       {categories.map((category) => (
         <button key={category.id} className="mx-2 my-4 mb-4 h-fit w-16 md:w-24 md:h-24 md:mb-8 lg:w-34 lg:h-34 lg:mb-10">
           <a href={`http://localhost:3000/category/${category.id}`} className="flex flex-col justify-center items-center space-y-1">

@@ -22,8 +22,8 @@ function DisclosureMenu(props){
         localStorage.clear();
         dispatch(logout());
         setTimeout(() => {Navigate('/login')}, 1500);
-
     }
+
     if(isLogin){
         return(
             <div className="border-t border-gray-700 pt-4 pb-3">
@@ -132,7 +132,7 @@ function DesktopMenu(props){
 }
 
 export default function NavBar() {
-    const [search, setSearch] = useState([]);     
+    const [search, setSearch] = useState([]);
     const user = useSelector((state) => state.userSlice);
     const isLogin = localStorage.getItem("token");
     const countItem = useSelector((state) => state.cartSlice.count);

@@ -2,6 +2,7 @@ import NavBar from "../../component/NavBar";
 import Delivered from "../../component/Delivered";
 import Carousel from "../../component/StaticBanner";
 import { Category } from "../../component/category";
+import { Category } from "../../component/category";
 import Footer from "../../component/Footer";
 import Suggested from "../../component/ProductSuggestion";
 import { useState, useEffect } from "react";
@@ -10,10 +11,17 @@ import { URL_GEO } from "../../helper";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsrLocation } from "../../redux/locationSlice";
 import { setBranchId } from "../../redux/branchSlice";
+import { setBranchId } from "../../redux/branchSlice";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 
 const LandingPage = () => {
+  const dispatch = useDispatch();
+
+  dispatch(
+    setBranchId({
+      branchId: localStorage.getItem("branchId"),
+    })
   const dispatch = useDispatch();
 
   dispatch(
@@ -27,6 +35,8 @@ const LandingPage = () => {
   const userLat = useSelector((state) => state.locationSlice.value.usrLat);
   const userLng = useSelector((state) => state.locationSlice.value.usrLng);
   const currentLocation = { userLocation, userLat, userLng };
+  const user = useSelector((state) => state.userSlice); 
+  const branchId = useSelector((state) => state.branchSlice.branchId);
   const user = useSelector((state) => state.userSlice); 
   const branchId = useSelector((state) => state.branchSlice.branchId);
 
@@ -51,6 +61,12 @@ const LandingPage = () => {
                 response.data.results[0].components.municipality ||
                 response.data.results[0].formatted ||
                 "...",
+              usrLocation:
+                response.data.results[0].components.city ||
+                response.data.results[0].components.county ||
+                response.data.results[0].components.municipality ||
+                response.data.results[0].formatted ||
+                "...",
             })
           );
         },
@@ -63,6 +79,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     async function fetchData() {
+      try {
       try {
         const responseBranch = await api.get(`branch`);
         const responseAddress = await api.get(`address/user/${user.id}`);
