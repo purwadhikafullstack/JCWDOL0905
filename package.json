@@ -21,6 +21,6 @@
     "projects/*"
   ],
   "dependencies": {
-    "tailwind-scrollbar-hide": "^1.1.7"
+   
   }
 }
