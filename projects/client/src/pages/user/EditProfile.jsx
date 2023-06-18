@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
@@ -6,21 +6,27 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import logo_groceria from "../../assets/images/logo-brand-groceria.png";
 import NavBar from "../../component/NavBar";
 import Footer from "../../component/Footer";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { login } from "../../redux/userSlice";
+import default_picture from "../../assets/images/default.jpg"
 
 const EditProfile = () => {
+  const token = localStorage.getItem("token")
   const [email, setEmail] = useState("");
+  const [file, setFile] = useState();
+  const [preview, setPreview] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [errorEmail, setErrorEmail] = useState();
-  const [profiles, setProfiles] = useState({
-    name: "",
-    gender: "",
-    email: "",
-    birthdate: "",
-  });
+  const [profiles, setProfiles] = useState({});
   const Navigate = useNavigate();
-
+  const dispatch = useDispatch
+  const inputFileRef = useRef(null);
   const user = useSelector((state) => state.userSlice)
+
+  const onFileChange = (event) => {
+    setFile(event.target.files[0]);
+    setPreview(URL.createObjectURL(event.target.files[0]));
+  }
 
   useEffect(() => {
     async function fetchProfiles() {
@@ -29,7 +35,6 @@ const EditProfile = () => {
         const profilesData = response.data.data;
 
         var birthdate = new Date(profilesData.birthdate.slice(0, 10));
-        birthdate.setDate(birthdate.getDate() + 1);
 
         let yyyy = birthdate.getFullYear();
         let mm = birthdate.getMonth() + 1;
@@ -42,6 +47,12 @@ const EditProfile = () => {
         profilesData.birthdate = formattedDate;
 
         setProfiles(profilesData);
+        
+        if(profilesData.profile_picture==undefined){
+          setPreview(default_picture)
+        }else{
+          setPreview(profilesData.profile_picture)
+        }
         setEmail(profilesData.email);
       } catch (error) {
         // toast.error(error.response.data.message);
@@ -66,16 +77,29 @@ const EditProfile = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    let birthdate = document.getElementById("birthdate").value
+    if(birthdate==''){
+      birthdate = null;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file)
+    formData.append("name", document.getElementById("name").value)
+    formData.append("gender", document.getElementById("gender").value)
+    formData.append("email", email)
+    formData.append("birthdate", birthdate)
+    formData.append("prevEmail", profiles.email)
+
     const data = {
       name: document.getElementById("name").value,
       gender: document.getElementById("gender").value,
       email: email,
-      birthdate: document.getElementById("birthdate").value,
+      birthdate: birthdate,
       prevEmail: profiles.email,
     };
 
     try {
-      const response = await api.patch(`profiles/${user.id}`, data);
+      const response = await api.patch(`profiles/${user.id}`, formData);
       toast.success(response.data.message);
 
       document.getElementById("name").value = "";
@@ -84,8 +108,8 @@ const EditProfile = () => {
       document.getElementById("birthdate").value = "";
 
       setTimeout(() => {
-        Navigate("/");
-      }, 1500);
+        Navigate("/profile");
+      }, 1000);
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -102,6 +126,27 @@ const EditProfile = () => {
         <div className="flex flex-col bg-white shadow-md mt-8 px-4 sm:px-6 md:px-8 lg:px-10 py-5 rounded-3xl w-2/3 sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-md">
           <div className="font-medium self-center text-xl text-gray-800">
             Edit Profile
+          </div>
+          <div className="flex flex-col mb-3">
+            <label className="mb-1 text-xs tracking-wide text-gray-600">
+                Profile Picture:
+            </label>
+            <div className="relative">
+              <input
+                type="file"
+                id="file"
+                name="profile_picture"
+                ref={inputFileRef}
+                onChange={onFileChange}
+                accept="image/jpg, image/jpeg, image/png, image/gif"
+                className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400"
+                placeholder="Choose profile picture"
+                hidden
+              />
+                <a href="#">
+                  <img className="rounded-full h-20 w-20" src={preview} onClick={()=> inputFileRef.current.click()}></img>
+                </a>
+            </div>
           </div>
           <div className="mt-5">
             <form autoComplete="off">
@@ -178,21 +223,7 @@ const EditProfile = () => {
                   />
                 </div>
               </div>
-              <div className="flex flex-col mb-3">
-                <label className="mb-1 text-xs tracking-wide text-gray-600">
-                  Profile Picture:
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    id="profilpicture"
-                    name="profilepicture"
-                    defaultValue={profiles.birthdate}
-                    className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400"
-                    placeholder="Choose profile picture"
-                  />
-                </div>
-              </div>
+
               <div className="flex w-full mt-10">
                 <button
                   type="submit"

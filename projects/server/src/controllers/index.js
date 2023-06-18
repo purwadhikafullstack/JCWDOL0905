@@ -7,6 +7,7 @@ const suggestionController = require('./suggestionController')
 const categoryControllers = require("./categoryControllers");
 const productControllers = require("./productControllers");
 const inventoryControllers = require("./inventoryControllers");
+const cartController = require("./cartController")
 
 module.exports = {
     userController,
@@ -14,9 +15,10 @@ module.exports = {
     addressController,
     branchController,
     suggestionController,
-  categoryControllers,
-  productControllers,
-  inventoryControllers,
+    categoryControllers,
+    productControllers,
+    inventoryControllers,
+    cartController,
 }
   
 

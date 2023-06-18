@@ -7,14 +7,6 @@ import "slick-carousel/slick/slick-theme.css";
 import "../css/product.css";
 
 export default function Suggested(props) {
-  const cards = [
-    "https://web3.21cineplex.com/mobile-banner/mtix%20pay%20App.jpg",
-    "https://web3.21cineplex.com/mobile-banner/MakinDekatApps.jpg",
-    "https://web3.21cineplex.com/mobile-banner/Caramel%20SachetApps.jpg",
-    "https://web3.21cineplex.com/mobile-banner/mtix%20pay%20App.jpg",
-    "https://web3.21cineplex.com/mobile-banner/MakinDekatApps.jpg",
-    "https://web3.21cineplex.com/mobile-banner/Caramel%20SachetApps.jpg",
-  ];
 
   const productsData = props.productsData;
 
@@ -71,7 +63,7 @@ export default function Suggested(props) {
                 </div>
                 <div className="pt-10 pb-4 text-center">
                   <h3 className="text-sm font-medium text-gray-900">
-                    <a href={"#"}>
+                    <a href={`/product/${product.id}`}>
                       <span aria-hidden="true" className="absolute inset-0" />
                       {product.product_name}
                     </a>

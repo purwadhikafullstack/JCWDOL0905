@@ -75,4 +75,24 @@ module.exports = {
       });
     }
   },
+
+  findInventory: async (req, res) => {
+    const inventoryId = req.params.idInventory;
+    try {
+        let findInventory = await inventory.findOne({ where: { id: inventoryId } });
+        if (!findInventory){
+            return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true });
+        }
+    
+        res.status(200).send({
+            status: "Successfully find inventory",
+            data: findInventory,
+            navigate: false
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(404).send({isError: true, message: "Find inventory failed"})
+    }
+},
 };

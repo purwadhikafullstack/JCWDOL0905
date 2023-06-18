@@ -5,6 +5,9 @@ module.exports = {
     getProfile: async (req, res) => {
         try {
             const profileData = await users.findOne({where: {id: req.params.id}});
+            if(profileData.birthdate==null){
+                profileData.birthdate='';
+            }
             if (!profileData) {
                 return res.status(400).send({code: 400, message: `Invalid id user : ${req.params.id}`})}
             res.status(200).send({code: 200, message: "Get profile data success", data: profileData});
@@ -15,17 +18,23 @@ module.exports = {
     },
 
     editProfile: async (req, res) => {
-        try {
+        try {          
             let {name, gender, email, birthdate, prevEmail} = req.body;
             if (!email){
                 return res.status(404).send({isError: true, message: "Please fill the required field (email)"});
             }
             let findEmail = await users.findOne({ where: { email: email } });
             if (findEmail && prevEmail!=email){
-                return res.status(404).send({ isError: true, message: "Email already exists" });
+                return res.status(404).send({ isError: true, message: "Email already registered" });
             }
 
-            await users.update({name, gender, email, birthdate}, {where: {id: req.params.id}});
+            if(req.file != undefined){
+                let imageUrl = req.protocol + "://" + req.get("host") + "/api/media/profiles/" + req.file.filename;
+                await users.update({name, gender, email, birthdate, profile_picture: imageUrl}, {where: {id: req.params.id}});
+            }else{
+                await users.update({name, gender, email, birthdate}, {where: {id: req.params.id}});
+            }
+
             res.status(200).send({isError: false, message: "Profile updated", data: req.body});
           
         } catch (error) {

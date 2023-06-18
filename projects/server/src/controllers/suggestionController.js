@@ -4,9 +4,11 @@ const address = db.Address;
 module.exports = {
     getSuggestedProduct: async (req, res) => {
         try {
-            const query = `SELECT inventories.id, stock, pr.product_name, pr.product_price, pr.product_description, pr.product_image, pr.weight
+            const query = `SELECT inventories.id, stock, pr.product_name, pr.product_price, pr.product_description, pr.product_image, pr.weight,
+            br.branch_name, br.city
             FROM inventories
             join products pr on pr.id = inventories.id_product
+            join store_branches br on br.id = inventories.id_branch
             where id_branch=${req.params.id_branch}
             limit 6;`;
         

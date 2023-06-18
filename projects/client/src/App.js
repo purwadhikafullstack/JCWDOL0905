@@ -16,8 +16,12 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/userSlice";
 import { setBranchId } from "./redux/branchSlice";
+import { countItem } from "./redux/cartSlice";
 import ProductsPage from "./pages/user/productsPage";
 import CategoryPage from "./pages/user/categoryPage";
+import Cart from "./pages/user/Cart";
+import ProductDetail from "./pages/user/ProductDetail";
+import Profile from "./pages/user/Profile";
 
 
 function App() {
@@ -41,6 +45,25 @@ function App() {
     }
     fetchUser(token)
 
+    async function countCart() {
+      try {
+        const response = await api.get(`cart/count`, {
+            'headers': {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        dispatch(
+          countItem({
+            count: response.data.data,
+          })
+        );
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    }
+    countCart()
+
   },[])
 
   return (
@@ -59,6 +82,9 @@ function App() {
         <Route Component={EditProfile} path="/edit-profile" />
         <Route Component={ProductsPage} path="/product" />
         <Route Component={CategoryPage} path="/category/:id" />
+        <Route Component={Cart} path="/cart" />
+        <Route Component={ProductDetail} path="/product/:id" />
+        <Route Component={Profile} path="/profile" />
       </Routes>
     </BrowserRouter>
 
