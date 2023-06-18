@@ -99,12 +99,12 @@ const ProductDetail = () => {
                 }
             });
             const cartData = response.data.results;
-            await api.get(`inventory/find/${id}`);
+            await api.get(`inventory/find/${id}?branchId=${branchId}`);
 
             setCarts(cartData);
           } catch (error) {
             if(error.response.data.navigate){
-                Navigate('/')
+                Navigate('/404')
             }
             toast.error(error.response.data.message);
           }
@@ -117,9 +117,11 @@ const ProductDetail = () => {
             <NavBar/>
             <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6 bg-neutral-100">
                 <h3 className="text-lg font-bold sm:text-xl">Inventory Id: {id}</h3>
-                <button onClick={() => addToCart(id)} className="w-full rounded-md border border-transparent bg-green-600 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50">
-                    Add to Cart
-                </button>
+                {token &&
+                    <button onClick={() => addToCart(id)} className="w-full rounded-md border border-transparent bg-green-600 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50">
+                        Add to Cart
+                    </button>
+                }
                 <Toaster/>
             </div>
             <Footer/>

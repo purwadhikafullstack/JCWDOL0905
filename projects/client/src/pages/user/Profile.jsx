@@ -176,6 +176,12 @@ export default function Profile() {
                             </defs>
                         </svg>
                         </div>
+                        {addressId == undefined &&
+                            <div>
+                                <h3 className="text-lg font-medium text-white">Shipping Address</h3>
+                                <p className="max-w-3xl text-base text-teal-50"><b>Shipping address has not been set</b></p>
+                            </div>
+                        }
                         {addressId != undefined &&
                             <div>
                                 <h3 className="text-lg font-medium text-white">Shipping Address</h3>
@@ -201,7 +207,7 @@ export default function Profile() {
                                 <a className="text-teal-200 hover:text-teal-100 underline" href="#">Manage Address</a>
                             </li>
                             <li>
-                                <a className="text-teal-200 hover:text-teal-100 underline" href="#">Change Password</a>
+                                <a className="text-teal-200 hover:text-teal-100 underline" href="change-password">Change Password</a>
                             </li>
                         </ul>
                     </div>

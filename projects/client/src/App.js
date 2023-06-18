@@ -21,11 +21,6 @@ import VerificationBridge from "./pages/user/VerificationBridge";
 import VerificationPasswordBridge from "./pages/user/VerificationPasswordBridge";
 import EditProfile from "./pages/user/EditProfile";
 import Page404 from "./pages/404"
-import { api } from "./api/api";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "./redux/userSlice";
-import { setBranchId } from "./redux/branchSlice";
 import { countItem } from "./redux/cartSlice";
 import ProductsPage from "./pages/user/productsPage";
 import CategoryPage from "./pages/user/categoryPage";
@@ -58,7 +53,6 @@ function App() {
     if (token) {
       fetchUser(token);
     }
-    fetchUser(token)
 
     async function countCart() {
       try {
@@ -106,9 +100,9 @@ function App() {
               <Route Component={TokenInvalid} path="/token-invalid" />
               <Route Component={LandingPage} path="/" />
               <Route Component={Page404} path="*" />
-              <Route Component={Cart} path="/cart" />
+              <Route element={<ProtectedPage needLogin={true}><Profile /></ProtectedPage>} path="/profile" />
+              <Route element={<ProtectedPage needLogin={true}><Cart /></ProtectedPage>} path="/cart" />
               <Route Component={ProductDetail} path="/product/:id" />
-              <Route Component={Profile} path="/profile" />
             </Routes>
           </BrowserRouter>
         </>
