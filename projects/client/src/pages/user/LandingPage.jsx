@@ -20,7 +20,8 @@ const LandingPage = () => {
     setBranchId({
       branchId: localStorage.getItem("branchId"),
     })
-  );
+  )
+
 
   const userLocation = useSelector((state) => state.locationSlice.value.usrLocation);
   const userLat = useSelector((state) => state.locationSlice.value.usrLat);
@@ -50,6 +51,12 @@ const LandingPage = () => {
                 response.data.results[0].components.municipality ||
                 response.data.results[0].formatted ||
                 "...",
+              usrLocation:
+                response.data.results[0].components.city ||
+                response.data.results[0].components.county ||
+                response.data.results[0].components.municipality ||
+                response.data.results[0].formatted ||
+                "...",
             })
           );
         },
@@ -64,7 +71,7 @@ const LandingPage = () => {
     async function fetchData() {
       try {
         const responseBranch = await api.get(`branch`);
-        const responseAddress = await api.get(`address/${user.id}`);
+        const responseAddress = await api.get(`address/user/${user.id}`);
         const responseProduct = await api.get(`suggest/${branchId}`);
         const branchsData = responseBranch.data.data;
         const addressData = responseAddress.data.data;
@@ -73,6 +80,7 @@ const LandingPage = () => {
         setBranch(branchsData);
         setAddress(addressData);
         setProduct(productData);
+
       } catch (error) {
         toast.error("Fetch data failed");
       }
@@ -91,6 +99,13 @@ const LandingPage = () => {
       <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6 bg-neutral-100">
         <Carousel />
         <Category/>
+        <span className="inline-flex items-start">
+          <img src="https://cdn-icons-png.flaticon.com/512/67/67347.png" alt="" className="self-center w-4 h-4 rounded-full mr-1" />
+          <span>
+            {products.length>0 ? `${products[0].branch_name} (${products[0].city})` : ""}
+          </span>
+        </span>
+        <br></br>
         <span><strong className="text-lg font-bold sm:text-xl">Product Suggestion</strong>&emsp;<a href="/product" className="text-md sm:text-lg text-green-700">See All Products</a></span>
         
         <Suggested productsData={products} />

@@ -13,4 +13,16 @@ module.exports = {
             console.log(error);
             res.status(404).send({isError: true, message: "Get user address data failed"})}
     },
+
+    getAddressDetail: async (req, res) => {
+        try {
+            const addressData = await address.findOne({where: {id: req.params.id}});
+            if (!addressData) {
+                return res.status(400).send({code: 400, message: `Can't get address detail`})}
+            res.status(200).send({code: 200, message: "Get address detail success", data: addressData});
+
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Get address detail failed"})}
+    },
 }

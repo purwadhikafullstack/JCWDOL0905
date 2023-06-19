@@ -95,7 +95,7 @@ export default function Delivered(props) {
         function setStoreBranchId() {
           try{
             if(addressData.length==0){
-                localStorage.setItem("addressId", 0);
+                // localStorage.setItem("addressId", 0);
                 localStorage.setItem("nearestAddressId", 0);
             }else{
                 sortAddress(usrLat, usrLng)
@@ -128,7 +128,7 @@ export default function Delivered(props) {
                         <div>
                             <p className="inline-flex my-2">
                                 <span className="inline-flex items-start">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/67/67347.png" alt="" className="self-center w-4 h-4 rounded-full mx-1" />
+                                    <img src="https://cdn-icons-png.flaticon.com/512/67/67347.png" alt="" className="self-center w-4 h-4 rounded-full mr-1" />
                                     <span>
                                         Delivered to <b>{location ? location : usrLocation}</b> &nbsp;&nbsp;
                                         <button>

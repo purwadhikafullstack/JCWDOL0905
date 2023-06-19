@@ -21,10 +21,15 @@ import VerificationBridge from "./pages/user/VerificationBridge";
 import VerificationPasswordBridge from "./pages/user/VerificationPasswordBridge";
 import EditProfile from "./pages/user/EditProfile";
 import Page404 from "./pages/404"
+import { countItem } from "./redux/cartSlice";
 import ProductsPage from "./pages/user/productsPage";
 import CategoryPage from "./pages/user/categoryPage";
 import ChangePassword from "./pages/user/ChangePassword";
 import TokenInvalid from "./pages/TokenInvalid";
+import Cart from "./pages/user/Cart";
+import ProductDetail from "./pages/user/ProductDetail";
+import Profile from "./pages/user/Profile";
+
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -49,8 +54,27 @@ function App() {
     if (token) {
       fetchUser(token);
     }
-    // eslint-disable-next-line
-  }, []);
+
+    async function countCart() {
+      try {
+        const response = await api.get(`cart/count`, {
+            'headers': {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        dispatch(
+          countItem({
+            count: response.data.data,
+          })
+        );
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    }
+    countCart()
+
+  },[])
 
   return (
     <>
@@ -77,6 +101,9 @@ function App() {
               <Route Component={TokenInvalid} path="/token-invalid" />
               <Route Component={LandingPage} path="/" />
               <Route Component={Page404} path="*" />
+              <Route element={<ProtectedPage needLogin={true}><Profile /></ProtectedPage>} path="/profile" />
+              <Route element={<ProtectedPage needLogin={true}><Cart /></ProtectedPage>} path="/cart" />
+              <Route Component={ProductDetail} path="/product/:id" />
             </Routes>
           </BrowserRouter>
         </>

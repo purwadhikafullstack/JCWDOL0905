@@ -6,6 +6,7 @@ import logo from "../assets/images/logo-brand-groceria.png"
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../redux/userSlice'
 import { useNavigate } from 'react-router-dom'
+import default_picture from "../assets/images/default.jpg"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -31,11 +32,11 @@ function DisclosureMenu(props){
                         <div className="text-sm font-medium text-black-400">{user.name}</div>
                     </div>
                     <button type="button" className="ml-auto flex-shrink-0 rounded-full bg-green-700 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-800">
-                        <img className="h-10 w-10 rounded-full" src={user.profile_picture} alt="" />
+                        <img className="h-10 w-10 rounded-full" src={user.profile_picture ? user.profile_picture : default_picture} alt="" />
                     </button>
                 </div>
                 <div className="mt-3 space-y-1 px-2">
-                    <Disclosure.Button key={'Cart'} as="a" href={'/profile'} className="block rounded-md py-2 px-4 text-base font-medium text-gray-400 hover:bg-gray-300 hover:text-black">
+                    <Disclosure.Button key={'Cart'} as="a" href={'/cart'} className="block rounded-md py-2 px-4 text-base font-medium text-gray-400 hover:bg-gray-300 hover:text-black">
                         Cart
                     </Disclosure.Button>
                     <Disclosure.Button key={'Profile'} as="a" href={'/profile'} className="block rounded-md py-2 px-4 text-base font-medium text-gray-400 hover:bg-gray-300 hover:text-black">
@@ -63,6 +64,7 @@ function DisclosureMenu(props){
 function DesktopMenu(props){
     const user = props.data
     const isLogin = props.isLogin
+    const count = props.count
     const dispatch = useDispatch()
     const Navigate = useNavigate()
 
@@ -75,17 +77,22 @@ function DesktopMenu(props){
     if(isLogin){
         return (
             <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                <nav className="hidden lg:flex lg:space-x-8 lg:py-2" aria-label="Global">
-                    <button href='/cart' type="button" className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-green focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-green-800">
-                        <ShoppingCartIcon color='green' className="h-7 w-7" aria-hidden="true" />
-                    </button>
-                </nav>
+                <div class="h-screen flex justify-center items-center mt-2">
+                    <div class="relative py-2">
+                        <div class="t-0 absolute left-6">
+                            <p class="flex h-2 w-2 items-center justify-center rounded-full bg-red-500 p-2 text-xs text-white">{count}</p>
+                        </div>
+                        <button type="button" className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-green focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-green-800">
+                            <a href='/cart'><ShoppingCartIcon color='green' className="h-8 w-8" aria-hidden="true" /></a>
+                        </button>
+                    </div>
+                </div>
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-8 flex-shrink-0">
                 <div>
                     <Menu.Button className="ml-auto flex rounded-full bg-green-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-800">
-                        <img className="h-8 w-8 rounded-full" src={user.profile_picture} alt="profile user" />
+                        <img className="h-8 w-8 rounded-full" src={user.profile_picture ? user.profile_picture : default_picture} alt="profile user" />
                     </Menu.Button>
                 </div>
                 <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
@@ -128,6 +135,7 @@ export default function NavBar() {
     const [search, setSearch] = useState([]);
     const user = useSelector((state) => state.userSlice);
     const isLogin = localStorage.getItem("token");
+    const countItem = useSelector((state) => state.cartSlice.count);
 
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {
@@ -186,7 +194,7 @@ export default function NavBar() {
                                     )}
                                 </Disclosure.Button>
                             </div>
-                            <DesktopMenu data={user} isLogin={isLogin}/>
+                            <DesktopMenu data={user} isLogin={isLogin} count={countItem}/>
                         </div>
                     </div>
 
