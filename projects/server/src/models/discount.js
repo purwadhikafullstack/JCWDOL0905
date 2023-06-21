@@ -25,16 +25,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       discount_value: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       min_purchase_qty: {
         type: DataTypes.INTEGER,
       },
       start_date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
       },
       end_date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
       },
     },
     {

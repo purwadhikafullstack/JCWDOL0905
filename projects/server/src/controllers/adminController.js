@@ -17,7 +17,7 @@ module.exports = {
         if (err) {
           res.status(404).send({isError: true, message: "Login failed when comparing password"});
         } else if (result) {
-          const token = jwt.sign({id_admin: resultAdmin.id, email: resultAdmin.email, role: resultAdmin.role}, jwtKey)
+          const token = jwt.sign({id_admin: resultAdmin.id, email: resultAdmin.email, role: resultAdmin.role, id_branch: resultAdmin.id_branch}, jwtKey)
           await admins.update({token_admin: token}, {where: {id: resultAdmin.id}});
           let getAdmin = await admins.findOne({where: {id: resultAdmin.id}});
           delete getAdmin.dataValues.password;

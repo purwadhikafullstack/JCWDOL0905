@@ -8,7 +8,6 @@ import NavBar from "../../component/NavBar";
 import { ProductsList } from "../../component/productsList";
 import { useSelector } from "react-redux";
 
-
 export default function ProductsByCategory() {
   const [productsInfo, setProductsInfo] = useState([]);
   const [sort, setSort] = useState(1);

@@ -22,6 +22,7 @@ const DashboardAdmin = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
+    { name: 'Manage Category', href: '/manage-category', icon: HomeIcon, current: true },
   ]
 
   function classNames(...classes) {

@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
           name: "id_inventory",
         },
       });
+      Inventory.hasMany(models.Voucher, {
+        foreignKey: {
+          name: "id_inventory",
+        },
+      });
       Inventory.hasMany(models.Inventory_History, {
         foreignKey: {
           name: "id_inventory",

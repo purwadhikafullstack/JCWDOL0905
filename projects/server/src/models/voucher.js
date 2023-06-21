@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
           name: "id_voucher",
         },
       });
+      Voucher.belongsTo(models.Inventory, {
+        foreignKey: {
+          name: "id_inventory",
+        },
+      });
     }
   }
   Voucher.init(
@@ -35,6 +40,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       max_discount: {
         type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
       },
       min_purchase_amount: {
         type: DataTypes.INTEGER,

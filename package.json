@@ -21,6 +21,8 @@
     "projects/*"
   ],
   "dependencies": {
-   
+    "moment": "^2.29.4",
+    "react-datepicker": "^4.14.0",
+    "tailwind-scrollbar-hide": "^1.1.7"
   }
 }

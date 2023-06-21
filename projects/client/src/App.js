@@ -32,6 +32,10 @@ import ProductDetail from "./pages/user/ProductDetail";
 import Profile from "./pages/user/Profile";
 import LoginAdmin from "./pages/admin/LoginAdmin";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
+// import { Loading } from "./pages/Loading";
+import { ManageCategory } from "./pages/admin/ManageCategory";
+import { ManageDiscount } from "./pages/admin/ManageDiscount";
+import { ManageVoucher } from "./pages/admin/ManageVoucher";
 
 
 function App() {
@@ -122,6 +126,9 @@ function App() {
               <Route Component={ProductDetail} path="/product/:id" />
               <Route Component={LoginAdmin} path="/login-admin" />
               <Route Component={DashboardAdmin} path="/admin/dashboard" />
+              <Route Component={ManageCategory} path="/manage-category" />
+              <Route Component={ManageDiscount} path="/manage-discount" />
+              <Route Component={ManageVoucher} path="/manage-voucher" />
             </Routes>
           </BrowserRouter>
         </>

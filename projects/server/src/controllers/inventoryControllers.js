@@ -38,7 +38,12 @@ module.exports = {
 
       const category_id = parseInt(req.query.category) || null;
       const productName = req.query.name || null;
+      const sort = req.query.sort || "ASC";
+      const order = req.query.order || "product_name";
 
+      console.log(req.query);
+
+      console.log(sort,order);
       const categoryQuery = category_id ? { id_category: category_id } : {};
       const productQuery = productName ? { product_name: { [Op.like]: `%${productName}%` } } : {};
 
@@ -50,7 +55,7 @@ module.exports = {
           model: product,
           where: { ...categoryQuery, ...productQuery },
         },
-        order: [[{ model: product }, req.query.order, req.query.sort]],
+        order: [[{ model: product }, order, sort]],
         limit: pageSize,
         offset: (page - 1) * pageSize,
       });
