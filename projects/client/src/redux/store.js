@@ -4,6 +4,7 @@ import userSlice from "./userSlice";
 import branchSlice from "./branchSlice";
 import tokenSlice from "./tokenSlice"
 import cartSlice from "./cartSlice";
+import adminSlice from "./adminSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     userSlice,
     branchSlice,
     tokenSlice,
-    cartSlice
+    cartSlice,
+    adminSlice
   }
 });

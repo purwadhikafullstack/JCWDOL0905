@@ -19,7 +19,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       role: {
-        type: Sequelize.ENUM('super', 'branch')
+        type: Sequelize.ENUM("SUPER_ADMIN", "BRANCH_ADMIN")
+      },
+      token_admin: {
+        type: DataTypes.STRING,
       },
       createdAt: {
         allowNull: false,

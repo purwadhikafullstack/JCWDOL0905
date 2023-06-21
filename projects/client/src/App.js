@@ -5,6 +5,7 @@ import { api } from "./api/api";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/userSlice";
+import { loginAdmin   } from "./redux/adminSlice";
 import { setBranchId } from "./redux/branchSlice";
 import { setAccessToken } from "./redux/tokenSlice";
 import { Loading } from "./pages/Loading";
@@ -29,6 +30,8 @@ import TokenInvalid from "./pages/TokenInvalid";
 import Cart from "./pages/user/Cart";
 import ProductDetail from "./pages/user/ProductDetail";
 import Profile from "./pages/user/Profile";
+import LoginAdmin from "./pages/admin/LoginAdmin";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
 
 
 function App() {
@@ -38,6 +41,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const branchId = localStorage.getItem("branchId");
+    const token_admin = localStorage.getItem("token_admin");
     dispatch(setBranchId({ branchId: branchId }));
     setTimeout(() => {setIsLoading(false)}, 1000);
 
@@ -53,6 +57,18 @@ function App() {
     };
     if (token) {
       fetchUser(token);
+    }
+
+    const fetchAdmin = async (token_admin) => {
+      try {
+        const res = await api.get(`/admins/auth/${token_admin}`);
+        dispatch(loginAdmin(res.data.admin));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (token_admin) {
+      fetchAdmin(token_admin);
     }
 
     async function countCart() {
@@ -104,6 +120,8 @@ function App() {
               <Route element={<ProtectedPage needLogin={true}><Profile /></ProtectedPage>} path="/profile" />
               <Route element={<ProtectedPage needLogin={true}><Cart /></ProtectedPage>} path="/cart" />
               <Route Component={ProductDetail} path="/product/:id" />
+              <Route Component={LoginAdmin} path="/login-admin" />
+              <Route Component={DashboardAdmin} path="/admin/dashboard" />
             </Routes>
           </BrowserRouter>
         </>
