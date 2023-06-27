@@ -37,7 +37,6 @@ app.use("/api/products", express.static(__dirname + "/public/products"));
 app.use("/api/categories", express.static(__dirname + "/public/categories"));
 app.use("/api/media/profiles", express.static(__dirname + "/public/profiles"));
 
-
 // ===========================
 
 // not found

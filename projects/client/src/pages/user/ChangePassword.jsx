@@ -59,7 +59,7 @@ const ChangePassword = () => {
     try {
       const response = await api.post("users/change-password", {id_user: id_user, oldPassword: oldPassword, newPassword: newPassword, confirmNewPassword: confirmNewPassword});
       toast.success(response.data.message);
-    //   setTimeout(() => {Navigate('/profile')}, 1500);
+      setTimeout(() => {Navigate('/profile')}, 1500);
     } catch (error) {
       toast.error(error.response.data.message);
     }

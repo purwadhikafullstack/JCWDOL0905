@@ -22,10 +22,6 @@ module.exports = {
   inventoryControllers,
   adminController,
   cartController,
-    discountController,
-    voucherController
+  discountController,
+  voucherController
 }
-  
-
-
-

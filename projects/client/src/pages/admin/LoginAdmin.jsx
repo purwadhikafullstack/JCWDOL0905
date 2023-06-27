@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
@@ -6,6 +6,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import logo_groceria from "../../assets/images/logo-brand-groceria.png"
 import { useDispatch } from "react-redux";
 import { loginAdmin } from "../../redux/adminSlice";
+import { setAccessTokenAdmin } from "../../redux/tokenSlice";
 
 const LoginAdmin = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +17,13 @@ const LoginAdmin = () => {
   const [errorPassword, setErrorPassword] = useState();
   const Navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token_admin = localStorage.getItem("token_admin")
+    if (token_admin) {
+      setTimeout(() => {Navigate('/admin/dashboard')}, 1500)
+    }
+  })
 
   let validateEmail = (value) => {
     if (value === "") {
@@ -47,7 +55,8 @@ const LoginAdmin = () => {
       toast.success(response.data.message);
       localStorage.setItem("token_admin", `${response.data.data.token_admin}`);
       dispatch(loginAdmin(response.data.data))
-      setTimeout(() => {Navigate("/admin/dashboard")}, 1500);
+      dispatch(setAccessTokenAdmin(response.data.data.token_admin))
+      setTimeout(() => {Navigate("/admin/dashboard")}, 1000);
     } catch (error) {
       toast.error(error.response.data.message);
     }
