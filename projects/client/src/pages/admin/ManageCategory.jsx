@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { api } from "../../api/api";
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Toaster } from "react-hot-toast";
+import Layout from "../../component/Layout";
 import AddCategoryModal from "../../component/manageCategory/AddCategoryModal";
 import DeleteCategoryModal from "../../component/manageCategory/DeleteModal";
 import EditCategoryModal from "../../component/manageCategory/EditCategoryModal";
@@ -55,9 +56,10 @@ export const ManageCategory = () => {
   };
 
   return (
-    <div className="flex bg-neutral-100 min-w-screen min-h-screen">
+    <Layout>
       <Toaster />
-      <div className="flex mx-auto rounded-md max-w-xl max-h-5xl px-2 py-2 bg-white md:max-w-4xl md:my-8 md:px-6 md:py-6 lg:max-w-7xl lg:h-7xl lg:px-4 lg:py-4 lg:my-8 drop-shadow-md">
+      <div className="flex min-w-screen min-h-screen">
+      <div className="flex mx-auto rounded-md max-w-xl max-h-5xl px-2 bg-white md:max-w-4xl md:px-6  lg:max-w-7xl lg:h-7xl lg:px-4">
         <div className="p-4 lg:p-8 justify-start ">
           <div className="flex justify-between items-center my-3 mb-8">
             <h2>Manage Category</h2>
@@ -144,6 +146,7 @@ export const ManageCategory = () => {
           onClose={closeEditModal}
         />
       )}
-    </div>
+      </div>
+    </Layout>
   );
 };

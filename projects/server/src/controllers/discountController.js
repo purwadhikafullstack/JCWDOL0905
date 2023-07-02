@@ -113,50 +113,29 @@ module.exports = {
   },
   getAllDiscounts: async (req, res) => {
     try {
-      if (req.admin.role === "BRANCH_ADMIN") {
-        const result = await discount.findAndCountAll({
-          where: {
-            end_date: {
+      const branchId = req.query.branchId || 1;
+      
+      const result = await discount.findAndCountAll({
+        where: {
+          end_date: {
               [Op.gte]: new Date(),
             },
-          },
-          include: {
+        },
+        include: {
             model: inventory,
-            where: { id_branch: req.admin.id_branch },
+            where: { id_branch: branchId },
             include: {
                 model: product
             }
-          },
-        });
-
-        return res.status(200).send({
+        },
+      })
+        
+        res.status(200).send({
           isError: true,
           message: "Successfully get all discounts",
           data: result.rows,
           count: result.count,
         });
-      }
-
-      const branchId = req.query.branchId;
-      const result = await discount.findAndCountAll({
-        where: {
-          end_date: {
-            [Op.gte]: new Date(),
-          },
-        },
-        include: {
-          model: inventory,
-          where: { id_branch: branchId },
-        },
-      });
-
-      res.status(200).send({
-        isError: true,
-        message: "Successfully get all discounts",
-        data: result.rows,
-        count: result.count
-      });
-
     } catch (err) {
       console.log(err);
       res.status(400).send({

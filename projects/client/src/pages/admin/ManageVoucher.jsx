@@ -2,11 +2,18 @@ import { useState, useEffect } from "react";
 import { api } from "../../api/api";
 import { Toaster } from "react-hot-toast";
 import CreateVoucherModal from "../../component/CreateVoucherModal";
+import Layout from "../../component/Layout";
+import { useSelector } from "react-redux";
 
 export const ManageVoucher = () => {
   const [vouchers, setVouchers] = useState([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const token = localStorage.getItem("token_admin");
+  const role = useSelector((state) => state.adminSlice.role);
+  const id_branch = useSelector((state) => state.adminSlice.id_branch);
+
+  const branchId = role === "BRANCH_ADMIN" ? id_branch : "";
+  console.log("branchId", branchId)
 
   useEffect(() => {
     async function fetchVouchers() {
@@ -15,9 +22,9 @@ export const ManageVoucher = () => {
             headers: { Authorization: `Bearer ${token}` },
           };
         
-        const vouchersData = await api.get("/voucher/", config);
-        console.log(vouchersData)
+        const vouchersData = await api.get(`/voucher/?branchId=${branchId}`, config);
         setVouchers(vouchersData.data.data.rows);
+        console.log(vouchersData.data.data.rows)
       } catch (err) {
         console.log(err);
       }
@@ -46,9 +53,10 @@ export const ManageVoucher = () => {
 
 
   return (
-    <div className="flex bg-neutral-100 min-w-screen min-h-screen">
+    <Layout>
+    <div className="flex min-w-screen min-h-screen">
       <Toaster />
-      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 py-2 bg-white md:w-full md:my-8 md:px-6 md:py-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4 lg:py-4 lg:my-8 drop-shadow-md">
+      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
         <div className="w-full lg:w-full p-4 lg:p-8 justify-start ">
           <div className="flex justify-between items-center my-3 mb-8">
             <h2>Manage Voucher</h2>
@@ -60,6 +68,7 @@ export const ManageVoucher = () => {
             </button>
           </div>
 
+
           <div>
             <div className="flex flex-col">
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -68,7 +77,6 @@ export const ManageVoucher = () => {
                     <table className="min-w-full text-left text-md font-light">
                       <thead className="border-b font-medium dark:border-neutral-500">
                         <tr>
-                        {/* const { voucher_type, id_inventory, voucher_kind, voucher_code, voucher_value, max_discount, min_purchase_amount, start_date, end_date } = req.body; */}
                           <th scope="col" className="px-6 py-4">
                             Id
                           </th>
@@ -100,6 +108,7 @@ export const ManageVoucher = () => {
                       </thead>
                       <tbody>
                         {vouchers?.map((voucher) => (
+                          voucher.voucher_type === "product" && voucher.Inventory?.id_branch !== branchId && branchId !== "" ? <></> : 
                           <tr className="border-b dark:border-neutral-500">
                             <td className="whitespace-nowrap px-6 py-4 font-medium">
                               {voucher.id}
@@ -108,7 +117,8 @@ export const ManageVoucher = () => {
                             {voucher.voucher_type}
                             </td>
                             <td className="whitespace-nowrap px-6 py-4">
-                                {voucher?.Inventory?.Product.product_name}</td>
+                                {voucher?.Inventory?.Product.product_name} 
+                                {voucher.Inventory ? <span> ({voucher.Inventory?.Store_Branch?.branch_name})</span> : <></> }</td>
                             <td className="whitespace-nowrap px-6 py-4">
                                 {voucher.voucher_code}</td>
                             <td className="whitespace-nowrap px-6 py-4">
@@ -122,7 +132,7 @@ export const ManageVoucher = () => {
                             </td>
                             <td className="whitespace-nowrap px-6 py-4">
                                 {formatDate(voucher.start_date)} - {formatDate(voucher.end_date)}</td>
-                          </tr>
+                          </tr>  
                         ))}
                       </tbody>
                     </table>
@@ -143,5 +153,6 @@ export const ManageVoucher = () => {
         />
       )}
     </div>
+    </Layout>
   );
 };

@@ -2,6 +2,7 @@ const db = require("../models");
 const voucher = db.Voucher;
 const inventory = db.Inventory;
 const product = db.Product;
+const branch = db.Store_Branch;
 const { Op } = require("sequelize");
 
 
@@ -138,7 +139,6 @@ module.exports = {
   },
   getAllVouchers: async (req, res) => {
     try {
-      if (req.admin.role === "BRANCH_ADMIN") {
         const result = await voucher.findAndCountAll({
           where: {
             end_date: {
@@ -148,38 +148,15 @@ module.exports = {
           include: {
             required : false,
             model: inventory,
-            where: { id_branch: req.admin.id_branch },
-            include: {
-              model: product
-            }
+            include: [{model: product}, {model: branch, attributes: ["branch_name"]}]
           },
         });
 
-        return res.status(200).send({
+        res.status(200).send({
           isError: true,
           message: "Successfully get all vouchers",
           data: result
         });
-      }
-
-      const branchId = req.query.branchId;
-      const result = await voucher.findAndCountAll({
-        where: {
-            end_date: {
-                [Op.gte]: new Date()
-            }
-        },
-        include: {
-          model: inventory,
-          where: { id_branch: branchId },
-        },
-      });
-
-      res.status(200).send({
-        isError: true,
-        message: "Successfully get all vouchers",
-        data: result
-      });
 
     } catch (err) {
       console.log(err);

@@ -35,6 +35,7 @@ import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import { ManageCategory } from "./pages/admin/ManageCategory";
 import { ManageDiscount } from "./pages/admin/ManageDiscount";
 import { ManageVoucher } from "./pages/admin/ManageVoucher";
+import { ManageProduct } from "./pages/admin/ManageProduct";
 import AdminManagement from "./pages/admin/AdminManagement";
 import ProtectedPageAdmin from "./component/ProtectedPageAdmin";
 import TokenInvalidAdmin from "./pages/admin/TokenInvalidAdmin";
@@ -53,7 +54,9 @@ function App() {
 
     const fetchUser = async (token) => {
       try {
-        const res = await api.get(`/users/auth/${token}`);
+        const res = await api.get(`/users/auth/${token}`, {
+          headers: {Authorization : `Bearer ${token}`}
+        });
         dispatch(login(res.data.user));
         dispatch(setAccessToken(token));
       } catch (error) {
@@ -133,9 +136,10 @@ function App() {
               <Route Component={TokenInvalidAdmin} path="/token-invalid-admin" />
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.BRANCH_ADMIN, ROLE.SUPER_ADMIN]}> <DashboardAdmin /> </ProtectedPageAdmin> } path="/admin/dashboard" />
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN]}> <AdminManagement /> </ProtectedPageAdmin> } path="/admin/admin-management" />
-              <Route Component={ManageCategory} path="/manage-category" />
-              <Route Component={ManageDiscount} path="/manage-discount" />
-              <Route Component={ManageVoucher} path="/manage-voucher" />
+              <Route Component={ManageCategory} path="/admin/manage-category" />
+              <Route Component={ManageDiscount} path="/admin/manage-discount" />
+              <Route Component={ManageVoucher} path="/admin/manage-voucher" />
+              <Route Component={ManageProduct} path="/admin/manage-product" />
             </Routes>
           </BrowserRouter>
         </>

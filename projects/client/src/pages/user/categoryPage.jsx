@@ -48,6 +48,7 @@ export default function ProductsByCategory() {
           }
         });
         setProductsInfo(productData.data.data);
+        console.log(productData.data.data);
         setTotalPage(Math.ceil(productData.data.count / 12));       
       } catch (err) {
         console.log(err);
