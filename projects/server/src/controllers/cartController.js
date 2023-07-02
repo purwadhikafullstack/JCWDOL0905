@@ -26,7 +26,7 @@ module.exports = {
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({
-                status: "Successfully fetch cart items",
+                message: "Successfully fetch cart items",
                 results,
             });
 
@@ -42,8 +42,8 @@ module.exports = {
             const user = jwt.verify(bearerToken, jwtKey);
 
             let count = await carts.count({where:{ id_user: user.id_user }});
-            res.status(201).send({
-                status: "Cart successfully counted",
+            res.status(200).send({
+                message: "Cart successfully counted",
                 data: count,
             });
 
@@ -77,7 +77,7 @@ module.exports = {
             });
         
             res.status(201).send({
-                status: "Successfully add item to cart",
+                message: "Successfully add item to cart",
                 data: addItem,
             });
 
@@ -98,7 +98,7 @@ module.exports = {
             });
         
             res.status(201).send({
-                status: "Successfully delete cart",
+                message: "Successfully delete cart",
                 deleteCount: result,
             });
 
@@ -107,4 +107,72 @@ module.exports = {
             res.status(404).send({isError: true, message: "Delete cart failed"})
         }
     },
+
+    deleteCartItem: async (req, res) => {
+        try {
+            let cartId = req.params.id
+
+            let findCartItem = await carts.findOne({ where: { id: cartId } });
+            if (!findCartItem){
+                return res.status(404).send({ isError: true, message: "Cart item not exist" });
+            }
+
+            await carts.destroy({
+                where: { id: cartId },
+            });
+        
+            res.status(200).send({
+                message: "Successfully delete cart item",
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(400).send({isError: true, message: "Delete cart item failed"})
+        }
+    },
+
+    updateQty: async (req, res) => {
+        try {
+            let cartId = req.params.id
+            let num = req.body.num
+
+            let findCartItem = await carts.findOne({ where: { id: cartId } });
+            if (!findCartItem){
+                return res.status(404).send({ isError: true, message: "Cart item not exist" });
+            }
+
+            let findInventory = await inventories.findOne({ where: { id: findCartItem.id_inventory } });
+            if (!findInventory){
+                return res.status(404).send({ isError: true, message: "Inventory not exist" });
+            }
+
+            let qty = findCartItem.product_qty
+            let stock = findInventory.stock
+            let newQty = qty + num
+
+            if(newQty > stock){
+                return res.status(400).send({isError: true, message: "Item quantity can't exceed the available stock"})
+            }
+
+            if(newQty < 1){
+                await carts.destroy({
+                    where: { id: cartId },
+                });
+
+                return res.status(200).send({
+                    message: "Successfully delete cart item",
+                });
+            }
+
+            await carts.update({product_qty: newQty}, {where: {id: cartId}});
+        
+            res.status(200).send({
+                message: "Successfully update cart",
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Update cart failed"})
+        }
+    }
 }

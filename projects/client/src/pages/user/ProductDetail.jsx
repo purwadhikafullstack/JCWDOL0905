@@ -55,7 +55,7 @@ const ProductDetail = () => {
                                 'Authorization': `Bearer ${token}`
                             }
                         });
-                        toast.success(deleteCart.data.status);
+                        toast.success(deleteCart.data.message);
                         const response = await api.post(`cart/${id}`, {}, {
                             'headers': {
                                 'Authorization': `Bearer ${token}`
@@ -63,7 +63,7 @@ const ProductDetail = () => {
                         });
 
                         countCart()
-                        toast.success(response.data.status);
+                        toast.success(response.data.message);
                     }
                 }else{
                     const response = await api.post(`cart/${id}`, {}, {
@@ -72,7 +72,7 @@ const ProductDetail = () => {
                         }
                     });
                     countCart()
-                    toast.success(response.data.status);
+                    toast.success(response.data.message);
                 }
             }else{
                 const response = await api.post(`cart/${id}`, {}, {
@@ -81,7 +81,7 @@ const ProductDetail = () => {
                     }
                 });
                 countCart()
-                toast.success(response.data.status);
+                toast.success(response.data.message);
 
             }
 

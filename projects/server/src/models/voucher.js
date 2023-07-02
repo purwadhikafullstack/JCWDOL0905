@@ -39,6 +39,9 @@ module.exports = (sequelize, DataTypes) => {
       min_purchase_amount: {
         type: DataTypes.INTEGER,
       },
+      id_inventory: {
+        type: DataTypes.INTEGER,
+      },
       start_date: {
         type: DataTypes.DATE,
       },

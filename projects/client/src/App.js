@@ -25,9 +25,13 @@ import { countItem } from "./redux/cartSlice";
 import ProductsPage from "./pages/user/productsPage";
 import CategoryPage from "./pages/user/categoryPage";
 import ChangePassword from "./pages/user/ChangePassword";
-import TokenInvalid from "./pages/TokenInvalid";import Cart from "./pages/user/Cart";
+import TokenInvalid from "./pages/TokenInvalid";
+import Cart from "./pages/user/Cart";
 import ProductDetail from "./pages/user/ProductDetail";
 import Profile from "./pages/user/Profile";
+import AddressPage from "./pages/user/AddressPage";
+import CreateOrder from "./pages/user/CreateOrder";
+import OrderList from "./pages/admin/OrderList";
 
 
 function App() {
@@ -68,7 +72,7 @@ function App() {
           })
         );
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log("Ccounting cart failed");
       }
     }
     countCart()
@@ -103,6 +107,9 @@ function App() {
               <Route element={<ProtectedPage needLogin={true}><Profile /></ProtectedPage>} path="/profile" />
               <Route element={<ProtectedPage needLogin={true}><Cart /></ProtectedPage>} path="/cart" />
               <Route Component={ProductDetail} path="/product/:id" />
+              <Route Component={OrderList} path="/order-list" />
+              <Route element={<ProtectedPage needLogin={true}><AddressPage /></ProtectedPage>} path="/address" />
+              <Route element={<ProtectedPage needLogin={true}><CreateOrder /></ProtectedPage>} path="/order" />
             </Routes>
           </BrowserRouter>
         </>
