@@ -19,7 +19,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       role: {
-        type: Sequelize.ENUM('super', 'branch')
+        type: Sequelize.ENUM("SUPER_ADMIN", "BRANCH_ADMIN")
+      },
+      token_admin: {
+        type: DataTypes.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -28,7 +31,13 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+    }, {
+      paranoid: true
     });
   },
   async down(queryInterface, Sequelize) {

@@ -8,7 +8,6 @@ import NavBar from "../../component/NavBar";
 import { ProductsList } from "../../component/productsList";
 import { useSelector } from "react-redux";
 
-
 export default function ProductsByCategory() {
   const [productsInfo, setProductsInfo] = useState([]);
   const [sort, setSort] = useState(1);
@@ -49,6 +48,7 @@ export default function ProductsByCategory() {
           }
         });
         setProductsInfo(productData.data.data);
+        console.log(productData.data.data);
         setTotalPage(Math.ceil(productData.data.count / 12));       
       } catch (err) {
         console.log(err);

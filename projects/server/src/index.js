@@ -24,7 +24,7 @@ app.use(express.json());
 
 //#region API ROUTES
 // Import routes
-const { userRouter, profileRouter, addressRouter, branchRouter, suggestionRouter, cartRouter, cityRouter, shippingRouter, voucherRouter, transactionRouter } = require("./routers")
+const { userRouter, profileRouter, addressRouter, branchRouter, suggestionRouter, categoryRouters, productRouters, inventoryRouters, adminRouter, cartRouter, discountRouter, voucherRouter, cityRouter, shippingRouter, transactionRouter } = require("./routers")
 
 // Add routes
 app.use('/api/users', userRouter)
@@ -47,6 +47,12 @@ const voucher = require("./models/voucher");
 app.use("/api/category", categoryRouters);
 app.use("/api/product", productRouters);
 app.use("/api/inventory", inventoryRouters);
+app.use("/api/admins", adminRouter);
+app.use("/api/discount", discountRouter);
+app.use("/api/voucher", voucherRouter)
+app.use("/api/products", express.static(__dirname + "/public/products"));
+app.use("/api/categories", express.static(__dirname + "/public/categories"));
+app.use("/api/media/profiles", express.static(__dirname + "/public/profiles"));
 
 // ===========================
 

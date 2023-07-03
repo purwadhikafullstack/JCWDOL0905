@@ -52,6 +52,12 @@ const LandingPage = () => {
                 response.data.results[0].components.municipality ||
                 response.data.results[0].formatted ||
                 "...",
+              usrLocation:
+                response.data.results[0].components.city ||
+                response.data.results[0].components.county ||
+                response.data.results[0].components.municipality ||
+                response.data.results[0].formatted ||
+                "...",
             })
           );
         },

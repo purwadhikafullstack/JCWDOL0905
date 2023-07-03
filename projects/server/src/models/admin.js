@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       admin_name: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
@@ -32,13 +31,25 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM("super", "branch"),
-        values: ["super", "branch"],
+        type: DataTypes.ENUM("SUPER_ADMIN", "BRANCH_ADMIN"),
+        values: ["SUPER_ADMIN", "BRANCH_ADMIN"],
         allowNull: false,
       },
+      token_admin: {
+        type: DataTypes.STRING,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+      }
     },
     {
       sequelize,
+      paranoid: true,
       modelName: "Admin",
     }
   );

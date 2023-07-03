@@ -5,8 +5,9 @@ import { api } from "./api/api";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/userSlice";
+import { loginAdmin   } from "./redux/adminSlice";
 import { setBranchId } from "./redux/branchSlice";
-import { setAccessToken } from "./redux/tokenSlice";
+import { setAccessToken, setAccessTokenAdmin } from "./redux/tokenSlice";
 import { Loading } from "./pages/Loading";
 import ProtectedPage from "./component/ProtectedPage";
 import LandingPage from "./pages/user/LandingPage";
@@ -29,6 +30,19 @@ import TokenInvalid from "./pages/TokenInvalid";
 import Cart from "./pages/user/Cart";
 import ProductDetail from "./pages/user/ProductDetail";
 import Profile from "./pages/user/Profile";
+import LoginAdmin from "./pages/admin/LoginAdmin";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
+import { ManageCategory } from "./pages/admin/ManageCategory";
+import { ManageDiscount } from "./pages/admin/ManageDiscount";
+import { ManageVoucher } from "./pages/admin/ManageVoucher";
+import { ManageProduct } from "./pages/admin/ManageProduct";
+import AdminManagement from "./pages/admin/AdminManagement";
+import ProtectedPageAdmin from "./component/ProtectedPageAdmin";
+import TokenInvalidAdmin from "./pages/admin/TokenInvalidAdmin";
+import { ROLE } from "./constant/role";
+import Cart from "./pages/user/Cart";
+import ProductDetail from "./pages/user/ProductDetail";
+import Profile from "./pages/user/Profile";
 import AddressPage from "./pages/user/AddressPage";
 import CreateOrder from "./pages/user/CreateOrder";
 import OrderList from "./pages/admin/OrderList";
@@ -41,12 +55,15 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const branchId = localStorage.getItem("branchId");
+    const token_admin = localStorage.getItem("token_admin");
     dispatch(setBranchId({ branchId: branchId }));
     setTimeout(() => {setIsLoading(false)}, 1000);
 
     const fetchUser = async (token) => {
       try {
-        const res = await api.get(`/users/auth/${token}`);
+        const res = await api.get(`/users/auth/${token}`, {
+          headers: {Authorization : `Bearer ${token}`}
+        });
         dispatch(login(res.data.user));
         dispatch(setAccessToken(token));
       } catch (error) {
@@ -57,13 +74,27 @@ function App() {
     if (token) {
       fetchUser(token);
     }
-
+    const fetchAdmin = async (token_admin) => {
+      try {
+        const res = await api.get(`/admins/auth/${token_admin}`);
+        dispatch(loginAdmin(res.data.admin));
+        dispatch(setAccessTokenAdmin(token_admin));
+      } catch (error) {
+        console.log(error);
+        window.location.href = "/token-invalid-admin";
+        localStorage.removeItem("token_admin");
+      }
+    };
+    if (token_admin) {
+      fetchAdmin(token_admin);
+    } 
+      
     async function countCart() {
       try {
         const response = await api.get(`cart/count`, {
-            'headers': {
-                'Authorization': `Bearer ${token}`
-            }
+          'headers': {
+            'Authorization': `Bearer ${token}`,
+          },
         });
 
         dispatch(
@@ -72,11 +103,12 @@ function App() {
           })
         );
       } catch (error) {
-        console.log("Ccounting cart failed");
+        console.log(error.response.data.message);
       }
     }
-    countCart()
-
+    if (token) {
+      countCart()
+    }
   },[])
 
   return (
@@ -104,6 +136,17 @@ function App() {
               <Route Component={TokenInvalid} path="/token-invalid" />
               <Route Component={LandingPage} path="/" />
               <Route Component={Page404} path="*" />
+              <Route element={<ProtectedPage needLogin={true}><Profile /></ProtectedPage>} path="/profile" />
+              <Route element={<ProtectedPage needLogin={true}><Cart /></ProtectedPage>} path="/cart" />
+              <Route Component={ProductDetail} path="/product/:id" />
+              <Route Component={LoginAdmin} path="/login-admin" />
+              <Route Component={TokenInvalidAdmin} path="/token-invalid-admin" />
+              <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.BRANCH_ADMIN, ROLE.SUPER_ADMIN]}> <DashboardAdmin /> </ProtectedPageAdmin> } path="/admin/dashboard" />
+              <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN]}> <AdminManagement /> </ProtectedPageAdmin> } path="/admin/admin-management" />
+              <Route Component={ManageCategory} path="/admin/manage-category" />
+              <Route Component={ManageDiscount} path="/admin/manage-discount" />
+              <Route Component={ManageVoucher} path="/admin/manage-voucher" />
+              <Route Component={ManageProduct} path="/admin/manage-product" />
               <Route element={<ProtectedPage needLogin={true}><Profile /></ProtectedPage>} path="/profile" />
               <Route element={<ProtectedPage needLogin={true}><Cart /></ProtectedPage>} path="/cart" />
               <Route Component={ProductDetail} path="/product/:id" />
