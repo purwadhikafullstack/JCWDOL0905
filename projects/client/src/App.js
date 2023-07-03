@@ -40,6 +40,10 @@ import AdminManagement from "./pages/admin/AdminManagement";
 import ProtectedPageAdmin from "./component/ProtectedPageAdmin";
 import TokenInvalidAdmin from "./pages/admin/TokenInvalidAdmin";
 import { ROLE } from "./constant/role";
+import AddressPage from "./pages/user/AddressPage";
+import CreateOrder from "./pages/user/CreateOrder";
+import OrderList from "./pages/admin/OrderList";
+
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -140,6 +144,9 @@ function App() {
               <Route Component={ManageDiscount} path="/admin/manage-discount" />
               <Route Component={ManageVoucher} path="/admin/manage-voucher" />
               <Route Component={ManageProduct} path="/admin/manage-product" />
+              <Route Component={OrderList} path="/order-list" />
+              <Route element={<ProtectedPage needLogin={true}><AddressPage /></ProtectedPage>} path="/address" />
+              <Route element={<ProtectedPage needLogin={true}><CreateOrder /></ProtectedPage>} path="/order" />
             </Routes>
           </BrowserRouter>
         </>

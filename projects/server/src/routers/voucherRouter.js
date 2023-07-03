@@ -5,5 +5,6 @@ const authAdmin = require("../middleware/authAdmin");
 
 router.post("/", auth, authAdmin.verifyToken, voucherController.createVoucher);
 router.get("/", auth, authAdmin.verifyToken, voucherController.getAllVouchers);
+router.get('/user', auth, voucherController.getUserVoucher)
 
 module.exports = router;

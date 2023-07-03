@@ -18,6 +18,7 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorEmail, setErrorEmail] = useState();
   const [profiles, setProfiles] = useState({});
+  const [disableBtn, setDisableBtn] = useState(false)
   const Navigate = useNavigate();
   const dispatch = useDispatch
   const inputFileRef = useRef(null);
@@ -65,10 +66,13 @@ const EditProfile = () => {
   let validateEmail = (value) => {
     if (value === "") {
       setErrorEmail("Please input your email");
+      setDisableBtn(true);
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       setErrorEmail("Invalid email format");
+      setDisableBtn(true);
     } else {
       setErrorEmail("");
+      setDisableBtn(false);
     }
     setEmail(value);
   };
@@ -90,14 +94,6 @@ const EditProfile = () => {
     formData.append("birthdate", birthdate)
     formData.append("prevEmail", profiles.email)
 
-    const data = {
-      name: document.getElementById("name").value,
-      gender: document.getElementById("gender").value,
-      email: email,
-      birthdate: birthdate,
-      prevEmail: profiles.email,
-    };
-
     try {
       const response = await api.patch(`profiles/${user.id}`, formData);
       toast.success(response.data.message);
@@ -108,13 +104,15 @@ const EditProfile = () => {
       document.getElementById("birthdate").value = "";
 
       setTimeout(() => {
-        Navigate("/profile");
+        window.location.href = '/profile'
       }, 1000);
     } catch (error) {
       toast.error(error.response.data.message);
     }
     setIsLoading(false);
   };
+
+  console.log("diss", disableBtn)
 
   return (
     <>
@@ -227,7 +225,7 @@ const EditProfile = () => {
               <div className="flex w-full mt-10">
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={disableBtn}
                   onClick={handleSubmit}
                   className="flex mt-2 items-center justify-center focus:outline-none text-white text-sm uppercase sm:text-base bg-green-500 hover:bg-green-600 rounded-2xl py-2 w-full transition duration-150 ease-in"
                 >

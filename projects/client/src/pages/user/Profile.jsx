@@ -5,7 +5,7 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   XMarkIcon,
-  MinusIcon,
+  PencilSquareIcon,
   PencilIcon
 } from "@heroicons/react/24/outline";
 import NavBar from "../../component/NavBar";
@@ -204,7 +204,7 @@ export default function Profile() {
                         </dl>
                         <ul role="list" className="mt-8 flex space-x-12">
                             <li>
-                                <a className="text-teal-200 hover:text-teal-100 underline" href="#">Manage Address</a>
+                                <a className="text-teal-200 hover:text-teal-100 underline" href="/address">Manage Address</a>
                             </li>
                             <li>
                                 <a className="text-teal-200 hover:text-teal-100 underline" href="change-password">Change Password</a>
@@ -220,7 +220,7 @@ export default function Profile() {
                             </div>
                             <a href="/edit-profile">
                                 <div class="ml-3 items-center">
-                                <PencilIcon className="h-5 w-5 fill-white" aria-hidden="true"/>
+                                <PencilSquareIcon className="h-5 w-5 fill-white" aria-hidden="true"/>
                                 </div>
                             </a>
                         </div>

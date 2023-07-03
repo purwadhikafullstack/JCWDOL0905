@@ -99,13 +99,16 @@ module.exports = {
     }
   },
   findInventory: async (req, res) => {
+    const branchId = req.query.branchId
     const inventoryId = req.params.idInventory;
     try {
         let findInventory = await inventory.findOne({ where: { id: inventoryId } });
         if (!findInventory){
-            return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true });
+          return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true });
+        }else if(findInventory.id_branch!=branchId){
+          return res.status(404).send({ isError: true, message: "Id branch not valid", navigate: true });
         }
-        
+    
         res.status(200).send({
             status: "Successfully find inventory",
             data: findInventory,
@@ -116,7 +119,8 @@ module.exports = {
         console.log(error);
         res.status(404).send({isError: true, message: "Find inventory failed"})
     }
-},
+  },
+  
   getInventoryById: async (req, res) => {
     const id = req.params.id;
     try {

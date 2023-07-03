@@ -10,22 +10,26 @@ const adminRouter = require("./adminRouter");
 const discountRouter = require("./discountRouter");
 const voucherRouter = require("./voucherRouter")
 const cartRouter = require("./cartRouter");
-
+const cityRouter = require("./cityRouter")
+const shippingRouter = require("./shippingRouter")
+const transactionRouter = require("./transactionRouter")
 
 module.exports = {
-  userRouter,
-  profileRouter,
-  addressRouter,
-  branchRouter,
-  suggestionRouter,
-  categoryRouters,
-  productRouters,
-  inventoryRouters,
-  cartRouter,
-  adminRouter,
-  discountRouter,
-  voucherRouter
-};
-
+    userRouter,
+    profileRouter,
+    addressRouter,
+    branchRouter,
+    suggestionRouter,
+    categoryRouters,
+    productRouters,
+    inventoryRouters,
+    cartRouter,
+    adminRouter,
+    discountRouter,
+    voucherRouter,
+    cityRouter,
+    shippingRouter,
+    transactionRouter,
+}
 
 

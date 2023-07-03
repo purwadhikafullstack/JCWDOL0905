@@ -48,7 +48,7 @@ const Login = () => {
       }
       else {
         localStorage.setItem("token", `${response.data.data.access_token}`);
-        setTimeout(() => {Navigate('/')}, 1500);
+        setTimeout(() => {window.location.href = '/'}, 1500);
       }
     } catch (error) {
       toast.error(error.response.data.message);
