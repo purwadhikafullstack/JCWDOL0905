@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       status: {
         type: DataTypes.ENUM("in", "out"),
-
         allowNull: false,
       },
       reference: {
@@ -29,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      current_stock: {
+        type: DataTypes.INTEGER,
       },
     },
     {

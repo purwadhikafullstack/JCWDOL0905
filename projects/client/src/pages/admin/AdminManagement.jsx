@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import ModalEditAdminBranch from "../../component/ModalEditAdminBranch";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import ModalDeleteAdminBranch from "../../component/ModalDeleteAdminBranch";
+import { useSearchParams } from "react-router-dom";
 
 function Table({ tableData, setEditData, setOpenEditModal, setOpenDeleteModal }) {
   return (
@@ -28,21 +29,11 @@ function Table({ tableData, setEditData, setOpenEditModal, setOpenDeleteModal })
               <tbody className="divide-y text-left divide-gray-200 bg-white">
                 {tableData.map((person) => (
                   <tr key={person.email}>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6">
-                      {person.id || ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {person.admin_name || ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {person.email || ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {person.role === "BRANCH_ADMIN" ? "BRANCH ADMIN" : person.role || ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {person.Store_Branch.branch_name || ""}
-                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6"> {person.id || ""} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {person.admin_name || ""} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {person.email || ""} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {person.role === "BRANCH_ADMIN" ? "BRANCH ADMIN" : person.role || ""} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {person.Store_Branch.branch_name || ""} </td>
                     <td className="flex whitespace-nowrap px-3 py-3 text-center text-sm font-medium sm:pr-3 justify-center">
                       <div className="flex row">
                         <PencilIcon
@@ -73,10 +64,11 @@ function Table({ tableData, setEditData, setOpenEditModal, setOpenDeleteModal })
 }
 
 function AdminManagement() {
-  const [limit, setLimit] = useState(5);
-  const [page, setPage] = useState(0);
-  const [filterState, setFilterState] = useState("");
-  const [filterType, setFilterType] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+  const [limit, setLimit] = useState(Number(searchParams.get("limit")) || 5);
+  const [filterState, setFilterState] = useState( searchParams.get("filter") ||"");
+  const [filterType, setFilterType] = useState(searchParams.get("filterType") ||"");
   const [tableData, setTableData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [open, setOpen] = useState(false);
@@ -122,6 +114,10 @@ function AdminManagement() {
     getListOfAdmin();
   }, [page, limit]);
 
+  useEffect(() => {
+    setSearchParams({ page: page.toString(), limit: limit.toString(), filter: filterState, filterType: filterType });
+  }, [page, limit, setSearchParams, filterState, filterType]);
+
   return (
     <Layout>
       <div className="px-4 sm:px-6 lg:px-8">
@@ -132,7 +128,7 @@ function AdminManagement() {
           <div className="sm:flex-auto">
             <div>
               <input
-                type="yex"
+                type="text"
                 name="name"
                 className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-300 py-2 focus:outline-none focus:border-green-400"
                 placeholder="Search by name or email"

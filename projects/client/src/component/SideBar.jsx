@@ -15,7 +15,7 @@ const initNavigation = [
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCartIcon, current: false, roleAccess: ["SUPER_ADMIN", "BRANCH_ADMIN"] },
   { name: 'Discount Management', icon: ReceiptPercentIcon, current: false, roleAccess: ["SUPER_ADMIN", "BRANCH_ADMIN"], submenus:  [{name: 'Manage Discount', href: '/admin/manage-discount'},{name: 'Manage Voucher', href: '/admin/manage-voucher'}]},
   { name: 'Sales Report', href: '/admin/sales-report', icon: ClipboardDocumentCheckIcon, current: false, roleAccess: ["BRANCH_ADMIN", "SUPER_ADMIN"] },
-  { name: 'Product Stock History', href: '/admin/product-stock-history', icon: InboxStackIcon, current: false, roleAccess: ["BRANCH_ADMIN"]},
+  { name: 'Product Stock History', href: '/admin/product-stock-history', icon: InboxStackIcon, current: false, roleAccess: ["BRANCH_ADMIN", "SUPER_ADMIN"]},
 ].map(item => ({...item, isOpen: false}));
 
 const SideBar = forwardRef((props, ref) => {
