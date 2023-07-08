@@ -3,6 +3,7 @@ const inventory = db.Inventory;
 const product = db.Product;
 const inventoryHistory = db.Inventory_History;
 const discount = db.Discount;
+const category = db.Category;
 const { Op } = require("sequelize");
 const { literal } = require('sequelize');
 
@@ -43,22 +44,22 @@ module.exports = {
     const productName = req.query.name || null;
     const sort = req.query.sort || "ASC";
     const order = req.query.order === "product_price" ? 'discounted_price' : "`Product.product_name`";
+    const admin = req.query.adm || null;
 
     const categoryQuery = category_id ? { id_category: category_id } : {};
     const productQuery = productName ? { product_name: { [Op.like]: `%${productName}%` } } : {};
+    const stockQuery = !admin ? {stock: { [Op.gte]: 1} } : {};
 
-      
     const allInventories = await inventory.findAndCountAll({
       where: {
         id_branch: branchId,
-        stock: {
-          [Op.gte]: 1,
-        }
+        ...stockQuery
       },
       include: [
         {
           model: product,
           where: { ...categoryQuery, ...productQuery },
+          include: { model: category, attributes: ['category_name'] },
         },
         {
           model: discount,
@@ -89,7 +90,6 @@ module.exports = {
       data: allInventories.rows,
       count: allInventories.count,
     });
-
 
     } catch (err) {
       console.log(err);
@@ -251,5 +251,5 @@ module.exports = {
       console.log(error);
       res.status(404).send({isError: true, message: "Fetch inventory by Id failed"})
     }
-  }
+  },
 };

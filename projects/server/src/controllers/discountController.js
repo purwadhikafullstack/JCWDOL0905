@@ -114,6 +114,7 @@ module.exports = {
   getAllDiscounts: async (req, res) => {
     try {
       const branchId = req.query.branchId || 1;
+      console.log("branchId", branchId)
       
       const result = await discount.findAndCountAll({
         where: {

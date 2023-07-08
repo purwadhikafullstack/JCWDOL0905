@@ -1,7 +1,7 @@
 export const ProductsList = ({ productsInfo }) => {
 
   function formatIDR(price) {
-    let idr = Math.floor(price).toLocaleString("id-ID");
+    let idr = Math.round(price).toLocaleString("id-ID");
     return `Rp ${idr}`;
   }
 

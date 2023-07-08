@@ -1,5 +1,6 @@
 const db = require("../models");
 const category = db.Category;
+const { Op } = require("sequelize");
 
 module.exports = {
   createNewCategory: async (req, res) => {
@@ -48,12 +49,27 @@ module.exports = {
   },
   fetchAllCategories: async (req, res) => {
     try {
-      let result = await category.findAll({});
+      const admin = req.query.adm || null;
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = 12;
+      const categoryName = req.query.name || null;
+      const sort = req.query.sort || "ASC";
+
+      const order = admin ? {order : [['category_name', sort]]} : {};
+      const limit = admin ? {limit: pageSize} : {};
+      const offset = admin ? {offset: (page - 1) * pageSize,} : {};
+
+      const categoryQuery = categoryName ? { category_name: { [Op.like]: `%${categoryName}%` } } : {};
+
+      let result = await category.findAndCountAll({
+        where: {...categoryQuery}, ...order, ...limit, ...offset
+      });
 
       res.status(200).send({
         isError: false,
         message: "Successfully fetch all categories",
-        data: result,
+        data: result.rows,
+        count: result.count
       });
     } catch (err) {
       console.log(err);

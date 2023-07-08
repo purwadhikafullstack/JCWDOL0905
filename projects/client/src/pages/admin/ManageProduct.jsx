@@ -9,9 +9,10 @@ import AddProductModal from "../../component/manageProduct/AddProductModal";
 import EditProductModal from "../../component/manageProduct/EditProductModal";
 import Layout from "../../component/Layout";
 
-export const ManageProduct = () => {
+const ManageProduct = () => {
   const [activePage, setActivePage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [sort, setSort] = useState(1);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -35,7 +36,29 @@ export const ManageProduct = () => {
     
     async function fetchProducts() {
       try{
-        const productsData = await api.get(`/product/?category=${selectedCategory}&name=${searchedProduct}&page=${activePage}`);
+        let url;
+        switch (parseInt(sort)) {
+          // sort by name A-Z
+          case 1:
+            url = `/product/?order=product_name&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
+            break;
+          // sort by name Z-A
+          case 2:
+            url = `/product/?order=product_name&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
+            break;
+          // sort by price L-H
+          case 3:
+            url = `/product/?order=product_price&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
+            break;
+          // sort by price H-L
+          case 4:
+            url = `/product/?order=product_price&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
+            break;
+          default:
+            url = `/product/?order=updatedAt&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
+        }
+
+        const productsData = await api.get(url);
         setProducts(productsData.data.data);
         setTotalPage(Math.ceil(productsData.data.count / 8));  
       } catch (error) {
@@ -43,7 +66,7 @@ export const ManageProduct = () => {
       }
     }
     fetchProducts()
-  }, [selectedCategory, searchedProduct, activePage]);
+  }, [selectedCategory, activePage, sort]);
 
   const openAddModal = () => {
     setAddModalOpen(true);
@@ -73,13 +96,29 @@ export const ManageProduct = () => {
     setEditModalOpen(false);
   };
 
-  const handleInputChange = (e) => {
-    setSearchedProduct(e.target.value);
+  const handleSortChange = (e) => {
+    setSort(e.target.value);
     setActivePage(1);
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+    setActivePage(1);
+    setSort(1)
+      async function fetchProducts() {
+        try {
+          const productsData = await api.get(`/product/?category=${selectedCategory}&name=${searchedProduct}&order=product_name&sort=ASC&page=${activePage}`);
+          setProducts(productsData.data.data);
+          setTotalPage(Math.ceil(productsData.data.count / 8));
+       } catch (err) {
+        console.log(err)
+       }
+    }
+    fetchProducts()
+  }};
+
   function formatIDR(price) {
-    let idr = Math.floor(price).toLocaleString("id-ID");
+    let idr = Math.round(price).toLocaleString("id-ID");
     return `Rp ${idr}`;
   }
 
@@ -87,7 +126,7 @@ export const ManageProduct = () => {
     <Layout>
     <div className="flex min-w-screen min-h-screen">
       <Toaster />
-      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:max-w-3xl md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
+      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:max-w-4xl md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
         <div className="w-full lg:w-full p-4 lg:p-8 justify-start ">
           <div className="flex justify-between items-center my-3 mb-8">
             <h2>Manage Product</h2>
@@ -100,7 +139,7 @@ export const ManageProduct = () => {
           </div>
 
           <div>
-            <div className="flex mb-6">
+          <div className="flex flex-col md:flex-row lg:flex-row mb-6">
               <div className="relative w-full">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <MagnifyingGlassIcon
@@ -109,13 +148,14 @@ export const ManageProduct = () => {
                   />
                 </div>
                 <input
-                  id="search" type="search" placeholder="Search product name" onChange={handleInputChange} className="block w-full rounded-md border-0 pl-10 pr-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-md sm:leading-6"
+                  id="search" type="search"
+                  placeholder="Search product name"
+                  onChange={e => setSearchedProduct(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full rounded-md border-0 pl-10 pr-40 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-md sm:leading-6"
                 />
-              </div>
-              <div className="flex ml-4 lg:ml-8 items-center">
-                <label className="block w-16 text-md font-medium leading-6 text-gray-900 mr-2 "> Filter by:</label>
-                <select className="w-36 lg:w-60 rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" id="filter" onChange={(e) => setSelectedCategory(e.target.value)} >
-                  <option key="" value="">All Categories</option>
+                <select className="absolute right-0 bg-gray-100 right-0 rounded-r-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" onChange={(e) => setSelectedCategory(e.target.value)}>
+                <option key="" value="">All Categories</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.category_name}
@@ -123,7 +163,25 @@ export const ManageProduct = () => {
                   ))}
                 </select>
               </div>
+
+              <div className="flex mt-4 md:ml-8 md:mt-0 items-center">
+                <label className="block w-16 text-md font-medium leading-6 text-gray-900 mr-2 ">
+                  Sort by:
+                </label>
+                <select
+                  className="w-56 lg:w-60 rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500"
+                  id="filter"
+                  value={sort}
+                  onChange={handleSortChange}
+                >
+                  <option value="1">Product Name A-Z</option>
+                  <option value="2">Product Name Z-A</option>
+                  <option value="3">Price Lowest-Highest</option>
+                  <option value="4">Price Highest-Lowest</option>
+                </select>
+              </div>
             </div>
+            
             
             {products.map((product) => (
               <div className="grid grid grid-cols-1 gap-y-4 sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 lg:grid-cols-6 lg:gap-x-4 rounded-md border border-gray-300 p-3 mb-4">
@@ -196,3 +254,5 @@ export const ManageProduct = () => {
     </Layout>
   );
 };
+
+export default ManageProduct;

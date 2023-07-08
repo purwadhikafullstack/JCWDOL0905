@@ -58,7 +58,6 @@ export default function ProductsPage() {
         searchedName && productData.data.data.length < 1 && toast.error(`${searchValue} is not found`);
         setProductsInfo(productData.data.data);
 
-        console.log("products", productData.data.data);
         setTotalPage(Math.ceil(productData.data.count / 12));
       } catch (err) {
         console.log(err);
