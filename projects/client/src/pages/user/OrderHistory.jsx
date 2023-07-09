@@ -76,7 +76,7 @@ export default function OrderHistory() {
                                 <th class="px-6 py-4 font-bold">
                                     Total Payment
                                 </th>
-                                <th class="py-4 font-bold">
+                                <th class="px-6 py-4 font-bold">
                                     Order Detail
                                 </th>
                             </tr>
@@ -118,21 +118,29 @@ export default function OrderHistory() {
                                         <div className="mt-1">
                                             {`${rupiah(data.final_price)}`}
                                         </div>
+
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div className="mt-1">
+                                            <button type="button" onClick={() => Navigate(`/order/${data.id}`)}>
+                                                <ArrowTopRightOnSquareIcon className="h-5 w-5" onClick={() => Navigate(`/order/${data.id}`)}/>
+                                            </button>
+                                        </div>
+
                                     </td>
                                     {/* <td class="pl-6 py-4">
                                         <div class="flex items-center place-content-end">
                                             <DrawerEditAddress id={data.id}/>
                                         </div>
                                     </td> */}
-                                    <td class="pr-6 py-4">
+                                    {/* <td class="pr-6 py-4">
                                         <div class="mt-1">
-                                            {/* <ArrowTopRightOnSquareIcon className="h-5 w-5" as="a" href={'/'}/> */}
                                             <button type="button" onClick={() => Navigate(`/order/${data.id}`)}>
-                                                <ArrowTopRightOnSquareIcon className="h-5 w-5"/>
+                                                <ArrowTopRightOnSquareIcon className="h-5 w-5" onClick={() => Navigate(`/order/${data.id}`)}/>
                                             </button>
                                             
                                         </div>
-                                    </td>
+                                    </td> */}
                                 </tr>
                             </tbody>
                         ))}

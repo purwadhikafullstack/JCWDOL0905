@@ -180,7 +180,7 @@ module.exports = {
                     {transaction: t}
                 );
                 await inventory.update({stock: stock - product_qty}, {where: { id: id_inventory }, transaction: t});
-                await inventory_history.create({status: 'out', reference: 'sale', quantity: product_qty, id_inventory}, {transaction: t});
+                // await inventory_history.create({status: 'out', reference: 'sale', quantity: product_qty, id_inventory}, {transaction: t});
 
             }
 
