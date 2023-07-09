@@ -43,6 +43,8 @@ import { ROLE } from "./constant/role";
 import AddressPage from "./pages/user/AddressPage";
 import CreateOrder from "./pages/user/CreateOrder";
 import OrderList from "./pages/admin/OrderList";
+import OrderDetail from "./pages/user/OrderDetail";
+import OrderHistory from "./pages/user/OrderHistory";
 
 
 function App() {
@@ -144,9 +146,11 @@ function App() {
               <Route Component={ManageDiscount} path="/admin/manage-discount" />
               <Route Component={ManageVoucher} path="/admin/manage-voucher" />
               <Route Component={ManageProduct} path="/admin/manage-product" />
-              <Route Component={OrderList} path="/order-list" />
+              <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN, ROLE.BRANCH_ADMIN]}> <OrderList /> </ProtectedPageAdmin> } path="/admin/orders" />
               <Route element={<ProtectedPage needLogin={true}><AddressPage /></ProtectedPage>} path="/address" />
               <Route element={<ProtectedPage needLogin={true}><CreateOrder /></ProtectedPage>} path="/order" />
+              <Route element={<ProtectedPage needLogin={true}><OrderDetail /></ProtectedPage>} path="/order/:id" />
+              <Route element={<ProtectedPage needLogin={true}><OrderHistory /></ProtectedPage>} path="/order-history" />
             </Routes>
           </BrowserRouter>
         </>

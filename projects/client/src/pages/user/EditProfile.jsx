@@ -112,8 +112,6 @@ const EditProfile = () => {
     setIsLoading(false);
   };
 
-  console.log("diss", disableBtn)
-
   return (
     <>
       <NavBar />

@@ -3,7 +3,6 @@ const withMT = require("@material-tailwind/react/utils/withMT");
 module.exports = withMT({
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
-    'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}'
   ],
   theme: {
     extend: {
@@ -12,5 +11,5 @@ module.exports = withMT({
       },
     },
   },
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/aspect-ratio"), require('tailwind-scrollbar-hide'), require('flowbite/plugin'), require('daisyui')],
+  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/aspect-ratio"), require('tailwind-scrollbar-hide')],
 });

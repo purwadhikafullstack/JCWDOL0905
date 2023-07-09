@@ -45,9 +45,6 @@ export default function DrawerEditAddress(props) {
         fetchCity()
     }, [open, provinceId])
 
-    // console.log("provid", provinceId)
-    // console.log("city", city)
-
     const handleSubmit = async () => {
         try {
             const data = {
@@ -75,7 +72,7 @@ export default function DrawerEditAddress(props) {
 
             setTimeout(() => {
                 window.location.href = '/address'
-            }, 500);
+            }, 200);
         } catch (error) {
             toast.error(error.response.data.message);
         }
@@ -218,13 +215,13 @@ export default function DrawerEditAddress(props) {
                                 >
                                     Cancel
                                 </button>
-                                <a
+                                <button
+                                    type="button"
                                     onClick={() => handleSubmit()}
-                                    href="#"
                                     className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                                 >
                                     Update
-                                </a>
+                                </button>
                                 </div>
                             </form>
                             </Dialog.Panel>

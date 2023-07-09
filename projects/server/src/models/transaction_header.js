@@ -29,11 +29,25 @@ module.exports = (sequelize, DataTypes) => {
           name: "id_shipping_service",
         },
       });
+      Transaction_Header.belongsTo(models.Address, {
+        foreignKey: {
+          name: "id_address",
+        },
+      });
+      Transaction_Header.belongsTo(models.Store_Branch, {
+        foreignKey: {
+          name: "id_branch",
+        },
+      });
     }
   }
   Transaction_Header.init(
     {
       total_price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      total_weight: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -54,6 +68,36 @@ module.exports = (sequelize, DataTypes) => {
       },
       order_status: {
         type: DataTypes.ENUM("waiting for payment", "waiting for payment confirmation", "processed", "shipped", "done", "canceled"),
+      },
+      branch_name: {
+        type: DataTypes.STRING,
+      },
+      branch_address: {
+        type: DataTypes.STRING,
+      },
+      branch_province: {
+        type: DataTypes.STRING,
+      },
+      branch_city: {
+        type: DataTypes.STRING,
+      },
+      branch_city_id: {
+        type: DataTypes.INTEGER,
+      },
+      address_label: {
+        type: DataTypes.STRING,
+      },
+      address_detail: {
+        type: DataTypes.STRING,
+      },
+      address_province: {
+        type: DataTypes.STRING,
+      },
+      address_city: {
+        type: DataTypes.STRING,
+      },
+      address_city_id: {
+        type: DataTypes.INTEGER,
       },
     },
     {

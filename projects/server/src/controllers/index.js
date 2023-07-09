@@ -13,6 +13,7 @@ const voucherController = require("./voucherController")
 const cityController = require("./cityController")
 const shippingController = require("./shippingController")
 const transactionController = require("./transactionController")
+const orderController = require("./orderController")
 
 module.exports = {
     userController,
@@ -30,4 +31,5 @@ module.exports = {
     cityController,
     shippingController,
     transactionController,
+    orderController,
 }

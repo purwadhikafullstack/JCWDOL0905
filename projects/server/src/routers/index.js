@@ -13,6 +13,7 @@ const cartRouter = require("./cartRouter");
 const cityRouter = require("./cityRouter")
 const shippingRouter = require("./shippingRouter")
 const transactionRouter = require("./transactionRouter")
+const orderRouter = require("./orderRouter")
 
 module.exports = {
     userRouter,
@@ -30,6 +31,7 @@ module.exports = {
     cityRouter,
     shippingRouter,
     transactionRouter,
+    orderRouter,
 }
 
 
