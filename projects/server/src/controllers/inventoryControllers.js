@@ -1,7 +1,9 @@
 const db = require("../models");
 const inventory = db.Inventory;
 const product = db.Product;
+const inventoryHistory = db.Inventory_History;
 const discount = db.Discount;
+const category = db.Category;
 const { Op } = require("sequelize");
 const { literal } = require('sequelize');
 
@@ -42,22 +44,22 @@ module.exports = {
     const productName = req.query.name || null;
     const sort = req.query.sort || "ASC";
     const order = req.query.order === "product_price" ? 'discounted_price' : "`Product.product_name`";
+    const admin = req.query.adm || null;
 
     const categoryQuery = category_id ? { id_category: category_id } : {};
     const productQuery = productName ? { product_name: { [Op.like]: `%${productName}%` } } : {};
+    const stockQuery = !admin ? {stock: { [Op.gte]: 1} } : {};
 
-      
     const allInventories = await inventory.findAndCountAll({
       where: {
         id_branch: branchId,
-        stock: {
-          [Op.gte]: 1,
-        }
+        ...stockQuery
       },
       include: [
         {
           model: product,
           where: { ...categoryQuery, ...productQuery },
+          include: { model: category, attributes: ['category_name'] },
         },
         {
           model: discount,
@@ -89,7 +91,6 @@ module.exports = {
       count: allInventories.count,
     });
 
-
     } catch (err) {
       console.log(err);
       res.status(400).send({
@@ -116,9 +117,91 @@ module.exports = {
         });
 
     } catch (error) {
-        console.log(error);
-        res.status(404).send({isError: true, message: "Find inventory failed"})
+      console.log(error);
+      res.status(404).send({ isError: true, message: "Find inventory failed" });
     }
+  },
+  findInventoryHistory: async (req, res) => {
+    console.log('calling findInventoryHistory');
+    let { productName, orderBy, orderByMethod, branchId, startDate, endDate, page, limit, } = req.query;
+    const mapOrderBy = { id: "Inventory_Histories.id", productName: "CombinedQuery.productName", createdAt: "Inventory_Histories.createdAt", };
+    productName = productName ? `%${productName}%` : ""; // formating that for like query
+    orderBy = mapOrderBy[orderBy] || "Inventory_Histories.id"; // Default to 'Inventory_Histories.id' if not provided
+    orderByMethod = orderByMethod || "ASC"; // Default to 'ASC' if not provided
+    branchId = branchId || ""; // Empty string if not provided
+    startDate = startDate || "1970-01-01 00:00:00"; // Default to a very early date if not provided
+    endDate = endDate || "9999-12-31 23:59:59"; // Default to a very late date if not provided
+    page = parseInt(page) || 1; // Default to 1 if not provided or invalid
+    limit = parseInt(limit) || 10; // Default to 10 if not provided or invalid
+    const offset = (page - 1) * limit;
+    const query = `
+    SELECT
+        Inventory_Histories.id,
+        CombinedQuery.productName,
+        CombinedQuery.branchName,
+        Inventory_Histories.status,
+        Inventory_Histories.reference,
+        Inventory_Histories.quantity,
+        Inventory_Histories.createdAt,
+        Inventory_Histories.updatedAt,
+        Inventory_Histories.current_stock
+    FROM
+        (
+            SELECT
+                Inventories.id,
+                Inventories.stock AS inventory_stock,
+                Products.product_name AS productName,
+                Store_Branches.branch_name AS branchName
+            FROM
+                Inventories
+            JOIN
+                Products ON Inventories.id_product = Products.id
+            JOIN 
+                Store_Branches ON Inventories.id_branch = Store_Branches.id            
+            WHERE
+                ${branchId ? "Inventories.id_branch = :branchId" : "1 = 1"}
+        ) AS CombinedQuery
+    JOIN
+        Inventory_Histories ON Inventory_Histories.id_inventory = CombinedQuery.id
+    WHERE
+        ${productName ? "CombinedQuery.productName LIKE :productName" : "1 = 1"}
+        AND Inventory_Histories.createdAt BETWEEN :startDate AND :endDate
+    ORDER BY
+        ${orderBy} ${orderByMethod}
+        LIMIT :limit
+        OFFSET :offset;
+  `;
+
+  console.log(query, 'this is query');
+
+    const countQuery = `
+    SELECT COUNT(*) AS total
+    FROM
+        (
+            SELECT
+                Inventories.id,
+                Products.product_name AS productName
+            FROM
+                Inventories
+            JOIN
+                Products ON Inventories.id_product = Products.id
+            WHERE
+                ${branchId ? "Inventories.id_branch = :branchId" : "1 = 1"}
+        ) AS CombinedQuery
+    JOIN
+        Inventory_Histories ON Inventory_Histories.id_inventory = CombinedQuery.id
+    WHERE
+        ${productName ? "CombinedQuery.productName LIKE :productName" : "1 = 1"}
+        AND Inventory_Histories.createdAt BETWEEN :startDate AND :endDate;
+  `;
+
+    const result = await db.sequelize.query(query, { replacements: { branchId, productName, startDate, endDate, limit, offset, }, });
+    const countResult = await db.sequelize.query(countQuery, { replacements: { branchId, productName, startDate, endDate, }, });
+    const totalItems = countResult[0][0].total;
+    const totalPages = Math.ceil(totalItems / limit);
+    console.log(countResult[0][0].total, "count result");
+    const data = { totalItems, totalPages, currentPage: page, items: result[0], };
+    return res.status(200).send({ status: "Successfully find invesssntory", data: data, });
   },
   
   getInventoryById: async (req, res) => {
@@ -168,5 +251,5 @@ module.exports = {
       console.log(error);
       res.status(404).send({isError: true, message: "Fetch inventory by Id failed"})
     }
-  }
+  },
 };

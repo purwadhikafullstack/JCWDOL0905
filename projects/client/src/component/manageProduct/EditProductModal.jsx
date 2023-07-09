@@ -16,10 +16,10 @@ export default function EditProductModal({ open, setOpen, onClose, product, cate
       .min(4, "Product name must be 4 characters at minimum"),
     product_price: Yup.number("Price must be a number")
       .positive("Price must be a positive number")
-      .integer("Price must be a number"),
+      .integer("Price must be an integer"),
     weight: Yup.number("Weight must be a number")
       .positive("Weight must be a positive number")
-      .integer("Weight must be a number"),
+      .integer("Weight must be an integer"),
     product_description: Yup.string()
       .min(4, "Product description must be 4 characters at minimum")
       .max(255, "Product description must be 255 characters at max"),
@@ -49,14 +49,13 @@ export default function EditProductModal({ open, setOpen, onClose, product, cate
       formData.append("id_category",values.id_category);
       formData.append("product_description",values.product_description);
       formData.append("product_price",values.product_price);
-      // formData.append("weight",values.weight);
+      formData.append("weight",values.weight);
       formData.append("image", file);
 
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
       const response = await api.patch(`/product/${product.id}`, formData, config);
-      console.log(response)
       toast.success(response.data.message);
       window.location.reload();
       handleClose();

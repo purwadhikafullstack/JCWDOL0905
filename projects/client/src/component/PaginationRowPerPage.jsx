@@ -36,7 +36,7 @@ const Pagination = ({rowsOption, handleChangeRow, rowPerPage, page, handleChange
                     <button
                       onClick={() => {
                         handleChangeRow(data);
-                        handleChangePage(0);
+                        handleChangePage(1);
                       }}
                       className={`${
                         active ? "bg-indigo-500 text-white" : "text-gray-900"
@@ -53,7 +53,7 @@ const Pagination = ({rowsOption, handleChangeRow, rowPerPage, page, handleChange
       </Menu>
       <div className="flex justify-center text-center items-center">
           <button
-            disabled={page === 0}
+            disabled={page === 1}
             onClick={() => handleChangePage(page - 1)}
             type="button"
             className="relative inline-flex items-center border border-gray-300 bg-white disabled:bg-gray-500 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -61,10 +61,10 @@ const Pagination = ({rowsOption, handleChangeRow, rowPerPage, page, handleChange
             <ChevronLeftIcon className="w-5 h-5" />
           </button>
           <span className="mx-3 items-center justify-center">
-            {`Page ${page + 1} of ${totalPages}`}
+            {`Page ${page} of ${totalPages}`}
           </span>
           <button
-            disabled={page + 1 >= totalPages}
+            disabled={page >= totalPages}
             type="button"
             onClick={() => handleChangePage(page + 1)}
             className="relative inline-flex items-center border border-gray-300 bg-white disabled:bg-gray-500 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"

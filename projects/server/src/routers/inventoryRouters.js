@@ -7,5 +7,6 @@ router.post("/", auth, inventoryControllers.addInventory);
 router.get("/", auth, inventoryControllers.fetchAllInventories);
 router.get("/:id", auth, inventoryControllers.getInventoryById);
 router.get("/find/:idInventory", auth, inventoryControllers.findInventory);
+router.get("/admin/history", auth, inventoryControllers.findInventoryHistory)
 
 module.exports = router;

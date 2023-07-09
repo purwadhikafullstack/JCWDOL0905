@@ -1,10 +1,15 @@
 const db = require("../models");
 const admins = db.Admin;
 const branch = db.Store_Branch;
+const users = db.User;
+const Transaction_Header = db.Transaction_Header;
+const Inventories = db.Inventories
+const Transaction_Detail = db.Transaction_Detail
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const jwtKey = process.env.JWT_SECRET_KEY;
 const { Op } = require("sequelize");
+const { Sequelize} = require('sequelize');
 
 module.exports = {
   login: async (req, res) => {
@@ -41,21 +46,20 @@ module.exports = {
         return res.status(404).send({ isError: true, message: "Please fill all the required fields", });
       let charEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!charEmail.test(email))
-        return res .status(404) .send({ isError: true, message: "Invalid email format" });
+        return res.status(404).send({ isError: true, message: "Invalid email format" });
       let findEmail = await admins.findOne({ where: { email: email } });
       if (findEmail)
-        return res .status(404) .send({ isError: true, message: "Email already exists" });
-      let char =
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=[\]{}|\\,./?'":;<>~`])(?!.*\s).{8,}$/;
+        return res.status(404) .send({ isError: true, message: "Email already exists" });
+      let char = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=[\]{}|\\,./?'":;<>~`])(?!.*\s).{8,}$/;
       if (!char.test(password))
-        return res.status(404).send({ isError: true, message: "Password must contain at least 8 characters including an uppercase letter, a symbol, and a number", });
+        return res.status(404) .send({ isError: true, message: "Password must contain at least 8 characters including an uppercase letter, a symbol, and a number", });
       const salt = await bcrypt.genSalt(10);
       const hashPass = await bcrypt.hash(req.body.password, salt);
-      const result = await admins.create({ admin_name: name, email, password: hashPass, role: "BRANCH_ADMIN", id_branch: branchId });
-      res.status(201).send({ isError: false, message: "New admin account has been created successfully", data: result, });
+      const result = await admins.create({ admin_name: name, email, password: hashPass, role: "BRANCH_ADMIN", id_branch: branchId, });
+      res.status(201) .send({ isError: false, message: "New admin account has been created successfully", data: result, });
     } catch (error) {
       console.log(error);
-      res.status(404).send({ isError: true, message: "Adding new branch admin failed" });
+      res.status(404) .send({ isError: true, message: "Adding new branch admin failed" });
     }
   },
   editAdmin: async (req, res) => {
@@ -67,32 +71,27 @@ module.exports = {
       }
       const charEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!charEmail.test(email)) {
-        return res.status(404).send({ isError: true, message: "Invalid email format", });
-      }     
-      const findUserById = await admins.findOne({ where: { id: id }, });
+        return res.status(404).send({ isError: true, message: "Invalid email format" });
+      }
+      const findUserById = await admins.findOne({ where: { id: id } });
       const findEmail = await admins.findAll({ where: { email: { [Op.ne]: findUserById.email } }, });
       for (const element of findEmail) {
         if (email === element.email) {
           return res.status(404).send({ isError: true, message: "User already exists, use other email", });
         }
-      }  
-      const char =
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=[\]{}|\\,./?'":;<>~`])(?!.*\s).{8,}$/;
+      }
+      const char = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=[\]{}|\\,./?'":;<>~`])(?!.*\s).{8,}$/;
       if (password && !char.test(password)) {
         return res.status(404).send({ isError: true, message: "Password must contain at least 8 characters including an uppercase letter, a symbol, and a number", });
-      }  
+      }
       const salt = await bcrypt.genSalt(10);
       const hashPass = password ? await bcrypt.hash(password, salt) : undefined;
-      const updateData = { admin_name: name, email, id_branch: branchId, };
-      if (hashPass) {
-        updateData.password = hashPass;
-      }
-      const result = await admins.update(updateData, {
-        where: { id: id },
-      });  
+      const updateData = { admin_name: name, email, id_branch: branchId };
+      if (hashPass) { updateData.password = hashPass; }
+      const result = await admins.update(updateData, { where: { id: id }, });
       if (result[0] === 0) {
-        return res.status(404).send({ isError: true, message: "User not found", });
-      }  
+        return res .status(404).send({ isError: true, message: "User not found" });
+      }
       res.status(200).send({ isError: false, message: "User has been updated successfully", data: { admin_name: name, email, password: hashPass, id_branch: branchId, }, });
     } catch (error) {
       console.log(error);
@@ -111,28 +110,17 @@ module.exports = {
   getBranchAdmin: async (req, res) => {
     try {
       const { page, limit, filterState, filterType } = req.query;
-      const whereCondition = { role: "BRANCH_ADMIN", };
+      const whereCondition = { role: "BRANCH_ADMIN" };
       if (filterState && filterType === "name") {
-        whereCondition.admin_name = { [Op.like]: `%${filterState}%`, };
+        whereCondition.admin_name = { [Op.like]: `%${filterState}%` };
       }
       if (filterState && filterType === "email") {
-        whereCondition.email = { [Op.like]: `%${filterState}%`, };
+        whereCondition.email = { [Op.like]: `%${filterState}%` };
       }
-      const resultBranchAdmin = await admins.findAndCountAll({
-        where: whereCondition,
-        attributes: ["id", "admin_name", "email", "role", "id_branch"],
-        include: [
-          {
-            model: branch,
-            attributes: ["branch_name"],
-          },
-        ],
-        limit: Number(limit),
-        offset: Number(page) * Number(limit),
-      });
+      const resultBranchAdmin = await admins.findAndCountAll({ where: whereCondition, attributes: ["id", "admin_name", "email", "role", "id_branch"], include: [ { model: branch, attributes: ["branch_name"], }, ], limit: Number(limit), offset: Number(page - 1) * Number(limit), });
       const { count, rows } = resultBranchAdmin;
       const totalPages = Math.ceil(count / Number(limit));
-      return res.status(200).json({ totalItems: count, totalPages, currentPage: Number(page), data: rows, });
+      return res .status(200) .json({ totalItems: count, totalPages, currentPage: Number(page), data: rows, });
     } catch (error) {
       console.log(error);
       res.status(400).send({ error: "error while request" });
@@ -143,12 +131,131 @@ module.exports = {
       const { id } = req.params;
       let resultAdmin = await admins.findOne({ where: { id: id } });
       if (!resultAdmin) {
-        return res .status(404) .send({ isError: true, message: "user not found" });
+        return res.status(404) .send({ isError: true, message: "user not found" });
       }
-      const result = await admins.destroy({ where: { id: id, }, });
-      res.status(202).send({ message: `Success delete admin data with id = ${id}`, data: result, });
+      const result = await admins.destroy({ where: { id: id } });
+      res.status(202) .send({ message: `Success delete admin data with id = ${id}`, data: result, });
     } catch (error) {
-      res.status(400).send({ message: "error while request delete" });
+      res.status(400).send({ message: "Error while request delete" });
     }
   },
+  getDashboardData: async (req, res) => {
+    try {
+      const totalUser = await users.count();
+      const totalTransactions = await Transaction_Header.count({ where: { order_status: { [Op.or]: ["done", "shipped"] } }, });
+      const totalSales = await Transaction_Header.sum("final_price", { where: { order_status: { [Op.or]: ["done", "shipped"] } }, });
+      const totalSalesResult = await Transaction_Header.findAll({ attributes: [ [Sequelize.literal("DATE_FORMAT(createdAt, '%Y-%m')"), "name"], [Sequelize.fn("SUM", Sequelize.col("final_price")), "totalSales"], ], where: { order_status: { [Op.or]: ["done", "shipped"] } }, group: [Sequelize.literal("DATE_FORMAT(createdAt, '%Y-%m')")], order: [[Sequelize.literal("DATE_FORMAT(createdAt, '%Y-%m')"), "ASC"]], });
+      let maxMonthlySales = 0;
+      for (const monthSales of totalSalesResult) {
+        if (Number(monthSales.dataValues.totalSales) > maxMonthlySales) {
+          maxMonthlySales = Number(monthSales.dataValues.totalSales);
+        }
+      }
+      const result = { totalUser, totalTransactions, totalSales, totalSalesResult, maxMonthlySales, };
+      res.status(202) .send({ message: `Success get dashboard data`, data: result });
+    } catch (error) {
+      res.status(400).send({ message: "Error while request dashboard data" });
+    }
+  },
+  getDashboardDataPerBranch: async (req, res) => {
+    const { id } = req.params;
+    const rawQuery = `
+    SELECT DATE_FORMAT(Transaction_Headers.createdAt, '%Y-%m') AS name, SUM(Transaction_Headers.final_price) AS totalSales
+    FROM (
+      SELECT Transaction_Details.*, Store_Branches.id AS branch_id
+      FROM Transaction_Details
+      JOIN Inventories ON Transaction_Details.id_inventory = Inventories.id
+      JOIN Store_Branches ON Inventories.id_branch = Store_Branches.id
+    ) AS CombinedQuery
+    JOIN Transaction_Headers ON CombinedQuery.id_trans_header = Transaction_Headers.id
+    WHERE order_status IN ('done', 'shipped') AND CombinedQuery.branch_id = :branchId
+    GROUP BY DATE_FORMAT(Transaction_Headers.createdAt, '%Y-%m')
+    ORDER BY DATE_FORMAT(Transaction_Headers.createdAt, '%Y-%m') ASC;`;
+    const query2 = `SELECT COUNT(Transaction_Headers.id) as totalTransactions,SUM(Transaction_Headers.final_price) AS totalSales
+    FROM (
+      SELECT Transaction_Details.*, Store_Branches.id AS branch_id
+      FROM Transaction_Details
+      JOIN Inventories ON Transaction_Details.id_inventory = Inventories.id
+      JOIN Store_Branches ON Inventories.id_branch = Store_Branches.id
+    ) AS CombinedQuery
+    JOIN Transaction_Headers ON CombinedQuery.id_trans_header = Transaction_Headers.id
+    WHERE order_status IN ('done', 'shipped') AND CombinedQuery.branch_id = :branchId;`;
+    try {
+      const totalUser = await users.count();
+      const [result] = await db.sequelize.query(rawQuery, { replacements: { branchId: id }, });
+      const [result2,] = await db.sequelize.query(query2, { replacements: { branchId: id }, });      
+      let maxMonthlySales = 0;
+      for (const monthSales of result) {
+        if (Number(monthSales.totalSales) > maxMonthlySales) {
+          maxMonthlySales = Number(monthSales.totalSales);
+        }
+      }
+      const data = { totalUser, totalTransactions: result2[0].totalTransactions, totalSales: result2[0].totalSales, totalSalesResult: result, maxMonthlySales, };
+      res.status(202) .send({ message: `Success delete admin data with id = ${id}`, data: data, });
+    } catch (error) {
+      res.status(400).send({ message: "error while request dashboard data" });
+    }
+  },
+  getSalesReport: async (req, res) => {
+    let { orderBy, orderByMethod, branchId, startDate, endDate, page, limit, productName, userName, transactionId} = req.query;
+    const mapOrderBy = {createdAt: "Transaction_Headers.createdAt", productQuantity: "CombinedQuery.product_qty"};
+    orderBy = mapOrderBy[orderBy] || "Transaction_Headers.id";
+    orderByMethod = orderByMethod || "ASC";
+    branchId = branchId || "";
+    productName = productName ? `%${productName}%` : "";
+    userName = userName ? `%${userName}%` : "";
+    transactionId = transactionId ? `%${transactionId}%` : "";
+    startDate = startDate || "1970-01-01 00:00:00";
+    endDate = endDate || "9999-12-31 23:59:59";
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const salesReportQuery = `
+    SELECT Transaction_Headers.id, CombinedQuery.branch_name as branchName ,Transaction_Headers.createdAt, Users.name, CombinedQuery.productName, CombinedQuery.product_price, CombinedQuery.product_qty, CombinedQuery.product_price * CombinedQuery.product_qty as total_price
+    FROM (
+      SELECT Transaction_Details.*, Store_Branches.branch_name, Products.product_name as productName, Store_Branches.id as branchId
+      FROM Transaction_Details
+      JOIN Inventories ON Transaction_Details.id_inventory = Inventories.id
+      JOIN Products ON Inventories.id_product = Products.id
+      JOIN Store_Branches ON Inventories.id_branch = Store_Branches.id
+    ) AS CombinedQuery
+    JOIN Transaction_Headers ON CombinedQuery.id_trans_header = Transaction_Headers.id
+    JOIN Users ON Transaction_Headers.id_user = Users.id
+    WHERE Transaction_Headers.order_status IN ('done', 'shipped') 
+    AND ${branchId ? "CombinedQuery.branchId = :branchId" : "1 = 1"}
+    AND Transaction_Headers.createdAt BETWEEN :startDate AND :endDate
+    AND ${productName ? "CombinedQuery.productName LIKE :productName" :"1 = 1"}
+    AND ${userName ? "Users.name LIKE :userName" :"1 = 1"}
+    AND ${transactionId ? "Transaction_Headers.id LIKE :transactionId" :"1 = 1"}
+    ORDER BY
+    ${orderBy} ${orderByMethod}
+    LIMIT :limit
+    OFFSET :offset;`
+
+    const countQuery = `
+    SELECT COUNT(*) AS total
+    FROM (
+      SELECT Transaction_Details.*, Store_Branches.branch_name, Products.product_name as productName, Store_Branches.id as branchId
+      FROM Transaction_Details
+      JOIN Inventories ON Transaction_Details.id_inventory = Inventories.id
+      JOIN Products ON Inventories.id_product = Products.id
+      JOIN Store_Branches ON Inventories.id_branch = Store_Branches.id
+    ) AS CombinedQuery
+    JOIN Transaction_Headers ON CombinedQuery.id_trans_header = Transaction_Headers.id
+    JOIN Users ON Transaction_Headers.id_user = Users.id
+    WHERE Transaction_Headers.order_status IN ('done', 'shipped') 
+    AND ${branchId ? "CombinedQuery.branchId = :branchId" : "1 = 1"}
+    AND Transaction_Headers.createdAt BETWEEN :startDate AND :endDate
+    AND ${productName ? "CombinedQuery.productName LIKE :productName" :"1 = 1"}
+    AND ${userName ? "Users.name LIKE :userName" :"1 = 1"}
+    AND ${transactionId ? "Transaction_Headers.id LIKE :transactionId" :"1 = 1"}
+    ;`
+    const result = await db.sequelize.query(salesReportQuery, { replacements: { branchId, startDate, endDate, limit, offset, productName, userName, transactionId}, });
+    const countResult = await db.sequelize.query(countQuery, { replacements: { branchId, startDate, endDate,  productName, userName, transactionId}, });
+    const totalItems = countResult[0][0].total
+    const totalPages = Math.ceil(totalItems / limit);
+    const data = { totalItems, totalPages, currentPage: page, items: result[0], };
+    return res.status(200).send({ status: "Successfully find inventory", data: data, });
+  }
 };

@@ -6,7 +6,7 @@ import Layout from "../../component/Layout";
 import { useSelector } from "react-redux";
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
-export const ManageDiscount = () => {
+const ManageDiscount = () => {
   const [discounts, setDiscounts] = useState([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedBranchId, setSelectedBranchId] = useState(1);
@@ -15,8 +15,8 @@ export const ManageDiscount = () => {
   const role = useSelector((state) => state.adminSlice.role);
   const id_branch = useSelector((state) => state.adminSlice.id_branch);
 
-  const branchId = role === "BRANCH_ADMIN" ? id_branch : "";
-  console.log("branchId", branchId)
+  const branchId = role === "BRANCH_ADMIN" ? id_branch : selectedBranchId;
+
   useEffect(() => {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
@@ -25,7 +25,7 @@ export const ManageDiscount = () => {
       try {
         const discountData = await api.get(`/discount/?branchId=${branchId}`, config);
         setDiscounts(discountData.data.data);
-        console.log(discountData.data.data)
+        console.log("discount",discountData.data.data)
       } catch (err) {
         console.log(err);
       }
@@ -35,7 +35,6 @@ export const ManageDiscount = () => {
       try {
         const storeData = await api.get('/branch')
         setStoreBranches(storeData.data.data)
-        console.log(storeData.data.data)
       } catch (error) {
         console.log(error)
       }
@@ -64,7 +63,7 @@ export const ManageDiscount = () => {
     <Layout>
     <div className="flex min-w-screen min-h-screen">
       <Toaster />
-      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
+      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:max-w-4xl md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
         <div className="w-full lg:w-full p-4 lg:p-8 justify-start ">
           <div className="flex justify-between items-center my-3 mb-8">
             <h2>Manage Discount</h2>
@@ -152,3 +151,5 @@ export const ManageDiscount = () => {
     </Layout>
   );
 };
+
+export default ManageDiscount;

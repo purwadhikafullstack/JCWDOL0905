@@ -142,7 +142,7 @@ function DesktopMenu(props){
 }
 
 export default function NavBar() {
-    const [search, setSearch] = useState([]);
+    const [search, setSearch] = useState("");
     const user = useSelector((state) => state.userSlice);
     const isLogin = localStorage.getItem("token");
     const countItem = useSelector((state) => state.cartSlice.count);

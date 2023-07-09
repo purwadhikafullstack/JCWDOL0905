@@ -45,7 +45,7 @@ export default function Layout({ children }) {
       </Transition>
       <main
         className={`py-16 transition-all duration-[400ms] ${
-          showNav && !isMobile ? "pl-56" : ""
+          showNav && !isMobile ? "md:pl-56 lg:pl-56" : ""
         }`}
       >
 {children}

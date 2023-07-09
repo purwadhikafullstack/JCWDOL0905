@@ -5,7 +5,7 @@ import CreateVoucherModal from "../../component/CreateVoucherModal";
 import Layout from "../../component/Layout";
 import { useSelector } from "react-redux";
 
-export const ManageVoucher = () => {
+const ManageVoucher = () => {
   const [vouchers, setVouchers] = useState([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const token = localStorage.getItem("token_admin");
@@ -56,7 +56,7 @@ export const ManageVoucher = () => {
     <Layout>
     <div className="flex min-w-screen min-h-screen">
       <Toaster />
-      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
+      <div className="flex mx-auto rounded-md w-full max-w-xl max-h-5xl px-2 bg-white md:w-full md:max-w-4xl md:px-6 lg:w-full lg:max-w-7xl lg:h-7xl lg:px-4">
         <div className="w-full lg:w-full p-4 lg:p-8 justify-start ">
           <div className="flex justify-between items-center my-3 mb-8">
             <h2>Manage Voucher</h2>
@@ -156,3 +156,5 @@ export const ManageVoucher = () => {
     </Layout>
   );
 };
+
+export default ManageVoucher;

@@ -17,11 +17,11 @@ export default function AddProductModal({ open, setOpen, onClose, categories}) {
       .required("Product name is required"),
     product_price: Yup.number("Price must be a number")
       .positive("Price must be a positive number")
-      .integer("Price must be a number")
+      .integer("Price must be an integer")
       .required("Price is required"),
     weight: Yup.number("Weight must be a number")
       .positive("Weight must be a positive number")
-      .integer("Weight must be a number")
+      .integer("Weight must be an integer")
       .required("Weight is required"),
     product_description: Yup.string()
       .min(4, "Product description must be 4 characters at minimum")
@@ -45,8 +45,6 @@ export default function AddProductModal({ open, setOpen, onClose, categories}) {
 
   const addProduct = async (values) => {
     try {
-      console.log("values",values)
-      // console.log("image",values.image)
       const fileInput = document.getElementById("image");
       const file = fileInput.files[0];
 
@@ -56,14 +54,13 @@ export default function AddProductModal({ open, setOpen, onClose, categories}) {
       formData.append("product_description",values.product_description);
       formData.append("product_price",values.product_price);
       formData.append("weight",values.weight);
-      // formData.append("image", values.image);
       formData.append("image", file);
 
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
       const response = await api.post("/product/", formData, config);
-      // console.log(response)
+      console.log("addProduct", response)
       toast.success(response.data.message);
       window.location.reload();
       handleClose();
@@ -75,7 +72,7 @@ export default function AddProductModal({ open, setOpen, onClose, categories}) {
 
   return (
     <Formik
-      initialValues={{ product_name: "", product_price: "", weight: "", product_description: "", image: "", id_category: "",}}
+      initialValues={{ product_name: "", product_price: "", weight: "", product_description: "", image: "", id_category: 1,}}
       validationSchema={addProductSchema}
       onSubmit={(values) => addProduct(values)}
     >
