@@ -11,7 +11,7 @@ module.exports = {
             join products pr on pr.id = inventories.id_product
             join store_branches br on br.id = inventories.id_branch
             left join discounts on discounts.id_inventory = inventories.id
-            where id_branch=${req.params.id_branch}
+            where id_branch=${req.params.id_branch} and stock>0
             limit 10;`;
         
             const [results] = await db.sequelize.query(query);

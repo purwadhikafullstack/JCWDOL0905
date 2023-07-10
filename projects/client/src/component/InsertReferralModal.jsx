@@ -7,68 +7,32 @@ import toast, { Toaster } from "react-hot-toast";
 import { PencilSquareIcon, BackspaceIcon, ChevronLeftIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
-export default function UploadPaymentModal(props) {
+export default function InsertReferralModal(props) {
   const [open, setOpen] = useState(false)
-  const [file, setFile] = useState();
-  const [message, setMessage] = useState('');
-
   const cancelButtonRef = useRef(null)
 
-  const openModal = () => {
-    setFile()
-    setMessage('')
-    setOpen(true)
-  }
 
-  const onFileChange = (event) => {
-    setFile()
-    setMessage('')
-    try{
-      if(event.target.files.length > 1) throw { message: 'Select 1 image only.' }
-      if(event.target.files.length == 1){
-        let imageFile = event.target.files[0]
-        let type = imageFile.type
+  const handleSubmit = async () => {
+    let data = {referral_code : document.getElementById("referral").value}
+    let valid = true
+    if(data.referral_code.length != 10) valid = false
 
-        let checkType = false
-        if(type=='image/jpg' || type=='image/jpeg' || type=='image/png') checkType = true
-
-        if(!checkType) throw { message: 'Upload only image file with .jpg/.jpeg/.png type.' }
-        if(imageFile.size > 1000000) throw { message: 'Max image size 1 MB.' }
-
-        setFile(imageFile);
-      }
-      
-    }catch (error){
-      setMessage(error.message)
-    }
-  }
-
-  const handleSubmit = async (e) => {
-
-    const formData = new FormData();
-    formData.append("file", file)
-
-    try {
-      const response = await api.patch(`order/upload/${props.id}`, formData);
-      toast.success(response.data.message);
-
-      setTimeout(() => {
-        window.location.href = `/order/${props.id}`
-      }, 500);
-    } catch (error) {
-      toast.error(error.response.data.message);
+    if(valid){
+        try{
+            const response = await api.post(`profiles/voucher/${props.id}`, data);
+            toast.success(response.data.message)
+            window.location.href = `/profile`
+        }catch(error){
+            toast.error(error.response.data.message)
+        }
+    }else{
+        toast.error("Referral code not valid")
     }
   };
 
   return (
     <>
-        <button
-        type="button"
-        onClick={()=>openModal()}
-        className="mr-1 w-full rounded-md border border-transparent bg-green-600 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-green-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-        >
-            Upload Payment Proof
-        </button>
+        <a onClick={() => setOpen(true)} className="text-teal-200 hover:text-teal-100 underline" href='#'>Insert Friend's Referral</a>
         <Toaster/>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
@@ -102,38 +66,28 @@ export default function UploadPaymentModal(props) {
                     </div>
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                       <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                        Upload Payment Proof
+                        Insert Friend's Referral Code
                       </Dialog.Title>
                       <div className="mt-2">
                       <input
-                        type="file"
-                        id="file"
-                        name="payment"
-                        onChange={onFileChange}
-                        accept="image/jpg, image/jpeg, image/png"
-                        className="text-sm placeholder-gray-200 pl-5 pr-4 rounded-2xl border border-gray-200 w-full py-2 focus:outline-none focus:border-gray-200"
-                        placeholder="Choose payment proof"
+                        type="text"
+                        id="referral"
+                        name="referral"
+                        className="text-sm placeholder-black-400 pl-5 pr-4 rounded-2xl border border-gray-200 w-full py-2 focus:border-gray-200 outline"
+                        placeholder="Type here"
                       />
                       </div>
                     </div>                    
                   </div>
 
-                  {message != '' &&
-                    <div class=" ml-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative sm:ml-6" role="alert">
-                      <strong class="font-bold">File not valid!</strong>
-                      <span class="block sm:inline">{message}</span>
-                    </div>
-                  }
                   <div className="mt-5 sm:mt-4 sm:ml-10 sm:flex sm:pl-4">
-                    {file!=null && message=='' &&
-                      <button
+                    <button
                         type="button"
                         className="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:w-auto sm:text-sm"
-                        onClick={() => handleSubmit(props.id)}
-                      >
-                        Upload
-                      </button>
-                    }
+                        onClick={() => handleSubmit()}
+                        >
+                        Done
+                    </button>
                     
                     <button
                       type="button"
