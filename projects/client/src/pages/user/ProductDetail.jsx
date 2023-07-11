@@ -64,7 +64,7 @@ const ProductDetail = () => {
                         });
 
                         countCart()
-                        toast.success(response.data.status);
+                        toast.success(response.data.message);
                     }
                 }else{
                     const response = await api.post(`cart/${id}`, {}, {
@@ -73,7 +73,7 @@ const ProductDetail = () => {
                         }
                     });
                     countCart()
-                    toast.success(response.data.status);
+                    toast.success(response.data.message);
                 }
             }else{
                 const response = await api.post(`cart/${id}`, {}, {
@@ -82,7 +82,7 @@ const ProductDetail = () => {
                     }
                 });
                 countCart()
-                toast.success(response.data.status);
+                toast.success(response.data.message);
             }
         } catch(error){
             toast.error(error.response.data.message)

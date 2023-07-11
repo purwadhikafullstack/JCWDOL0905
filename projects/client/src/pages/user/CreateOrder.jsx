@@ -114,6 +114,10 @@ export default function CreateOrder() {
           toast.error("The branch location on cart not the same as current branch location")
           setTimeout(() => {Navigate('/')}, 500)
         }
+        if(addressId == undefined){
+          toast.error("Shipping address not setted")
+          setTimeout(() => {Navigate('/')}, 500)
+        }
         const data = {
             branchId: carts[0].id_branch,
             addressId,
@@ -255,7 +259,7 @@ export default function CreateOrder() {
       });
       toast.success(response.data.message);
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.href = `/order/${response.data.data.id}`
       }, 500);
     }catch(error){
       toast.error(error.response.data.message);
@@ -268,7 +272,7 @@ export default function CreateOrder() {
       <div className="bg-white">
         <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
           <h3 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
-            Order Summary
+            Order Confirmation
           </h3>
           <span className="inline-flex items-start">
             {carts.length>0 ? <img src={pin} alt="" className="self-center w-4 h-4 rounded-full mr-1" /> : ""}
@@ -357,7 +361,7 @@ export default function CreateOrder() {
                 id="summary-heading"
                 className="text-lg font-medium text-gray-900"
               >
-                Order Total
+                Order Detail
               </h2>
 
               <dl className="mt-6 space-y-4">

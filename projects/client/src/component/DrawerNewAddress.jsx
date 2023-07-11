@@ -60,18 +60,16 @@ export default function DrawerNewAddress() {
 
             setTimeout(() => {
                 window.location.href = '/address'
-            }, 500);
+            }, 200);
         } catch (error) {
             toast.error(error.response.data.message);
         }
     };
 
-    // console.log("city", city)
-
     return (
         <>
             <button
-            type="submit"
+            type="button"
             onClick={() => setOpen(true)}
             className="inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center"
             >
@@ -207,13 +205,13 @@ export default function DrawerNewAddress() {
                                     >
                                         Cancel
                                     </button>
-                                    <a
+                                    <button
+                                        type="button"
                                         onClick={() => handleSubmit()}
-                                        href="#"
                                         className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                                     >
                                         Add Address
-                                    </a>
+                                    </button>
                                 </div>
                             </form>
                             </Dialog.Panel>
