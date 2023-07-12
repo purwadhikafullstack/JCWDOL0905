@@ -7,18 +7,16 @@ import toast, { Toaster } from "react-hot-toast";
 import { PencilSquareIcon, BackspaceIcon, ChevronLeftIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
-export default function CancelOrderModal(props) {
+export default function RejectPaymentModal(props) {
   const [open, setOpen] = useState(false)
 
   const cancelButtonRef = useRef(null)
 
-  const cancelOrder = async(id) => {
+  const rejectPayment = async(id) => {
     try{
-      const response = await api.patch(`order/cancel/${id}`)
+      const response = await api.patch(`order/reject/${id}`)
       toast.success(response.data.message)
-
-      if(props.admin) window.location.href = `/admin/orders/${id}`
-      else window.location.href = `/order/${id}`
+      window.location.href = `/admin/orders/${id}`
     }catch(error){
       toast.error(error.response.data.message);
     }
@@ -29,9 +27,9 @@ export default function CancelOrderModal(props) {
         <button
         type="button"
         onClick={()=>setOpen(true)}
-        className="mr-1 w-full rounded-md border border-transparent bg-white py-3 px-4 text-base font-medium text-black-500 shadow-sm hover:bg-gray-300 hover:text-black focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-50 outline outline-1"
+        className="mr-1 w-full rounded-md border border-transparent bg-red-400 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-red-50"
         >
-            Cancel Order
+            Reject Payment
         </button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
@@ -65,11 +63,11 @@ export default function CancelOrderModal(props) {
                     </div>
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                       <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                        Cancel Order
+                        Reject Payment
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          Are you sure you want to cancel order?
+                          Are you sure you want to reject payment?
                         </p>
                       </div>
                     </div>
@@ -78,9 +76,9 @@ export default function CancelOrderModal(props) {
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:w-auto sm:text-sm"
-                      onClick={() => cancelOrder(props.id)}
+                      onClick={() => rejectPayment(props.id)}
                     >
-                      Cancel Order
+                      Reject Payment
                     </button>
                     <button
                       type="button"

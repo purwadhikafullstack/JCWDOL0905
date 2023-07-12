@@ -1,13 +1,3 @@
-import NavBar from "../../component/NavBar";
-import Footer from "../../component/Footer";
-import {
-  CheckIcon,
-  ClockIcon,
-  QuestionMarkCircleIcon,
-  XMarkIcon,
-  PlusIcon,
-  MinusIcon,
-} from "@heroicons/react/20/solid";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
@@ -18,15 +8,17 @@ import Countdown from "react-countdown";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import CancelOrderModal from "../../component/CancelOrderModal";
 import UploadPaymentModal from "../../component/UploadPaymentModal";
-import ReceiveOrderModal from "../../component/ReceiveOrderModal";
+import AcceptPaymentModal from "../../component/AcceptPaymentModal";
+import RejectPaymentModal from "../../component/RejectPaymentModal";
+import ShipOrderModal from "../../component/ShipOrderModal";
+import ShowImageFull from "../../component/ShowImageModal";
+import Layout from "../../component/Layout";
 
-export default function OrderDetail() {
+export default function DetailOrder() {
   const id = useParams().id;
   const Navigate = useNavigate();
-  const user = useSelector((state) => state.userSlice);
-  const branchId = useSelector((state) => state.branchSlice.branchId);
-  const addressId = localStorage.getItem("addressId");
-  const token = localStorage.getItem("token");
+  const role = useSelector((state) => state.adminSlice.role);
+  const id_branch = useSelector((state) => state.adminSlice.id_branch);
   const [carts, setCarts] = useState([]);
   const [order, setOrder] = useState({});
   const [detail, setDetail] = useState("");
@@ -39,10 +31,8 @@ export default function OrderDetail() {
       try {
         const response = await api.get(`transaction/${id}`);
         const orderData = response.data.data;
-        let countdown = new Date(orderData.updatedAt)
-        countdown.setDate(countdown.getDate() + 1)
 
-        if(user.id != orderData.id_user){
+        if(id_branch != orderData.id_branch && role != 'SUPER_ADMIN'){
           Navigate('/404')
         }
 
@@ -56,14 +46,13 @@ export default function OrderDetail() {
 
         setDetail(`${orderData.address_label} - ${orderData.address_detail} - ${orderData.address_city} - ${orderData.address_province}`)
         setOrder(orderData);
-        setTimer(countdown)
       } catch (error) {
         toast.error(error.response.data.message);
         Navigate('/404')
       }
     }
     fetchData();
-  }, [user]);
+  }, []);
 
   const rupiah = (number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -72,90 +61,53 @@ export default function OrderDetail() {
     }).format(number);
   };
 
-  const TimerEnd = () => <span>Canceled</span>;
-
-  const renderer = ({ hours, minutes, seconds, completed }) => {
-    if (completed) {
-      cancelOrder()
-      // return <TimerEnd />;
-    } else {
-      let h = hours.toString()
-      let m = minutes.toString()
-      let s = seconds.toString()
-      if(h.length==1) h = "0" + h
-      if(m.length==1) m = "0" + m
-      if(s.length==1) s = "0" + s
-      return (
-        <p>
-          Time Remaining: {h}:{m}:{s}
-        </p>
-      );
-    }
-  };
-
-  const cancelOrder = async() => {
-    try{
-      const response = await api.patch(`order/cancel/${id}`)
-      toast.success(response.data.message)
-      window.location.href = `/order/${id}`
-    }catch(error){
-      toast.error(error.response.data.message);
-    }
-  }
-
   return (
     <>
-      {user.id == order.id_user &&
+        <Layout>
+      {id_branch == order.id_branch || role == 'SUPER_ADMIN' &&
         <div>
-          <NavBar />
           <div className="bg-white">
             <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
               <div className="flex items-center">
-                  <button onClick={()=>Navigate('/order-history')} class="font-medium flex-none mr-1">
+                  <button onClick={()=>Navigate('/admin/orders')} class="font-medium flex-none mr-1">
                       <ChevronLeftIcon className="h-5 w-5 fill-white stroke-black stroke-2"/>
                   </button>
-                  <strong className="text-lg font-bold sm:text-xl">Order Summary</strong>
+                  <strong className="text-lg font-bold sm:text-xl">Order Detail</strong>
               </div>
 
               <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
                 <section aria-labelledby="cart-heading" className="lg:col-span-7">
                   <h2 id="cart-heading" className="sr-only">
-                    Items in your shopping cart
+                    Items in cart
                   </h2>
                   
                   {order.order_status && <p>Status: <b>{order.order_status.toUpperCase()}</b></p> }
-
-                    {order.order_status=='waiting for payment' && timer != null &&
-                      <div>
-                          <div className="shadow-md outline outline-offset-2 outline-gray-500 mx-2 my-2">
-                          <p className="mx-1 my-1">Please pay <b>{rupiah(order.final_price)}</b> to:</p>
-                          
-                          <span className="inline-flex items-start px-1 py-1">
-                              <img
-                              src={'https://img1.pngdownload.id/20180802/rpw/kisspng-bank-central-asia-logo-bca-finance-business-logo-bank-central-asia-bca-format-cdr-amp-pn-5b63687e24d811.5430623715332414701509.jpg'}
-                              alt=""
-                              className="self-center h-10 rounded-full mr-1"
-                              />
-                              <span className="self-center"><b>{'1234 5678 90'}</b></span>
-                          </span>
-                          <p className="px-1 py-1">{' a/n '}<b>{'PT Groceria'}</b></p>
-                      </div>
-                        <Countdown date={timer} renderer={renderer}/>
-                      </div>
+                    {order.order_status=='waiting for payment confirmation' &&
+                        <div className="mt-5">
+                            <div className="flex-shrink-0">
+                            <img
+                                src={order.payment_proof}
+                                alt={"payment proof"}
+                                className="h-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
+                            />
+                            </div>
+                            <div className="mt-3">
+                                <ShowImageFull image={order.payment_proof}/>
+                            </div>
+                        </div>
                     }
 
-                    {order.order_status=='waiting for payment' &&
+                    {order.order_status=='waiting for payment confirmation' &&
                       <div className="mt-6 flex">
-                        <UploadPaymentModal id={id}/>
+                        <AcceptPaymentModal id={id}/>
+                        <RejectPaymentModal id={id}/>
                       </div>
                     }
-                    
-                    {order.order_status=='shipped' &&
-                      <div className="mt-6">
-                        <ReceiveOrderModal id={id}/>
+                    {order.order_status=='processed' &&
+                      <div className="mt-6 flex">
+                        <ShipOrderModal id={id}/>
                       </div>
-                    }
-                    
+                    }                    
 
                   <p className="mt-5 font-bold">Item List</p>
 
@@ -259,9 +211,9 @@ export default function OrderDetail() {
                         {rupiah(order.final_price)}
                       </dd>
                     </div>
-                    {order.order_status=='waiting for payment' &&
+                    {(order.order_status=='waiting for payment' || order.order_status=='waiting for payment confirmation' || order.order_status=='processed') &&
                       <div className="mt-6 flex">
-                        <CancelOrderModal id={id}/>
+                        <CancelOrderModal id={id} admin={true}/>
                       </div>
                     }
                   </dl>
@@ -270,10 +222,9 @@ export default function OrderDetail() {
             </div>
             <Toaster />
           </div>
-          <Footer />
         </div>
       }
-      
+      </Layout>
     </>
   );
 }

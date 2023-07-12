@@ -127,7 +127,7 @@ export default function OrderList() {
                                                         <th scope="col" className="px-6 py-4">
                                                             Order Status
                                                         </th>
-                                                        <th scope="col" className="pl-4 py-4" colspan="2">
+                                                        <th scope="col" className="pl-4 py-4">
                                                             Action
                                                         </th>
                                                     </tr>
@@ -172,8 +172,7 @@ export default function OrderList() {
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 font-semibold align-top">{data.order_status}</td>
-                                                                <td className="whitespace-nowrap px-4 py-4 underline align-top">See Details</td>
-                                                                <td className="whitespace-nowrap pl-4 py-4 underline align-top">Change Status</td>
+                                                                <td className="whitespace-nowrap px-4 py-4 align-top"><a href={`/admin/orders/${data.id}`}>See Details</a></td>
                                                             </tr>
                                                     ))}
                                                 </tbody>

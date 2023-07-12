@@ -48,6 +48,7 @@ import OrderDetail from "./pages/user/OrderDetail";
 import OrderHistory from "./pages/user/OrderHistory";
 import ProductStockHistory from "./pages/admin/ProductStockHistory";
 import SalesReport from "./pages/admin/SalesReport";
+import DetailOrder from "./pages/admin/DetailOrder";
 
 
 function App() {
@@ -163,6 +164,7 @@ function App() {
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.BRANCH_ADMIN, ROLE.SUPER_ADMIN]}> <ManageStock /> </ProtectedPageAdmin> } path="/admin/manage-stock" />
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN, ROLE.BRANCH_ADMIN]}> <ProductStockHistory /> </ProtectedPageAdmin> } path="/admin/product-stock-history" />
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN, ROLE.BRANCH_ADMIN]}> <SalesReport /> </ProtectedPageAdmin> } path="/admin/sales-report" />
+              <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN, ROLE.BRANCH_ADMIN]}> <DetailOrder /> </ProtectedPageAdmin> } path="/admin/orders/:id" />
             </Routes>
           </BrowserRouter>
         </>
