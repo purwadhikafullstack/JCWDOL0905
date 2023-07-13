@@ -12,6 +12,12 @@ const app = express();
 //   })
 // );
 
+// const corsOptions ={
+//   origin:'*', 
+//   credentials:true, //access-control-allow-credentials:true
+//   optionSuccessStatus:200,
+// }
+
 app.use(cors())
 
 app.use(express.json());
@@ -43,9 +49,6 @@ app.use("/api/inventory", inventoryRouters);
 app.use("/api/admins", adminRouter);
 app.use("/api/discount", discountRouter);
 app.use("/api/voucher", voucherRouter)
-app.use("/api/products", express.static(__dirname + "/public/products"));
-app.use("/api/categories", express.static(__dirname + "/public/categories"));
-app.use("/api/media/profiles", express.static(__dirname + "/public/profiles"));
 
 // ===========================
 

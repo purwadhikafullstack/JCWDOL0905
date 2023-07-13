@@ -76,7 +76,6 @@ export default function CreateVoucherModal({ open, setOpen, onClose}) {
         voucher_value: document.getElementById("voucher_value").value,
         max_discount: maxDiscount,
         min_purchase_amount: minPurchase,
-        voucher_code: document.getElementById("voucher_code").value,
         start_date: document.getElementById("start_date").value,
         end_date: document.getElementById("end_date").value,
       };
@@ -296,7 +295,7 @@ export default function CreateVoucherModal({ open, setOpen, onClose}) {
                             </div>
                           </div>
 
-                          <div>
+                          {/* <div>
                             <label className="block text-md font-medium leading-6 text-gray-900">
                               Voucher Code
                             </label>
@@ -307,7 +306,7 @@ export default function CreateVoucherModal({ open, setOpen, onClose}) {
                                 className="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                               />
                             </div>
-                          </div>
+                          </div> */}
 
                           <div className="flex">
                             <div className="mr-2">

@@ -16,13 +16,14 @@ module.exports = {
             inventories.stock, inventories.id_branch,
             store_branches.branch_name, store_branches.city,
             products.id as product_id, products.product_name, products.product_price, products.weight, products.product_image, products.product_description,
-            discounts.discount_type, discounts.discount_value, discounts.min_purchase_qty, discounts.start_date, discounts.end_date
+            discounts.discount_type, discounts.discount_value, discounts.start_date, discounts.end_date
             from carts
             join inventories on carts.id_inventory = inventories.id
             join store_branches on store_branches.id = inventories.id_branch
             join products on inventories.id_product = products.id
             left join discounts on discounts.id_inventory = inventories.id
-            where id_user=${user.id_user};`;
+            where id_user=${user.id_user}
+            ORDER BY carts.updatedAt DESC;`;
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({
@@ -60,6 +61,8 @@ module.exports = {
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
 
+            const {quantity, stock} = req.body;
+
             let findInventory = await inventories.findOne({ where: { id: inventoryId } });
             if (!findInventory){
                 return res.status(404).send({ isError: true, message: "Inventory not exist" });
@@ -67,12 +70,24 @@ module.exports = {
 
             let findCartItem = await carts.findOne({ where: { id_inventory: inventoryId } });
             if (findCartItem){
-                return res.status(404).send({ isError: true, message: "Item already on cart" });
+                const updatedQty = parseInt(findCartItem.product_qty) + parseInt(quantity);
+                if (updatedQty > findInventory.stock) {
+                    const updatedCartMax = carts.update({product_qty: findInventory.stock},
+                    { where: {id: findCartItem.id}},
+                    )
+
+                    return res.status(201).send({ isError: false, message: "Successfully add item to cart at maximum stock", data: updatedCartMax },);
+                }
+                const updatedCart = carts.update(
+                  { product_qty: updatedQty },
+                  { where: { id: findCartItem.id } }
+                );
+                return res.status(200).send({ isError: false, message: "Successfully add quantity to cart", data: updatedCart },);
             }
 
             const addItem = await carts.create({
-                product_qty: 1,
-                id_user:user.id_user,
+                product_qty: quantity,
+                id_user: user.id_user,
                 id_inventory:inventoryId,
             });
         

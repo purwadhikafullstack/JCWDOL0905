@@ -11,9 +11,9 @@ const jwtKey = process.env.JWT_SECRET_KEY;
 module.exports = {
   createVoucher: async (req, res) => {
     try {
-      let { voucher_type, id_inventory, voucher_kind, voucher_code, voucher_value, max_discount, min_purchase_amount, start_date, end_date } = req.body;
+      let { voucher_type, id_inventory, voucher_kind, voucher_value, max_discount, min_purchase_amount, start_date, end_date } = req.body;
       
-      if ( !voucher_type || !voucher_kind || !voucher_code || !voucher_value || !start_date || !end_date) {
+      if ( !voucher_type || !voucher_kind || !voucher_value || !start_date || !end_date) {
         return res.status(400).send({
           isError: true,
           message: "Please complete the data",
@@ -38,19 +38,6 @@ module.exports = {
           isError: true,
           message: "End date is invalid",
         });
-      }
-
-      const voucherCodeExist = await voucher.findOne({
-        where : {
-          voucher_code: voucher_code
-        }
-      })
-
-      if (voucherCodeExist) {
-        return res.status(400).send({
-          isError: true,
-          message: "Voucher code already exists",
-        })
       }
 
       if (voucher_type === "product") {
@@ -141,23 +128,37 @@ module.exports = {
   },
   getAllVouchers: async (req, res) => {
     try {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = 12;
+      const sort = req.query.sort || "ASC";
+      const voucherCode = req.query.code || null;
+      const voucherType = req.query.type || null;
+
+      const typeQuery = voucherType ? {voucher_type : voucherType} : {};
+      // const codeQuery = voucherCode ? { voucher_code: { [Op.like]: `%${voucherCode}%` } } : {};
+
         const result = await voucher.findAndCountAll({
           where: {
             end_date: {
               [Op.gte]: new Date(),
             },
+             ...typeQuery
           },
           include: {
             required : false,
             model: inventory,
             include: [{model: product}, {model: branch, attributes: ["branch_name"]}]
           },
+          order: [['createdAt', sort]],
+          limit: pageSize,
+          offset: (page - 1) * pageSize,
         });
 
         res.status(200).send({
           isError: true,
           message: "Successfully get all vouchers",
-          data: result
+          data: result.rows,
+          count: result.count
         });
 
     } catch (err) {
@@ -176,7 +177,7 @@ module.exports = {
         const user = jwt.verify(bearerToken, jwtKey);
 
         const query = `select user_vouchers.id, user_vouchers.id,
-        vouchers.voucher_type, vouchers.voucher_kind, vouchers.voucher_code, vouchers.voucher_value,
+        vouchers.voucher_type, vouchers.voucher_kind, vouchers.voucher_value,
         vouchers.max_discount, vouchers.min_purchase_amount, vouchers.start_date, vouchers.end_date, vouchers.id_inventory
         from user_vouchers
         join vouchers on vouchers.id = user_vouchers.id_voucher

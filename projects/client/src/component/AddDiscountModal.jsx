@@ -7,9 +7,9 @@ import Datepicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
 
-export default function AddDiscountModal({ open, setOpen, onClose}) {
+export default function AddDiscountModal({ open, setOpen, onClose, selectedBranchId}) {
   const [categories, setCategories] = useState([]);
-  const [selectedBranch, setSelectedBranch] = useState(1);
+  // const [selectedBranch, setSelectedBranch] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [selectedDiscountType, setSelectedDiscountType] = useState(null);
   const [selectedStartDate, setSelectedStartDate] = useState(null); 
@@ -35,11 +35,7 @@ export default function AddDiscountModal({ open, setOpen, onClose}) {
 
     async function fetchInventories() {
       try {
-        // console.log("selectedCategory",selectedCategory);
-        if (role === 'SUPER_ADMIN') {
-          branchId = selectedBranch;
-        } 
-        const inventoriesData = await api.get(`/inventory/?category=${selectedCategory}&branchId=${branchId}`);
+        const inventoriesData = await api.get(`/inventory/?category=${selectedCategory}&branchId=${selectedBranchId}`);
         // console.log(inventoriesData)
         setInventories(inventoriesData.data.data);
       } catch (err) {
@@ -49,7 +45,7 @@ export default function AddDiscountModal({ open, setOpen, onClose}) {
     fetchInventories();
 
     setModalOpen(open);
-  }, [open, selectedBranch, selectedCategory, selectedDiscountType]);
+  }, [open, selectedCategory, selectedDiscountType]);
 
   const handleClose = () => {
     setModalOpen(false);
@@ -71,7 +67,6 @@ export default function AddDiscountModal({ open, setOpen, onClose}) {
         id_inventory: document.getElementById("inventory").value,
         discount_type: discountType,
         discount_value: discountValue,
-        min_purchase_qty: document.getElementById("min_purchase_qty").value,
         start_date: document.getElementById("start_date").value,
         end_date: document.getElementById("end_date").value,
       };
@@ -130,34 +125,6 @@ export default function AddDiscountModal({ open, setOpen, onClose}) {
                       </Dialog.Title>
                       <div className="mt-8 mb-4 w-96">
                         <form className="" action="#" method="POST">
-                        {role === "SUPER_ADMIN" ? 
-                        <div>
-                        <label className="block text-md font-medium leading-6 text-gray-900">
-                          Select Store Branch
-                        </label>
-                        <div className="my-2">
-                          <select
-                            className="w-full rounded-md border border-gray-200 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500"
-                            id="category" required
-                            onChange={(e) =>
-                              setSelectedBranch(e.target.value)
-                            }
-                          >
-                            <option key="1" value="1">
-                                Store 1
-                              </option>
-                              <option key="1" value="1">
-                                Store 1
-                              </option>
-                            {/* {categories.map((category) => ( 
-                              <option key={category.id} value={category.id}>
-                                St
-                              </option>
-                            ))} */}
-                          </select>
-                        </div>
-                      </div> : <></>}
-
                           <div>
                             <label className="block text-md font-medium leading-6 text-gray-900">
                               Product Category
@@ -226,15 +193,6 @@ export default function AddDiscountModal({ open, setOpen, onClose}) {
                               {selectedDiscountType === "buy one get one" ? <input type="number" id="discount_value" className="block w-full disabled:opacity-50 rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" disabled defaultValue={0}/> : <input type="number" id="discount_value" className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" required/>}
                             </div>
                           </div>
-                          </div>
-
-                          <div>
-                            <label className="block text-md font-medium leading-6 text-gray-900">
-                              Minimum Purchase
-                            </label>
-                            <div className="my-2">
-                              <input type="number" id="min_purchase_qty" className="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" defaultValue={1}/>
-                            </div>
                           </div>
 
                           <div className="flex">

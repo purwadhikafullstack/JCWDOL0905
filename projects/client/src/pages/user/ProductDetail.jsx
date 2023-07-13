@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { countItem } from "../../redux/cartSlice";
 import { CheckIcon } from '@heroicons/react/20/solid'
+import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 
 const ProductDetail = () => {
     const dispatch = useDispatch()
@@ -18,6 +19,22 @@ const ProductDetail = () => {
     const branchId = useSelector((state) => state.branchSlice.branchId);
     const [carts, setCarts] = useState([])
     const [product, setProduct] = useState({})
+    const [productQty, setProductQty] = useState(1)
+    const [errorQuantity, setErrorQuantity] = useState();
+
+
+    let validateQuantity = (value) => {
+      if (value == "") {
+        setErrorQuantity("Please input quantity");
+      } else if (value < 1) {
+        setErrorQuantity("Quantity must be at least 1");
+      } else if (value > product.stock ){
+        setErrorQuantity(`Quantity can't be more than ${product.stock}`);
+      } else {
+        setErrorQuantity("")
+      }
+      inputQty(value);
+    };
 
     async function countCart() {
         try {
@@ -32,6 +49,7 @@ const ProductDetail = () => {
               count: response.data.data,
             })
           );
+
         } catch (error) {
           console.log(error.response.data.message);
         }
@@ -39,6 +57,7 @@ const ProductDetail = () => {
 
     async function addToCart(){
         try{
+          // const data = {quantity: productQty}
             if(carts.length>0){
                 let deleteCart = false;
 
@@ -56,8 +75,8 @@ const ProductDetail = () => {
                                 'Authorization': `Bearer ${token}`
                             }
                         });
-                        toast.success(deleteCart.data.status);
-                        const response = await api.post(`cart/${id}`, {}, {
+                        toast.success(deleteCart.data.message);
+                        const response = await api.post(`cart/${id}`, {quantity: productQty}, {
                             'headers': {
                                 'Authorization': `Bearer ${token}`
                             }
@@ -67,15 +86,17 @@ const ProductDetail = () => {
                         toast.success(response.data.message);
                     }
                 }else{
-                    const response = await api.post(`cart/${id}`, {}, {
+                    const response = await api.post(`cart/${id}`, {quantity: productQty}, {
                         'headers': {
                             'Authorization': `Bearer ${token}`
                         }
                     });
+
                     countCart()
                     toast.success(response.data.message);
                 }
             }else{
+              console.log("add to cart res",response)
                 const response = await api.post(`cart/${id}`, {}, {
                     'headers': {
                         'Authorization': `Bearer ${token}`
@@ -113,7 +134,6 @@ const ProductDetail = () => {
           try {
               const result = await api.get(`/inventory/${id}`)
               setProduct(result.data.data)
-              console.log("product",result.data.data)
           } catch (error) {
             if(error.response.data.navigate){
               Navigate('/404')
@@ -123,8 +143,31 @@ const ProductDetail = () => {
       fetchProductData();
     }, [user, branchId]);
 
+    function increaseQty(e) {
+      e.preventDefault()
+      if (productQty < product.stock) {
+        setProductQty(parseInt(productQty) + 1)
+      } else if (productQty == "") {
+        setProductQty(1)
+      }
+    }
+
+    function decreaseQty(e) {
+      e.preventDefault()
+      if (productQty > 1) {
+        setProductQty(parseInt(productQty) - 1)
+      }
+    }
+
+    function inputQty(qty) {
+      if (qty === 0) {
+        setProductQty(1)
+      } else (
+        setProductQty(qty)
+      )
+    }
     function formatIDR(price) {
-      let idr = Math.floor(price).toLocaleString("id-ID");
+      let idr = Math.ceil(price).toLocaleString("id-ID");
       return `Rp ${idr}`;
     }
 
@@ -157,7 +200,7 @@ const ProductDetail = () => {
                   Product information
                 </h2>
                 <div className="flex items-center">
-                  <div className="text-xl font-bold text-green-600 sm:text-2xl mr-5 pb-1">
+                  <div className="text-xl font-bold text-green-500 sm:text-2xl mr-5 pb-1">
                     {formatIDR(product?.discounted_price)}
                   </div>
 
@@ -208,16 +251,32 @@ const ProductDetail = () => {
               <section aria-labelledby="options-heading">
                   <div className="mt-10">
                     {token && (
-                      <button
+                      <div className="flex">
+                        <div className="flex mr-8">
+                          <button disabled={productQty === 1} className="flex items-center justify-center disabled:opacity-50" onClick={decreaseQty}>
+                            <MinusCircleIcon className="
+                            block h-7 w-7 stroke-gray-600 hover:stroke-green-600 active:stroke-green-600 " />
+                          </button>
+                          <input id="quantity" className={`w-16 mx-3 border border-gray-300 border-b-2 border-t-0 border-x-0  rounded-md justify-center items-center focus:border-green-500 focus:ring-green-500 active:border-green-500 text-xl font-bold text-gray-600 text-center ${errorQuantity ? "focus:border-red-500 focus:ring-red-500 active:border-red-500" : ""}`} type="number" defaultValue={1} value={productQty} onChange={(e) => validateQuantity(e.target.value)}></input>
+                          <button disabled={productQty === product.stock} onClick={increaseQty} className="flex items-center justify-center disabled:opacity-50 disabled:stroke-gray">
+                            <PlusCircleIcon className="block h-7 w-7 stroke-gray-600 hover:stroke-green-600 active:stroke-green-600" />
+
+                          </button>
+                        </div>
+                        <button
                         onClick={() => addToCart(id)}
-                        disabled={product.stock === 0}
-                        className="flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 py-2 px-8 text-lg font-bold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                        disabled={product.stock === 0 || errorQuantity}
+                        className="flex items-center justify-center disabled:opacity-60 rounded-md border border-transparent bg-green-500 py-2 px-8 text-lg font-bold text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                       >
                         Add to Cart
                       </button>
+                      </div>
+                      
                     )}
                   </div>
               </section>
+              <div className="text-red-700 text-sm font-semibold mt-2 h-10">{errorQuantity ? errorQuantity : " "}</div>
+            
             </div>
           </div>
         </div>

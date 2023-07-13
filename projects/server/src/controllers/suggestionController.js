@@ -6,7 +6,7 @@ module.exports = {
         try {
             const query = `SELECT inventories.id, stock, pr.product_name, pr.product_price, pr.product_description, pr.product_image, pr.weight,
             br.branch_name, br.city,
-            discounts.discount_type, discounts.discount_value, discounts.min_purchase_qty, discounts.start_date, discounts.end_date
+            discounts.discount_type, discounts.discount_value, discounts.start_date, discounts.end_date
             FROM inventories
             join products pr on pr.id = inventories.id_product
             join store_branches br on br.id = inventories.id_branch

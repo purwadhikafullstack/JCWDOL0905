@@ -15,9 +15,6 @@ module.exports = {
       discount_value: {
         type: Sequelize.INTEGER
       },
-      min_purchase_qty: {
-        type: Sequelize.INTEGER
-      },
       start_date: {
         type: Sequelize.DATE
       },

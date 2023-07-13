@@ -7,30 +7,45 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useSelector } from "react-redux";
 import { Pagination } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
-import "semantic-ui-css/semantic.min.css";
+import UpdateStockModal from "../../component/UpdateStockModal";
+import { useSearchParams} from "react-router-dom";
 
 const ManageStock = () => {
-  const [activePage, setActivePage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activePage, setActivePage] = useState(searchParams.get("page") || 1);
   const [totalPage, setTotalPage] = useState(1);
+  const [order, setOrder] = useState(searchParams.get("order") || "")
+  const [sort, setSort] = useState(searchParams.get("sort") || 'ASC');
+  const [search, setSearch] = useState("")
   const [categories, setCategories] = useState([]);
   const [inventories, setInventories] = useState([]);
-  const [searchedProduct, setSearchedProduct] = useState("");
-  const [sort, setSort] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedBranchId, setSelectedBranchId] = useState(1);
+  const [searchedProduct, setSearchedProduct] = useState(searchParams.get("name") || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
+  const [selectedBranchId, setSelectedBranchId] = useState(searchParams.get("branchId") || 1);
   const [storeBranches, setStoreBranches] = useState([]);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState({})
   const role = useSelector((state) => state.adminSlice.role);
   const id_branch = useSelector((state) => state.adminSlice.id_branch);
 
   const branchId = role === "BRANCH_ADMIN" ? id_branch : selectedBranchId;
-  console.log("branchId", branchId);
+
+  useEffect(() => {
+    setSearchParams({ 
+      page: activePage,
+      sort: sort,
+      order: order,
+      category: selectedCategory,
+      name: searchedProduct,
+      branchId
+    });
+  }, [activePage, sort, order, selectedCategory, searchedProduct, selectedBranchId]);
 
   useEffect(() => {
     async function getStoreBranches() {
         try {
           const storeData = await api.get('/branch/')
           setStoreBranches(storeData.data.data)
-          console.log("Branches", storeData.data.data)
         } catch (error) {
           console.log(error)
         }
@@ -49,31 +64,14 @@ const ManageStock = () => {
 
     async function fetchInventories() {
       try {
-        let url;
-        switch (parseInt(sort)) {
-          // sort by name A-Z
-          case 1:
-            url = `/inventory/?order=product_name&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}&adm=1`;
-            break;
-          // sort by name Z-A
-          case 2:
-            url = `/inventory/?order=product_name&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}&adm=1`;
-            break;
-          // sort by price L-H
-          case 3:
-            url = `/inventory/?order=product_price&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}&adm=1`;
-            break;
-          // sort by price H-L
-          case 4:
-            url = `/inventory/?order=product_price&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}&adm=1`;
-            break;
-          default:
-            url = `/inventory/?order=updatedAt&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}&adm=1`;
-        }
-
-        const productData = await api.get(url, {
+        const productData = await api.get('/inventory', {
           params: {
             branchId,
+            order: order,
+            sort: sort,
+            name: searchedProduct,
+            category: selectedCategory,
+            page: activePage
           },
         });
 
@@ -84,38 +82,41 @@ const ManageStock = () => {
       }
     }
     fetchInventories();
-  }, [sort, activePage, selectedBranchId, selectedCategory]);
+  }, [order, sort, activePage, selectedBranchId, selectedCategory, searchedProduct]);
 
   const handleSortChange = (e) => {
-    setSort(e.target.value);
+    const values = JSON.parse(e.target.value);
+    setSort(values.sort);
+    setOrder(values.order);
+    setActivePage(1);
+  };
+
+  const handleFilterCategory = (e) => {
+    setSelectedCategory(e.target.value)
     setActivePage(1);
   };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-    setActivePage(1);
-    setSort(1)
-      async function fetchInventories() {
-        try {
-          const productData = await api.get(`/inventory/?order=product_name&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}&adm=1`, {
-            params: {
-              branchId,
-            },
-          });
-  
-          setInventories(productData.data.data);
-          setTotalPage(Math.ceil(productData.data.count / 12));
-       } catch (err) {
-        console.log(err)
-       }
-    }
-    fetchInventories()
+      setActivePage(1);
+      setSearchedProduct(search)
   }};
 
+  const openEditModal = (inventoryData) => {
+    setSelectedProduct(inventoryData);
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setSelectedProduct({});
+    setEditModalOpen(false);
+  };
+
   function formatIDR(price) {
-    let idr = Math.floor(price).toLocaleString("id-ID");
+    let idr = Math.ceil(price).toLocaleString("id-ID");
     return `Rp ${idr}`;
   }
+
   return (
     <Layout>
       <div className="flex min-w-screen min-h-screen">
@@ -134,7 +135,7 @@ const ManageStock = () => {
                   </label>
                   <select
                     className="rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500"
-                    id="filter"
+                    id="filter" value={selectedBranchId}
                     onChange={(e) => setSelectedBranchId(e.target.value)}
                   >
                     {storeBranches.map((branch) => (
@@ -160,11 +161,11 @@ const ManageStock = () => {
                 <input
                   id="search" type="search"
                   placeholder="Search product name"
-                  onChange={e => setSearchedProduct(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyDown={handleKeyDown} defaultValue={searchedProduct}
                   className="w-full rounded-md border-0 pl-10 pr-40 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-md sm:leading-6"
                 />
-                <select className="absolute right-0 bg-gray-100 right-0 rounded-r-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" onChange={(e) => setSelectedCategory(e.target.value)}>
+                <select className="absolute right-0 bg-gray-100 right-0 rounded-r-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" onChange={handleFilterCategory} value={selectedCategory}>
                 <option key="" value="">All Categories</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
@@ -180,14 +181,13 @@ const ManageStock = () => {
                 </label>
                 <select
                   className="w-56 lg:w-60 rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500"
-                  id="filter"
-                  value={sort}
+                  id="filter" value={JSON.stringify({ order, sort })}
                   onChange={handleSortChange}
                 >
-                  <option value="1">Product Name A-Z</option>
-                  <option value="2">Product Name Z-A</option>
-                  <option value="3">Price Lowest-Highest</option>
-                  <option value="4">Price Highest-Lowest</option>
+                  <option value='{"order":"product_name","sort":"ASC"}'>Product Name A-Z</option>
+                  <option value='{"order":"product_name","sort":"DESC"}'>Product Name Z-A</option>
+                  <option value='{"order":"product_price","sort":"ASC"}'>Price Lowest-Highest</option>
+                  <option value='{"order":"product_price","sort":"DESC"}'>Price Highest-Lowest</option>
                 </select>
               </div>
             </div>
@@ -196,7 +196,7 @@ const ManageStock = () => {
               <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-300">
+                  <table className="min-w-full divide-y divide-gray-300">
                       <thead className="bg-gray-50">
                         <tr>
                           <th
@@ -286,10 +286,13 @@ const ManageStock = () => {
                             </td>
                             <td className="flex whitespace-nowrap px-3 py-3 text-center text-sm font-medium sm:pr-3 justify-center">
                               <div className="flex row">
+                                <button className="hover:bg-gray-100 hover:rounded-md active:bg-gray-200 active:rounded-md p-1" onClick={() => openEditModal(inventory)}>
                                 <PencilSquareIcon
-                                  className="fill-green-600 block h-6 w-6"
+                                  className="fill-green-500 hover:fill-green-600 active:fill-green-600 block h-6 w-6"
                                   aria-hidden="true"
                                 />
+                                </button>
+                                
                               </div>
                             </td>
                           </tr>
@@ -312,6 +315,7 @@ const ManageStock = () => {
           </div>
           <div></div>
         </div>
+        {editModalOpen && (<UpdateStockModal open={editModalOpen} setOpen={setEditModalOpen} inventory={selectedProduct} cancelButtonRef={null} onClose={closeEditModal} />)}
       </div>
     </Layout>
   );

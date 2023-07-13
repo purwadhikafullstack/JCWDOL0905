@@ -166,7 +166,7 @@ export default function Cart() {
                           <div className="flex justify-between">
                             <h3 className="text-sm">
                               <a
-                                href={"#"}
+                                href={`/product/${item.id_inventory}`}
                                 className="font-medium text-gray-700 hover:text-gray-800"
                               >
                                 {item.product_name}
