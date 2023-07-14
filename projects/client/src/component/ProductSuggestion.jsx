@@ -7,24 +7,7 @@ export default function Suggested(props) {
 
   const productsData = props.productsData;
 
-  function checkDiscount(item){
-    const today = new Date()
-    const start = new Date(item.start_date)
-    const end = new Date(item.end_date)
-
-    if(start <= today && end >= today){
-      if(item.discount_type == 'percentage' || item.discount_type == 'amount'){
-        return 'price'
-      }
-      else if(item.discount_type == 'buy one get one'){
-        return 'bonus_qty'
-      }
-    }
-
-    return false
-  }
-
-  const checkDiscounte = (item) => {
+  const checkDiscount = (item) => {
     let today = new Date()
     let start = new Date(item.start_date)
     let end = new Date(item.end_date)
@@ -92,7 +75,7 @@ export default function Suggested(props) {
 
                   <p className="text-md text-gray-500 my-1">{product.weight} gram</p>
 
-                  {checkDiscounte(product) == 'price' ?
+                  {checkDiscount(product) == 'price' ?
                     <div>
                       <div className="flex">
                         <p className=" text-sm font-bold text-red-400 line-through flex-none mr-2">{rupiah(product.product_price)}</p>

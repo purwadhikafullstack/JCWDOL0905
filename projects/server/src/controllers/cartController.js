@@ -69,18 +69,23 @@ module.exports = {
                 return res.status(404).send({ isError: true, message: "Inventory not exist" });
             }
 
+            if(findInventory.stock < (quantity+bonus_qty)) return res.status(400).send({isError: true, message: "Item quantity + bonus item can't exceed the available stock"})
+
             let findCartItem = await carts.findOne({ where: { id_inventory: inventoryId } });
             if (findCartItem){
                 const updatedQty = parseInt(findCartItem.product_qty) + parseInt(quantity);
-                if (updatedQty > findInventory.stock) {
-                    const updatedCartMax = carts.update({product_qty: findInventory.stock},
-                    { where: {id: findCartItem.id}},
-                    )
+                const updateBonusQty = parseInt(findCartItem.bonus_qty) + parseInt(bonus_qty);
+                if ((updatedQty + updateBonusQty) > findInventory.stock) {
+                    return res.status(400).send({isError: true, message: "Item quantity + bonus item can't exceed the available stock"})
+                    // const updatedCartMax = carts.update({product_qty: findInventory.stock},
+                    // { where: {id: findCartItem.id}},
+                    // )
 
-                    return res.status(201).send({ isError: false, message: "Successfully add item to cart at maximum stock", data: updatedCartMax },);
+                    // return res.status(201).send({ isError: false, message: "Successfully add item to cart at maximum stock", data: updatedCartMax },);
                 }
+
                 const updatedCart = carts.update(
-                  { product_qty: updatedQty },
+                  { product_qty: updatedQty, bonus_qty: updateBonusQty },
                   { where: { id: findCartItem.id } }
                 );
                 return res.status(200).send({ isError: false, message: "Successfully add quantity to cart", data: updatedCart },);

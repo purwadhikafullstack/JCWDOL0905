@@ -143,7 +143,7 @@ const ProductDetail = () => {
           }
       }
       fetchProductData();
-    }, [user, branchId]);
+    }, [user, branchId, productQty]);
 
     function increaseQty(e) {
       e.preventDefault()
