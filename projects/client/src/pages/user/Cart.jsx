@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { countItem } from "../../redux/cartSlice";
 import pin from "../../assets/images/pin.png"
 import { useNavigate } from "react-router-dom";
+import { checkDiscount, countDiscount, rupiah, getTotalPrice, getTotalWeight } from "../../function";
 
 export default function Cart() {
   const Navigate = useNavigate()
@@ -17,28 +18,6 @@ export default function Cart() {
   const [carts, setCarts] = useState([]);
   const [update, setUpdate] = useState(false);
   const dispatch = useDispatch();
-
-  function checkDiscount(item){
-    const today = new Date()
-    const start = new Date(item.start_date)
-    const end = new Date(item.end_date)
-
-    if(start <= today && end >= today && item.product_qty >= item.min_purchase_qty){
-      if(item.discount_type == 'percentage' || item.discount_type == 'amount'){
-        return true
-      }
-    }
-
-    return false
-  }
-
-  function showDiscount(item){
-    if(item.discount_type == 'amount'){
-      return item.product_price - item.discount_value
-    } else if(item.discount_type == 'percentage'){
-      return item.product_price - (item.discount_value/100 * item.product_price)
-    }
-  }
 
   async function countCart() {
     try {
@@ -76,25 +55,23 @@ export default function Cart() {
     fetchData();
   }, [user, branchId, update]);
 
-  function getTotalPrice(){
-    let sum = 0;
-    for(let item of carts){
-      if(checkDiscount(item)){
-        sum += (showDiscount(item) * item.product_qty)
-      } else {
-        sum += (item.product_price * item.product_qty)
+  useEffect(() => {
+    async function updateBonus() {
+      for(let item of carts){
+        if(item.bonus_qty > 0 && checkDiscount(item)!='bonus_qty'){
+          try{
+            const response = await api.patch(`cart/bonus/${item.id}`, {bonus_qty: 0});
+          }catch(error){toast.error(error.response.data.message);}
+        }
+        if(item.bonus_qty == 0 && checkDiscount(item)=='bonus_qty'){
+          try{
+            const response = await api.patch(`cart/bonus/${item.id}`, {bonus_qty: item.product_qty});
+          }catch(error){toast.error(error.response.data.message);}
+        }
       }
     }
-    return sum
-  }
-
-  function getTotalWeight(){
-    let sum = 0;
-    for(let item of carts){
-        sum += (item.weight * item.product_qty)
-    }
-    return sum
-  }
+    updateBonus();
+  }, [carts]);
 
   async function updateQty(id, num){
     try {
@@ -116,13 +93,6 @@ export default function Cart() {
     } catch (error) {
       toast.error(error.response.data.message);
     }
-  }
-
-  const rupiah = (number)=>{
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR"
-    }).format(number);
   }
 
   return (
@@ -176,13 +146,13 @@ export default function Cart() {
                           <div className="mt-1 flex text-sm">
                             <p className="text-gray-500">{item.weight} gr/item</p>
                           </div>
-                          {checkDiscount(item) ?
+                          {checkDiscount(item) == 'price' ?
                             <div>
                               <p className="mt-1 text-sm font-medium text-gray-900 line-through">
                                 {rupiah(item.product_price)}
                               </p>
                               <p className="mt-1 text-sm font-medium text-gray-900">
-                                {rupiah(showDiscount(item))}
+                                {rupiah(countDiscount(item))}
                               </p>
                             </div>
                           : 
@@ -190,20 +160,25 @@ export default function Cart() {
                              {rupiah(item.product_price)}
                           </p>
                           }
+                          {checkDiscount(item) == 'bonus_qty' &&
+                            <p className="mt-1 text-sm font-medium text-gray-900">
+                              Bonus item: {item.bonus_qty} pcs
+                            </p>
+                          }
                           
                         </div>
 
                         <div className="mt-4 sm:mt-0 sm:pr-9">
                           <div class="flex items-center">
-                            <a class="flex-none mr-3">
-                              <PlusIcon onClick={() => updateQty(item.id, 1)} className="h-3 w-3 fill-gray-500 hover:fill-gray-700 outline outline-offset-2 outline-1" aria-hidden="true"/>
-                            </a>
+                            <button type="button" class="flex-none mr-3">
+                              <MinusIcon onClick={() => updateQty(item.id, -1)} className="h-3 w-3 fill-gray-500 hover:fill-gray-700 outline outline-offset-2 outline-1" aria-hidden="true"/>
+                            </button>
                             <div class="flex-none">
                               {item.product_qty}
                             </div>
-                            <a class="flex-none ml-3">
-                              <MinusIcon onClick={() => updateQty(item.id, -1)}className="h-3 w-3 fill-gray-500 hover:fill-gray-700 outline outline-offset-2 outline-1" aria-hidden="true"/>
-                            </a>
+                            <button type="button" class="flex-none ml-3">
+                              <PlusIcon onClick={() => updateQty(item.id, 1)}className="h-3 w-3 fill-gray-500 hover:fill-gray-700 outline outline-offset-2 outline-1" aria-hidden="true"/>
+                            </button>
                           </div>
 
                           <div className="absolute top-0 right-0">
@@ -253,14 +228,14 @@ export default function Cart() {
               <dl className="mt-6 space-y-4">
                 <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-600">Total Weight</dt>
-                    <dd className="text-sm font-medium text-gray-900">{getTotalWeight()} gr</dd>
+                    <dd className="text-sm font-medium text-gray-900">{getTotalWeight(carts)} gr</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="text-base font-medium text-gray-900">
                     Total Price
                   </dt>
                   <dd className="text-base font-medium text-gray-900">
-                    {rupiah(getTotalPrice())}
+                    {rupiah(getTotalPrice(carts))}
                   </dd>
                 </div>
               </dl>

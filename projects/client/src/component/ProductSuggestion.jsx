@@ -1,6 +1,7 @@
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { rupiah, checkDiscount, countDiscount } from "../function";
 
 export default function Suggested(props) {
 
@@ -13,20 +14,32 @@ export default function Suggested(props) {
 
     if(start <= today && end >= today){
       if(item.discount_type == 'percentage' || item.discount_type == 'amount'){
-        return true
+        return 'price'
+      }
+      else if(item.discount_type == 'buy one get one'){
+        return 'bonus_qty'
       }
     }
 
     return false
   }
 
-  function showDiscount(item){
-    if(item.discount_type == 'amount'){
-      return item.product_price - item.discount_value
-    } else if(item.discount_type == 'percentage'){
-      return item.product_price - (item.discount_value/100 * item.product_price)
+  const checkDiscounte = (item) => {
+    let today = new Date()
+    let start = new Date(item.start_date)
+    let end = new Date(item.end_date)
+    end.setDate(end.getDate() + 1);
+
+    if(start <= today && end >= today){
+      if(item.discount_type == 'percentage' || item.discount_type == 'amount'){
+          if(!item.product_qty) return 'price'
+          else if(item.min_purchase_qty == null || item.product_qty >= item.min_purchase_qty) return 'price'
+          else return false
+        }
+      else if(item.discount_type == 'buy one get one') return 'bonus_qty'
     }
-  }
+    return false
+}
 
   const settings = {
     // fade: true,
@@ -61,13 +74,6 @@ export default function Suggested(props) {
     ]
   };
 
-  const rupiah = (number)=>{
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR"
-    }).format(number);
-  }
-
   return (
     <>
           <Slider {...settings}>
@@ -86,19 +92,17 @@ export default function Suggested(props) {
 
                   <p className="text-md text-gray-500 my-1">{product.weight} gram</p>
 
-                  {checkDiscount(product) ?
+                  {checkDiscounte(product) == 'price' ?
                     <div>
                       <div className="flex">
                         <p className=" text-sm font-bold text-red-400 line-through flex-none mr-2">{rupiah(product.product_price)}</p>
-                        <p className=" text-sm font-bold text-green-600 flex-none">{rupiah(showDiscount(product))}</p>
+                        <p className=" text-sm font-bold text-green-600 flex-none">{rupiah(countDiscount(product))}</p>
                       </div>
-                      {/* <div className="flex flex-1 flex-col justify-end">
-                        <p className=" text-sm font-bold text-green-600">{rupiah(product.product_price)}</p>
-                      </div> */}
                     </div>
                     : 
-                    <div className="flex flex-1 flex-col justify-end">
+                    <div className="flex">
                       <p className=" text-sm font-bold text-green-600">{rupiah(product.product_price)}</p>
+                      {checkDiscount(product) == 'bonus_qty' && <p className="ml-2 text-sm font-bold text-blue-600">buy one get one</p>}
                     </div>
                   }
                 </div>

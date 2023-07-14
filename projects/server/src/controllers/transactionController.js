@@ -169,14 +169,14 @@ module.exports = {
             );
 
             for(let item of cartData){
-                let {product_price, product_qty, id_inventory, stock, product_name, product_image, weight} = item
+                let {product_price, product_qty, bonus_qty, id_inventory, stock, product_name, product_image, weight} = item
 
                 if(checkDiscount(item)){
                     product_price = countDiscount(item)
                 }
 
                 await trans_detail.create(
-                    {product_price, product_qty, id_inventory, id_trans_header: order.dataValues.id, product_name, product_image, weight},
+                    {product_price, product_qty, bonus_qty, id_inventory, id_trans_header: order.dataValues.id, product_name, product_image, weight},
                     {transaction: t}
                 );
                 // await inventory.update({stock: stock - product_qty}, {where: { id: id_inventory }, transaction: t});

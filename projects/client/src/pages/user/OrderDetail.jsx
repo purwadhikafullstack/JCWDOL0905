@@ -200,6 +200,11 @@ export default function OrderDetail() {
                                 </div>
                               </div>
                             </div>
+                            {data.bonus_qty > 0 &&
+                              <p className="mt-1 text-sm font-medium text-gray-900">
+                                Bonus item: {data.bonus_qty} pcs
+                              </p>
+                            }
                           </div>
                         </div>
                       </li>
@@ -224,14 +229,7 @@ export default function OrderDetail() {
                           Shipping Address
                       </label>
                       <div className="mt-1">
-                          <textarea
-                          id="address_detail"
-                          name="address_detail"
-                          readOnly
-                          rows={3}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                          defaultValue={detail}
-                          />
+                        <p className="text-gray-600 sm:text-sm">{detail}</p>
                       </div>
                   </div>
                     

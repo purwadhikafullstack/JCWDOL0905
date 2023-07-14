@@ -18,6 +18,7 @@ const ProductDetail = () => {
     const branchId = useSelector((state) => state.branchSlice.branchId);
     const [carts, setCarts] = useState([])
     const [product, setProduct] = useState({})
+    const [bonusQty, setBonusQty] = useState(0)
 
     async function countCart() {
         try {
@@ -56,8 +57,8 @@ const ProductDetail = () => {
                                 'Authorization': `Bearer ${token}`
                             }
                         });
-                        toast.success(deleteCart.data.status);
-                        const response = await api.post(`cart/${id}`, {}, {
+                        toast.success(deleteCart.data.message);
+                        const response = await api.post(`cart/${id}`, {bonusQty}, {
                             'headers': {
                                 'Authorization': `Bearer ${token}`
                             }
@@ -67,7 +68,7 @@ const ProductDetail = () => {
                         toast.success(response.data.message);
                     }
                 }else{
-                    const response = await api.post(`cart/${id}`, {}, {
+                    const response = await api.post(`cart/${id}`, {bonusQty}, {
                         'headers': {
                             'Authorization': `Bearer ${token}`
                         }
@@ -76,7 +77,7 @@ const ProductDetail = () => {
                     toast.success(response.data.message);
                 }
             }else{
-                const response = await api.post(`cart/${id}`, {}, {
+                const response = await api.post(`cart/${id}`, {bonusQty}, {
                     'headers': {
                         'Authorization': `Bearer ${token}`
                     }
@@ -112,8 +113,9 @@ const ProductDetail = () => {
         async function fetchProductData() {
           try {
               const result = await api.get(`/inventory/${id}`)
-              setProduct(result.data.data)
-              console.log("product",result.data.data)
+              const productData = result.data.data
+              setProduct(productData)
+              if(productData.Discounts[0].discount_type=='buy one get one') setBonusQty(1)
           } catch (error) {
             if(error.response.data.navigate){
               Navigate('/404')

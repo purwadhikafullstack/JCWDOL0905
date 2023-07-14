@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      bonus_qty: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,

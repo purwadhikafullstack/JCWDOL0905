@@ -31,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      bonus_qty: {
+        type: DataTypes.INTEGER,
+      },
       product_name: {
         type: DataTypes.STRING,
         allowNull: false,
