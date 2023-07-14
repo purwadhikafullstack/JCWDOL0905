@@ -96,7 +96,7 @@ function ProductStockHistory() {
     try {
       const response = await api.get(`inventory/admin/history`, {
         params: {
-          endDate: selectedEndDate === "" ? null : moment(selectedEndDate).endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+          endDate: selectedEndDate === "" ? null : moment(selectedEndDate).endOf('day').format('YYYY-MM-DD HH:mm:ss'),          
           startDate: selectedStartDate === "" ? null : moment(selectedStartDate).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
           page: page,
           limit: limit,
@@ -178,21 +178,33 @@ function ProductStockHistory() {
               <div className="flex items-center space-x-4">
                 <p className="w-24 text-right">Start Date:</p>
                 <Datepicker
-                  placeholderText="Start Date"
-                  selected={selectedStartDate}
+                  placeholderText="Start Date"                 
+                  selected={selectedStartDate === "" ? "" : new Date(selectedStartDate)}                  
                   className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6"
                   id="start_date"
-                  onChange={(date) => setSelectedStartDate(date)}
+                  onChange={(date) => {
+                    if (date === null ) {
+                      setSelectedStartDate("")
+                      return
+                    }
+                    setSelectedStartDate(date)
+                  }}
                 />
               </div>
               <div className="flex items-center space-x-4">
                 <p className="w-24 text-right">End Date:</p>
                 <Datepicker
                   placeholderText="End Date"
-                  selected={selectedEndDate}
+                  selected={selectedEndDate === "" ? "" : new Date(selectedEndDate)}                  
                   className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6"
                   id="end_date"
-                  onChange={(date) => setSelectedEndDate(date)}
+                  onChange={(date) => {
+                    if (date === null ) {
+                      setSelectedEndDate("")
+                      return
+                    }
+                    setSelectedEndDate(date)
+                  }}
                 />
               </div>
               <div className="flex items-center space-x-4">

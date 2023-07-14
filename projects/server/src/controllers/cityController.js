@@ -3,6 +3,9 @@ const axios = require("axios")
 module.exports = {
     getCity: async (req, res) => {
         try {
+
+            console.log(req.query);
+
             const cityData = await axios.get(`https://api.rajaongkir.com/starter/city?province=${req.query.provinceId}`, {
                 'headers': {
                     'key': process.env.KEY_RAJA_ONGKIR_API

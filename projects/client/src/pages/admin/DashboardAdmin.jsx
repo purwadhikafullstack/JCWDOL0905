@@ -5,7 +5,12 @@ import DashboardChart from "../../component/DashboardChart";
 import { api } from "../../api/api";
 import { useEffect, useState } from "react";
 import { ROLE } from "../../constant/role";
-import { UsersIcon, BanknotesIcon, ShoppingBagIcon } from '@heroicons/react/24/outline'
+import {
+  UsersIcon,
+  BanknotesIcon,
+  ShoppingBagIcon,
+} from "@heroicons/react/24/outline";
+import { useSearchParams } from "react-router-dom";
 
 const DASHBOARD_TEXT_ROLE_MAPPING = {
   SUPER_ADMIN: "Dashboard Super Admin",
@@ -15,7 +20,9 @@ const DASHBOARD_TEXT_ROLE_MAPPING = {
 const plotConfig = [{ key: "totalSales", color: "#8884d8" }];
 
 const DashboardAdmin = () => {
-  const [branchId, setBranchId] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [branchId, setBranchId] = useState(searchParams.get("branchId") || "All");
+  const [year, setYear] = useState(searchParams.get("year") || "");
   const [storeData, setStoreData] = useState([]);
   const [dashboardData, setDashboardData] = useState({});
   const { id_branch, role } = useSelector((state) => state.adminSlice);
@@ -28,7 +35,8 @@ const DashboardAdmin = () => {
             htmlFor="location"
             className="block text-sm text-left font-medium text-gray-700"
           >
-            {" "} Filter by Branch Store {" "}
+            {" "}
+            Filter by Branch Store{" "}
           </label>
           <div className="flex items-center space-x-4">
             <select
@@ -45,13 +53,6 @@ const DashboardAdmin = () => {
                 </option>
               ))}
             </select>
-            <button
-              type="button"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => handleSearchDashboard(branchId)}
-            >
-              Search
-            </button>
           </div>
         </div>
       </>
@@ -69,7 +70,11 @@ const DashboardAdmin = () => {
 
   const getDashboardData = async () => {
     try {
-      const response = await api.get(`admins/dashboard-data`);
+      const response = await api.get(`admins/dashboard-data`, {
+        params: {
+          year: year === "" ? null :year,
+        },
+      });
       setDashboardData(response.data.data);
     } catch (error) {
       console.log(error);
@@ -78,7 +83,12 @@ const DashboardAdmin = () => {
 
   const getDashboardDataById = async (id) => {
     try {
-      const response = await api.get(`admins/dashboard-data/${id}`);
+      const response = await api.get(`admins/dashboard-data-branch/`, {
+        params: {
+          year: year === "" ? null :year,
+          id: id,
+        },
+      });
       setDashboardData(response.data.data);
     } catch (error) {
       console.log(error);
@@ -86,7 +96,10 @@ const DashboardAdmin = () => {
   };
 
   const handleSearchDashboard = (branchId) => {
-    console.log(branchId, "this is branch id");
+    setSearchParams({ 
+      branchId: branchId,
+      year: year,
+    });
     if (branchId !== "All") {
       getDashboardDataById(branchId);
     } else {
@@ -114,6 +127,33 @@ const DashboardAdmin = () => {
               {DASHBOARD_TEXT_ROLE_MAPPING[role]}
             </h1>
             {renderSearchByBranch()}
+            <div className="mt-2">
+              <label
+                htmlFor="location"
+                className="block text-sm text-left font-medium text-gray-700"
+              >
+                {" "}
+                Filter by transaction year{" "}
+              </label>
+              <div className="flex items-center space-x-4">
+              <input
+                  type="text"
+                  name="name"
+                  className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
+                  placeholder="Input year YYYY"
+                  required
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => handleSearchDashboard(branchId)}
+                >
+                  Search
+                </button>
+              </div>
+            </div>
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               <div className="relative overflow-hidden rounded-lg bg-gray-800 px-4 py-5 shadow sm:px-6 sm:py-6">
                 <dt>
@@ -129,7 +169,7 @@ const DashboardAdmin = () => {
                 </dt>
                 <dd className="ml-8 flex justify-center items-baseline">
                   <p className="text-2xl font-semibold text-white">
-                    {dashboardData.totalUser || ""}
+                    {dashboardData.totalUser || "0"}
                   </p>
                 </dd>
               </div>
@@ -152,7 +192,7 @@ const DashboardAdmin = () => {
                       ? dashboardData.totalSales.toLocaleString("id", {
                           useGrouping: true,
                         })
-                      : ""}
+                      : "0"}
                   </p>
                 </dd>
               </div>
@@ -170,7 +210,7 @@ const DashboardAdmin = () => {
                 </dt>
                 <dd className="ml-8 flex justify-center items-baseline">
                   <p className="text-2xl font-semibold text-white">
-                    {dashboardData.totalTransactions || ""}
+                    {dashboardData.totalTransactions || "0"}
                   </p>
                 </dd>
               </div>

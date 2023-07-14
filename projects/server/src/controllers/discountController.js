@@ -119,6 +119,8 @@ module.exports = {
       const productName = req.query.name || null;
       const discountType = req.query.type || null;
       const branchId = req.query.branchId || 1;
+      console.log("branchId", branchId)
+      
 
       const typeQuery = discountType ? {discount_type : discountType} : {};
       const searchQuery = productName ? { product_name: { [Op.like]: `%${productName}%` } } : {};

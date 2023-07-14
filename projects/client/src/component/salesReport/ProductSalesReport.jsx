@@ -27,7 +27,7 @@ function Table({ tableData }) {
                   </th>
                   <th
                     scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
                   >
                     {" "}
                     Branch Name{" "}
@@ -275,20 +275,32 @@ function ProductSalesReport() {
               <p className="w-24 text-right">Start Date:</p>
               <ReactDatePicker
                 placeholderText="Start Date"
-                selected={selectedStartDate}
+                selected={selectedStartDate === "" ? "" : new Date(selectedStartDate)}
                 className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6"
                 id="start_date"
-                onChange={(date) => setSelectedStartDate(date)}
+                onChange={(date) => {
+                  if (date === null ) {
+                    setSelectedStartDate("")
+                    return
+                  }
+                  setSelectedStartDate(date)
+                }}
               />
             </div>
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">End Date:</p>
               <ReactDatePicker
                 placeholderText="End Date"
-                selected={selectedEndDate}
+                selected={selectedEndDate === "" ? "" : new Date(selectedEndDate)}                
                 className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6"
                 id="end_date"
-                onChange={(date) => setSelectedEndDate(date)}
+                onChange={(date) => {
+                  if (date === null ) {
+                    setSelectedEndDate("")
+                    return
+                  }
+                  setSelectedEndDate(date)
+                }}
               />
             </div>
             <div className="flex items-center space-x-4">
