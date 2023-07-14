@@ -20,16 +20,6 @@ export default function UploadPaymentModal(props) {
     setOpen(true)
   }
 
-  const uploadPayment = async(id) => {
-    try{
-      const response = await api.patch(`order/cancel/${id}`)
-      toast.success(response.data.message)
-      window.location.href = `/order/${id}`
-    }catch(error){
-      toast.error(error.response.data.message);
-    }
-  }
-
   const onFileChange = (event) => {
     setFile()
     setMessage('')

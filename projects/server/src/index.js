@@ -12,12 +12,6 @@ const app = express();
 //   })
 // );
 
-// const corsOptions ={
-//   origin:'*', 
-//   credentials:true, //access-control-allow-credentials:true
-//   optionSuccessStatus:200,
-// }
-
 app.use(cors())
 
 app.use(express.json());
@@ -91,7 +85,7 @@ app.listen(PORT, (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
-    //db.sequelize.sync({alter: true})
+    // db.sequelize.sync({alter: true})
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });

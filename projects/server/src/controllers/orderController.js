@@ -16,7 +16,6 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            console.log("ini lah");
             res.status(404).send({isError: true, message: "Cancel order failed"})}
     },
     uploadPayment: async (req, res) => {
@@ -31,5 +30,41 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(404).send({isError: true, message: "Upload payment failed"})}
+    },
+    acceptPayment: async (req, res) => {
+        try {
+            await trans_header.update({order_status: 'processed'}, {where: {id: req.params.id}});
+            res.status(200).send({code: 200, message: "Order processed successfully"});
+
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Process order failed"})}
+    },
+    rejectPayment: async (req, res) => {
+        try {
+            await trans_header.update({order_status: 'waiting for payment'}, {where: {id: req.params.id}});
+            res.status(200).send({code: 200, message: "Reject payment success"});
+
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Reject payment failed"})}
+    },
+    shipOrder: async (req, res) => {
+        try {
+            await trans_header.update({order_status: 'shipped'}, {where: {id: req.params.id}});
+            res.status(200).send({code: 200, message: "Shipping order success"});
+
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Shipping order failed"})}
+    },
+    receiveOrder: async (req, res) => {
+        try {
+            await trans_header.update({order_status: 'done'}, {where: {id: req.params.id}});
+            res.status(200).send({code: 200, message: "Confirm receive order success"});
+
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Confirm receive order failed"})}
     },
 }

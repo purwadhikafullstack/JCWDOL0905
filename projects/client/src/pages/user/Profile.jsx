@@ -4,6 +4,7 @@ import {
   Bars3Icon,
   EnvelopeIcon,
   PhoneIcon,
+  DocumentDuplicateIcon,
   XMarkIcon,
   PencilSquareIcon,
   PencilIcon
@@ -16,10 +17,12 @@ import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import default_picture from "../../assets/images/default.jpg"
+import InsertReferralModal from "../../component/InsertReferralModal";
 
 export default function Profile() {
     const [profiles, setProfiles] = useState({});
     const [address, setAddress] = useState({})
+    const [refVoucher, setRefVoucher] = useState(false)
     const Navigate = useNavigate();
     const user = useSelector((state) => state.userSlice)
     const addressId = localStorage.getItem("addressId")
@@ -29,6 +32,13 @@ export default function Profile() {
         try {
             const response = await api.get(`profiles/${user.id}`);
             const profilesData = response.data.data;
+
+            try{
+                const response = await api.get(`profiles/voucher/${user.id}`)
+                if(response.data.data != null) setRefVoucher(true)
+            } catch(error){
+                toast.error(error.response.data.message);
+            }
 
             if(addressId){
                 const responseAddress = await api.get(`address/${addressId}`);
@@ -50,8 +60,7 @@ export default function Profile() {
 
             setProfiles(profilesData);
         } catch (error) {
-            // toast.error(error.response.data.message);
-            console.log(error.response.data.message)
+            toast.error(error.response.data.message);
         }
         }
         fetchData();
@@ -202,14 +211,32 @@ export default function Profile() {
                                 <span className="ml-3">{profiles.phone_number}</span>
                             </dd>
                         </dl>
-                        <ul role="list" className="mt-8 flex space-x-12">
-                            <li>
-                                <a className="text-teal-200 hover:text-teal-100 underline" href="/address">Manage Address</a>
-                            </li>
-                            <li>
-                                <a className="text-teal-200 hover:text-teal-100 underline" href="change-password">Change Password</a>
-                            </li>
-                        </ul>
+                        <dl className="mt-8 space-y-6">
+                            <dt>
+                                <span className="sr-only">Referal</span>
+                            </dt>
+                            <dd className="flex text-base text-teal-50">
+                                <DocumentDuplicateIcon
+                                className="h-6 w-6 flex-shrink-0 text-teal-200"
+                                aria-hidden="true"
+                                />
+                                <span className="ml-3">Referral Code: {profiles.referral_code}</span>
+                            </dd>
+                        </dl>
+                        <div className="mt-10">
+                            <a className="text-teal-200 hover:text-teal-100 underline" href="/address">Manage Address</a>
+                        </div>
+                        <div className="mt-3">
+                            <a className="text-teal-200 hover:text-teal-100 underline" href="/order-history">Order History</a>
+                        </div>
+                        <div className="mt-3">
+                            <a className="text-teal-200 hover:text-teal-100 underline" href="/change-password">Change Password</a>
+                        </div>
+                        {!refVoucher &&
+                            <div className="mt-3">
+                                <InsertReferralModal id={user.id}/>
+                            </div>
+                        }
                     </div>
 
                     {/* Contact form */}
@@ -313,14 +340,6 @@ export default function Profile() {
                                 readOnly
                             />
                             </div>
-                        </div>
-                        <div className="sm:col-span-2 sm:flex sm:justify-end">
-                            {/* <button
-                                    type="submit"
-                                    className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent bg-teal-500 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 sm:w-auto"
-                                >
-                                    Submit
-                                </button> */}
                         </div>
                         </form>
                     </div>

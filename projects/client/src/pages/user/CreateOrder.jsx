@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import pin from "../../assets/images/pin.png"
+import { getTotalPrice, getTotalWeight, checkDiscount, countDiscount, rupiah, showVoucher, calculateVoucher } from "../../function";
 
 export default function CreateOrder() {
   const Navigate = useNavigate()
@@ -16,7 +17,7 @@ export default function CreateOrder() {
   const token = localStorage.getItem("token")
   const [carts, setCarts] = useState([]);
   const [addressDetail, setAddressDetail] = useState({});
-  const [detail, setDetail] = useState({});
+  const [detail, setDetail] = useState();
   const [voucher, setVoucher] = useState([]);
   const [voucherId, setVoucherId] = useState(0);
   const [voucherValue, setVoucherValue] = useState(0);
@@ -26,28 +27,6 @@ export default function CreateOrder() {
   const [index, setIndex] = useState(0);
   const [update, setUpdate] = useState(false)
   const dispatch = useDispatch();  
-
-  function checkDiscount(item){
-    const today = new Date()
-    const start = new Date(item.start_date)
-    const end = new Date(item.end_date)
-
-    if(start <= today && end >= today && item.product_qty >= item.min_purchase_qty){
-      if(item.discount_type == 'percentage' || item.discount_type == 'amount'){
-        return true
-      }
-    }
-
-    return false
-  }
-
-  function showDiscount(item){
-    if(item.discount_type == 'amount'){
-      return item.product_price - item.discount_value
-    } else if(item.discount_type == 'percentage'){
-      return item.product_price - (item.discount_value/100 * item.product_price)
-    }
-  }
 
   useEffect(() => {
     async function fetchData() {
@@ -121,7 +100,7 @@ export default function CreateOrder() {
         const data = {
             branchId: carts[0].id_branch,
             addressId,
-            orderWeight: getTotalWeight(),
+            orderWeight: getTotalWeight(carts),
             serviceId
         }
         const response = await api.post(`shipping`, data);
@@ -137,112 +116,33 @@ export default function CreateOrder() {
 
   useEffect(()=>{
     async function updateVoucherValue(){
-      setVoucherValue(calculateVoucher())
+      setVoucherValue(calculateVoucher(shippingCost, voucher, voucherId, carts))
     }
     updateVoucherValue()
   }, [shippingCost, voucherId])
 
-  function getTotalPrice(){
-    let sum = 0;
-    for(let item of carts){
-      if(checkDiscount(item)){
-        sum += (showDiscount(item) * item.product_qty)
-      } else {
-        sum += (item.product_price * item.product_qty)
-      }
-    }
-    return sum
-  }
-
-  function getTotalWeight(){
-    let sum = 0;
-    for(let item of carts){
-        sum += (item.weight * item.product_qty)
-    }
-    return sum
-  }
-
-  function showVoucher(item){
-    let text = ""
-    if(item.voucher_type=="total purchase"){
-      if(item.voucher_kind=='amount'){
-        text += `Voucher Discount ${rupiah(item.voucher_value)}. `
-      }else if(item.voucher_kind=='percentage'){
-        text += `Voucher Discount ${item.voucher_value}%. `
-      }
-
-      if(item.max_discount!=null){
-        text += `Max Disc ${rupiah(item.max_discount)}. `
-      }
-      if(item.min_purchase_amount!=null){
-        text += `Min Purchase ${rupiah(item.min_purchase_amount)}. `
-      }
-      return text
-    }else if(item.voucher_type=="shipping"){
-      if(item.voucher_kind=='amount'){
-        text += `Voucher Shipping Cost ${rupiah(item.voucher_value)}. `
-      }else if(item.voucher_kind=='percentage'){
-        text += `Voucher Shipping Cost ${item.voucher_value}%. `
-      }
-
-      if(item.max_discount!=null){
-        text += `Max Disc ${rupiah(item.max_discount)}. `
-      }
-      if(item.min_purchase_amount!=null){
-        text += `Min Purchase ${rupiah(item.min_purchase_amount)}. `
-      }
-      return text
-    }
-  }
-
-  const rupiah = (number)=>{
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR"
-    }).format(number);
-  }
-
-  function calculateVoucher(){
-    if(voucherId==0){
-      return 0
-    }else{
-      let disc = 0
-      let arr = voucher.find(x => x.id == voucherId)
-      if(arr.voucher_type == 'total purchase'){
-        if(arr.voucher_kind=='amount'){
-          disc = arr.voucher_value
-          if(arr.max_discount!=null){
-            if(arr.max_discount < disc) return arr.max_discount
-          }
-          return disc
-        }else if(arr.voucher_kind=='percentage'){
-          disc = arr.voucher_value/100 * getTotalPrice()
-          if(arr.max_discount!=null){
-            if(arr.max_discount < disc) return arr.max_discount
-          }
-          return disc
+  useEffect(() => {
+    async function updateBonus() {
+      for(let item of carts){
+        if(item.bonus_qty > 0 && checkDiscount(item)!='bonus_qty'){
+          try{
+            const response = await api.patch(`cart/bonus/${item.id}`, {bonus_qty: 0});
+          }catch(error){toast.error(error.response.data.message);}
+        }
+        if(item.bonus_qty == 0 && checkDiscount(item)=='bonus_qty'){
+          try{
+            const response = await api.patch(`cart/bonus/${item.id}`, {bonus_qty: item.product_qty});
+          }catch(error){toast.error(error.response.data.message);}
         }
       }
-      else if(arr.voucher_type == 'shipping'){
-        if(shippingCost==null) return 0
-        if(arr.voucher_kind=='amount'){
-          disc = arr.voucher_value
-        }else if(arr.voucher_kind=='percentage'){
-          disc = arr.voucher_value/100 * shippingCost
-        }
-        if(arr.max_discount!=null){
-          if(arr.max_discount < disc && arr.max_discount <= shippingCost) return arr.max_discount
-          else if(shippingCost < disc) return shippingCost
-        }
-        return disc
-      }
     }
-  }
+    updateBonus();
+  }, [carts]);
 
   const handleSubmit = async () => {
     let data = {
-      total_price: getTotalPrice(),
-      total_weight: getTotalWeight(),
+      total_price: getTotalPrice(carts),
+      total_weight: getTotalWeight(carts),
       shipping_fee: shippingCost,
       voucher_discount_amount: voucherValue,
       id_shipping_service: serviceId,
@@ -316,23 +216,24 @@ export default function CreateOrder() {
                           </div>
                           <div className="mt-1 flex text-sm">
                             <p className="text-gray-500">{item.weight} gr/item</p>
-                            {/* {product.size ? (
-                                <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">{product.size}</p>
-                            ) : null} */}
-                            {/* discount? */}
                           </div>
-                          {checkDiscount(item) ?
+                          {checkDiscount(item) == 'price' ?
                             <div>
                               <p className="mt-1 text-sm font-medium text-gray-900 line-through">
                                 {rupiah(item.product_price)}
                               </p>
                               <p className="mt-1 text-sm font-medium text-gray-900">
-                                {rupiah(showDiscount(item))}
+                                {rupiah(countDiscount(item))}
                               </p>
                             </div>
                             : 
                             <p className="mt-1 text-sm font-medium text-gray-900">
                               {rupiah(item.product_price)}
+                            </p>
+                          }
+                          {checkDiscount(item) == 'bonus_qty' &&
+                            <p className="mt-1 text-sm font-medium text-gray-900">
+                              Bonus item: {item.bonus_qty} pcs
                             </p>
                           }
                         </div>
@@ -370,14 +271,7 @@ export default function CreateOrder() {
                       Shipping Address
                   </label>
                   <div className="mt-1">
-                      <textarea
-                      id="address_detail"
-                      name="address_detail"
-                      readOnly
-                      rows={3}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                      defaultValue={detail}
-                      />
+                    {detail && <p className="text-gray-600 sm:text-sm">{detail}</p>}
                   </div>
               </div>
               <div>
@@ -426,11 +320,11 @@ export default function CreateOrder() {
                 
                 <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-600">Total Weight</dt>
-                    <dd className="text-sm font-medium text-gray-900">{getTotalWeight()} gr</dd>
+                    <dd className="text-sm font-medium text-gray-900">{getTotalWeight(carts)} gr</dd>
                 </div>
                 <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-600">Subtotal</dt>
-                    <dd className="text-sm font-medium text-gray-900">{rupiah(getTotalPrice())}</dd>
+                    <dd className="text-sm font-medium text-gray-900">{rupiah(getTotalPrice(carts))}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-600">Shipping Cost</dt>
@@ -445,7 +339,7 @@ export default function CreateOrder() {
                     Final Price
                   </dt>
                   <dd className="text-base font-medium text-gray-900">
-                    {rupiah(getTotalPrice() + (shippingCost || 0) - voucherValue)}
+                    {rupiah(getTotalPrice(carts) + (shippingCost || 0) - voucherValue)}
                   </dd>
                 </div>
               </dl>

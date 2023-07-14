@@ -1,5 +1,8 @@
 const db = require("../models");
 const users = db.User;
+const voucher = db.Voucher;
+const user_voucher = db.User_Voucher;
+const { Op } = require("sequelize");
 const admins = db.Admin;
 const branch = db.Store_Branch;
 const jwt = require("jsonwebtoken");
@@ -33,7 +36,7 @@ module.exports = {
             }
 
             if(req.file != undefined){
-                let imageUrl = req.protocol + "://" + req.get("host") + "/api/media/profiles/" + req.file.filename;
+                let imageUrl = process.env.API_URL + "/media/profiles/" + req.file.filename;
                 await users.update({name, gender, email, birthdate, profile_picture: imageUrl}, {where: {id: req.params.id}});
             }else{
                 await users.update({name, gender, email, birthdate}, {where: {id: req.params.id}});
@@ -55,5 +58,43 @@ module.exports = {
         const {rows} = resultBranchAdmin
         res.status(200).send({isError: false, message: "Get Admin Profile", data: resultBranchAdmin});
 
-    }
+    },
+
+    checkReferral: async (req, res) => {
+        try{
+            let findVoucher = await user_voucher.findOne({include: [{
+                model: voucher,
+                where: { voucher_type: 'referral code'},
+                required: true
+               }], where: { id_user: req.params.id_user} });
+            res.status(200).send({isError: false, message: "Successfully check user voucher", data: findVoucher});
+
+        } catch(error){
+            console.log(error);
+            res.status(404).send({isError: true, message: "Check user voucher failed"})
+        }
+    },
+
+    claimReferralVoucher: async (req, res) => {
+        try {          
+            let {referral_code} = req.body;
+            
+            let findReferral = await users.findOne({ where: { referral_code, id: {[Op.not]:req.params.id_user} } });
+            if (!findReferral){
+                return res.status(404).send({ isError: true, message: "Referral code not match" });
+            }
+
+            let findVoucher = await voucher.findOne({ where: { voucher_type: 'referral code' } });
+            if (!findVoucher){
+                return res.status(404).send({ isError: true, message: "No referral voucher currently available" });
+            }
+
+            let result = await user_voucher.create({is_used: 0, id_user: req.params.id_user, id_voucher: findVoucher.dataValues.id});
+            res.status(200).send({isError: false, message: "Referral voucher succesfully claimed", data: result});
+          
+        } catch (error) {
+            console.log(error);
+            res.status(404).send({isError: true, message: "Failed to claim referral voucher"})}
+    },
+
 }

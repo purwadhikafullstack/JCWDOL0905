@@ -100,6 +100,11 @@ export default function OrderHistory() {
                                                 {`${data.order_status.toUpperCase()}`}
                                             </div>
                                         }
+                                        {(data.order_status=='processed' || data.order_status=='shipped' || data.order_status=='done') &&
+                                            <div className="mt-1 text-green-600 font-bold">
+                                                {`${data.order_status.toUpperCase()}`}
+                                            </div>
+                                        }
                                         {data.order_status=='canceled' &&
                                             <div className="mt-1 text-red-400 font-bold">
                                                 {`${data.order_status.toUpperCase()}`}
