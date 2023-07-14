@@ -12,6 +12,9 @@ module.exports = {
       total_price: {
         type: Sequelize.INTEGER
       },
+      total_weight: {
+        type: DataTypes.INTEGER,
+      },
       shipping_fee: {
         type: Sequelize.INTEGER
       },
@@ -26,6 +29,36 @@ module.exports = {
       },
       order_status: {
         type: Sequelize.ENUM('waiting for payment', 'waiting for payment confirmation', 'processed', 'shipped', 'done', 'canceled')
+      },
+      branch_name: {
+        type: DataTypes.STRING,
+      },
+      branch_address: {
+        type: DataTypes.STRING,
+      },
+      branch_province: {
+        type: DataTypes.STRING,
+      },
+      branch_city: {
+        type: DataTypes.STRING,
+      },
+      branch_city_id: {
+        type: DataTypes.INTEGER,
+      },
+      address_label: {
+        type: DataTypes.STRING,
+      },
+      address_detail: {
+        type: DataTypes.STRING,
+      },
+      address_province: {
+        type: DataTypes.STRING,
+      },
+      address_city: {
+        type: DataTypes.STRING,
+      },
+      address_city_id: {
+        type: DataTypes.INTEGER,
       },
       createdAt: {
         allowNull: false,

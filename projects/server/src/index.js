@@ -43,9 +43,6 @@ app.use("/api/inventory", inventoryRouters);
 app.use("/api/admins", adminRouter);
 app.use("/api/discount", discountRouter);
 app.use("/api/voucher", voucherRouter)
-app.use("/api/products", express.static(__dirname + "/public/products"));
-app.use("/api/categories", express.static(__dirname + "/public/categories"));
-app.use("/api/media/profiles", express.static(__dirname + "/public/profiles"));
 
 // ===========================
 
@@ -88,7 +85,7 @@ app.listen(PORT, (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
-    // db.sequelize.sync({alter: true})
+    //db.sequelize.sync({alter: true})
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });

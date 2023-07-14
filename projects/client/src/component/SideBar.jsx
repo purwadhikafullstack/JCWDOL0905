@@ -48,7 +48,7 @@ const setSubMenuOpen = (index) => {
 };
 
   return (
-    <div ref={ref} className="fixed w-56 h-full bg-gray-800 text-gray-300 shadow-sm">
+    <div ref={ref} className="fixed w-56 h-full bg-gray-800 text-gray-300 shadow-sm z-10">
       <div className="flex justify-center mt-6 mb-14">
         <picture>
           <img

@@ -30,10 +30,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("percentage", "amount"),
         values: ["percentage", "amount"],
       },
-      voucher_code: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       voucher_value: {
         type: DataTypes.INTEGER,
         allowNull: false,

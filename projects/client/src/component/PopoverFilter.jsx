@@ -2,7 +2,11 @@ import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 
-export default function PopoverFilter({ children }) {
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
+
+export default function PopoverFilter({ positionClass = "right-0", children }) {
   return (
     <div>
       <Popover>
@@ -29,7 +33,7 @@ export default function PopoverFilter({ children }) {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className="absolute z-10 mt-3 w-screen max-w-sm transform px-4 sm:px-0 origin-top-right right-0">
+              <Popover.Panel className={classNames("absolute z-10 mt-3 w-screen max-w-sm transform px-4 sm:px-0 origin-top-right", positionClass)}>
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative grid gap-8 bg-white p-7">
                     {children}

@@ -13,6 +13,8 @@ import { setBranchId } from "../../redux/branchSlice";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 import pin from "../../assets/images/pin.png"
+import PromoBanner from "./PromoBanner";
+
 
 const LandingPage = () => {
   const dispatch = useDispatch();
@@ -99,16 +101,27 @@ const LandingPage = () => {
       />
       <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6 bg-neutral-100">
         <Carousel />
-        <Category/>
+        <Category />
+        <PromoBanner />
         <span className="inline-flex items-start">
           <img src={pin} alt="" className="self-center w-4 h-4 rounded-full mr-1" />
           <span>
-            {products.length>0 ? `${products[0].branch_name} (${products[0].city})` : ""}
+            {products.length > 0
+              ? `${products[0].branch_name} (${products[0].city})`
+              : ""}
           </span>
         </span>
         <br></br>
-        <span><strong className="text-lg font-bold sm:text-xl">Product Suggestion</strong>&emsp;<a href="/product" className="text-md sm:text-lg text-green-700">See All Products</a></span>
-        
+        <span>
+          <strong className="text-lg font-bold sm:text-xl">
+            Product Suggestion
+          </strong>
+          &emsp;
+          <a href="/product" className="text-md sm:text-lg text-green-700">
+            See All Products
+          </a>
+        </span>
+
         <Suggested productsData={products} />
       </div>
       <Footer />

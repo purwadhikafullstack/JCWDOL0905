@@ -322,15 +322,14 @@ export default function AddProductModal({ open, setOpen, onClose, categories}) {
                                             {...field}
                                             id="image"
                                             type="file"
-                                            className={`block w-full mr-2 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 ${
+                                            className={`block w-full mr-2 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 file:mr-8 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-100 file:text-green-500
+                                            hover:file:bg-green-100 ${
                                               form.errors.image &&
                                               form.touched.image
                                                 ? "ring-2 ring-red-600"
                                                 : ""
                                             }`}
-                                            // onChange={(event) => {
-                                            //   form.setFieldValue("image", event.currentTarget.files[0]);
-                                            // }}
+
                                           />
                                           <ErrorMessage
                                             name="image"

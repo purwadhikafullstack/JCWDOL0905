@@ -15,9 +15,6 @@ module.exports = {
       voucher_kind: {
         type: Sequelize.ENUM('percentage', 'amount')
       },
-      voucher_code: {
-        type: Sequelize.STRING
-      },
       voucher_value: {
         type: Sequelize.INTEGER
       },

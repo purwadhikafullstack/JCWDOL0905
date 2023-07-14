@@ -15,6 +15,18 @@ module.exports = {
       product_qty: {
         type: Sequelize.INTEGER
       },
+      product_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      product_image: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      weight: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

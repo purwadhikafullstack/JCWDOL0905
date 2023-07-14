@@ -55,10 +55,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT(10, 6),
         allowNull: false,
       },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+      }
     },
     {
       sequelize,
       modelName: "Store_Branch",
+      paranoid: true,
     }
   );
   return Store_Branch;

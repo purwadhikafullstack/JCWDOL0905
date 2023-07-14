@@ -8,20 +8,34 @@ import DeleteProductModal from "../../component/manageProduct/DeleteProductModal
 import AddProductModal from "../../component/manageProduct/AddProductModal";
 import EditProductModal from "../../component/manageProduct/EditProductModal";
 import Layout from "../../component/Layout";
+import { useSearchParams } from "react-router-dom";
 
 const ManageProduct = () => {
-  const [activePage, setActivePage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activePage, setActivePage] = useState(searchParams.get("page") || 1);
   const [totalPage, setTotalPage] = useState(1);
-  const [sort, setSort] = useState(1);
+  const [order, setOrder] = useState(searchParams.get("order") || "")
+  const [sort, setSort] = useState(searchParams.get("sort") || 'ASC');
+  const [search, setSearch] = useState("")
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [searchedProduct, setSearchedProduct] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchedProduct, setSearchedProduct] = useState(searchParams.get("name") || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState({})
+
+  useEffect(() => {
+    setSearchParams({ 
+      page: activePage,
+      sort: sort,
+      order: order,
+      category: selectedCategory,
+      name: searchedProduct
+    });
+  }, [activePage, sort, order, selectedCategory, searchedProduct]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -36,29 +50,15 @@ const ManageProduct = () => {
     
     async function fetchProducts() {
       try{
-        let url;
-        switch (parseInt(sort)) {
-          // sort by name A-Z
-          case 1:
-            url = `/product/?order=product_name&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
-            break;
-          // sort by name Z-A
-          case 2:
-            url = `/product/?order=product_name&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
-            break;
-          // sort by price L-H
-          case 3:
-            url = `/product/?order=product_price&sort=ASC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
-            break;
-          // sort by price H-L
-          case 4:
-            url = `/product/?order=product_price&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
-            break;
-          default:
-            url = `/product/?order=updatedAt&sort=DESC&name=${searchedProduct}&category=${selectedCategory}&page=${activePage}`;
-        }
-
-        const productsData = await api.get(url);
+        const productsData = await api.get('/product', {
+          params: {
+            order: order,
+            sort: sort,
+            name: searchedProduct,
+            category: selectedCategory,
+            page: activePage
+          }
+        });
         setProducts(productsData.data.data);
         setTotalPage(Math.ceil(productsData.data.count / 8));  
       } catch (error) {
@@ -66,7 +66,7 @@ const ManageProduct = () => {
       }
     }
     fetchProducts()
-  }, [selectedCategory, activePage, sort]);
+  }, [activePage, sort, order, selectedCategory, searchedProduct]);
 
   const openAddModal = () => {
     setAddModalOpen(true);
@@ -97,26 +97,20 @@ const ManageProduct = () => {
   };
 
   const handleSortChange = (e) => {
-    setSort(e.target.value);
+    const values = JSON.parse(e.target.value);
+    setSort(values.sort);
+    setOrder(values.order);
     setActivePage(1);
   };
-
+  const handleFilterCategory = (e) => {
+    setSelectedCategory(e.target.value)
+    setActivePage(1);
+  };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
     setActivePage(1);
-    setSort(1)
-      async function fetchProducts() {
-        try {
-          const productsData = await api.get(`/product/?category=${selectedCategory}&name=${searchedProduct}&order=product_name&sort=ASC&page=${activePage}`);
-          setProducts(productsData.data.data);
-          setTotalPage(Math.ceil(productsData.data.count / 8));
-       } catch (err) {
-        console.log(err)
-       }
-    }
-    fetchProducts()
+    setSearchedProduct(search)
   }};
-
   function formatIDR(price) {
     let idr = Math.round(price).toLocaleString("id-ID");
     return `Rp ${idr}`;
@@ -131,7 +125,7 @@ const ManageProduct = () => {
           <div className="flex justify-between items-center my-3 mb-8">
             <h2>Manage Product</h2>
             <button
-              className="bg-green-600 h-10 px-4 md:px-8 lg:px-8 text-white font-semibold rounded-md"
+              className="bg-green-500 h-10 px-4 md:px-8 lg:px-8 text-white font-semibold rounded-md hover:bg-green-600 active:bg-green-700"
               onClick={openAddModal}
             >
               Add Product
@@ -150,11 +144,11 @@ const ManageProduct = () => {
                 <input
                   id="search" type="search"
                   placeholder="Search product name"
-                  onChange={e => setSearchedProduct(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyDown={handleKeyDown} defaultValue={searchedProduct}
                   className="w-full rounded-md border-0 pl-10 pr-40 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-md sm:leading-6"
                 />
-                <select className="absolute right-0 bg-gray-100 right-0 rounded-r-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" onChange={(e) => setSelectedCategory(e.target.value)}>
+                <select className="absolute right-0 bg-gray-100 right-0 rounded-r-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" onChange={handleFilterCategory} value={selectedCategory}>
                 <option key="" value="">All Categories</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
@@ -163,21 +157,19 @@ const ManageProduct = () => {
                   ))}
                 </select>
               </div>
-
               <div className="flex mt-4 md:ml-8 md:mt-0 items-center">
                 <label className="block w-16 text-md font-medium leading-6 text-gray-900 mr-2 ">
                   Sort by:
                 </label>
                 <select
                   className="w-56 lg:w-60 rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500"
-                  id="filter"
-                  value={sort}
+                  id="filter" value={JSON.stringify({ order, sort })}
                   onChange={handleSortChange}
                 >
-                  <option value="1">Product Name A-Z</option>
-                  <option value="2">Product Name Z-A</option>
-                  <option value="3">Price Lowest-Highest</option>
-                  <option value="4">Price Highest-Lowest</option>
+                  <option value='{"order":"product_name","sort":"ASC"}'>Product Name A-Z</option>
+                  <option value='{"order":"product_name","sort":"DESC"}'>Product Name Z-A</option>
+                  <option value='{"order":"product_price","sort":"ASC"}'>Price Lowest-Highest</option>
+                  <option value='{"order":"product_price","sort":"DESC"}'>Price Highest-Lowest</option>
                 </select>
               </div>
             </div>
@@ -204,7 +196,7 @@ const ManageProduct = () => {
                     {product.product_description}</p>
 
                   <div className="items-end">
-                    <span className="text-lg font-bold text-green-600">
+                    <span className="text-lg font-bold text-green-500">
                       {formatIDR(product.product_price)}
                     </span>
                     <span className="ml-3 text-sm text-gray-400 my-1">

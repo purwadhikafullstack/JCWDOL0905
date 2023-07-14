@@ -8,5 +8,6 @@ router.get('/voucher/:id_user', auth, profileController.checkReferral)
 router.get('/:id', auth, profileController.getProfile)
 router.post('/voucher/:id_user', auth, profileController.claimReferralVoucher)
 router.patch('/:id', auth, multerUpload.single('file'), profileController.editProfile)
+router.get('/admin/:token', auth, profileController.getAdminProfile)
 
 module.exports = router

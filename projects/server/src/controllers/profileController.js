@@ -3,6 +3,10 @@ const users = db.User;
 const voucher = db.Voucher;
 const user_voucher = db.User_Voucher;
 const { Op } = require("sequelize");
+const admins = db.Admin;
+const branch = db.Store_Branch;
+const jwt = require("jsonwebtoken");
+const jwtKey = process.env.JWT_SECRET_KEY;
 
 module.exports = {
     getProfile: async (req, res) => {
@@ -43,6 +47,17 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(404).send({isError: true, message: "Edit profile failed"})}
+    },
+    getAdminProfile: async (req, res) => {
+        const admin = jwt.verify(req.params.token, jwtKey);
+
+        console.log(admin);
+        const resultBranchAdmin = await admins.findOne({ where: {id: admin.id_admin}, attributes: ["id", "admin_name", "email", "role", "id_branch"], include: [ { model: branch, attributes: ["branch_name", "address", "city", "province"], }, ] });
+
+        console.log(resultBranchAdmin, 'resultbranch');
+        const {rows} = resultBranchAdmin
+        res.status(200).send({isError: false, message: "Get Admin Profile", data: resultBranchAdmin});
+
     },
 
     checkReferral: async (req, res) => {
