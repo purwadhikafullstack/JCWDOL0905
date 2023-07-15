@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import pin from "../../assets/images/pin.png"
-import { getTotalPrice, getTotalWeight, checkDiscount, countDiscount, rupiah, showVoucher, calculateVoucher } from "../../function";
+import { getTotalPrice, getTotalWeight, checkDiscount, countDiscount, rupiah, showVoucher, calculateVoucher, checkProductVoucher } from "../../function";
 
 export default function CreateOrder() {
   const Navigate = useNavigate()
@@ -123,6 +123,7 @@ export default function CreateOrder() {
 
   useEffect(() => {
     async function updateBonus() {
+      setVoucher(checkProductVoucher(voucher, carts))
       for(let item of carts){
         if(item.bonus_qty > 0 && checkDiscount(item)!='bonus_qty'){
           try{
@@ -309,7 +310,6 @@ export default function CreateOrder() {
                           {voucher.map((data)=>{
                                 return(
                                     <option key={data.id} value={data.id}>
-                                      {`${data.voucher_code} - `}
                                       {showVoucher(data)}
                                     </option>
                                 )

@@ -7,6 +7,7 @@ const inventory = db.Inventory;
 const user_voucher = db.User_Voucher
 const jwt = require("jsonwebtoken");
 const jwtKey = process.env.JWT_SECRET_KEY;
+const { Op } = require('sequelize')
 
 module.exports = {
     cancelOrder: async (req, res) => {
@@ -67,4 +68,25 @@ module.exports = {
             console.log(error);
             res.status(404).send({isError: true, message: "Confirm receive order failed"})}
     },
+    updateStatus: async (req, res) => {
+        const t = await db.sequelize.transaction();
+        try{
+            let yesterday = new Date()
+            yesterday.setDate(yesterday.getDate() - 1)
+
+            let pastWeek = new Date()
+            pastWeek.setDate(pastWeek.getDate() - 7)
+
+            await trans_header.update({order_status: 'canceled'}, {where: { order_status: 'waiting for payment', updatedAt: {[Op.lt]: yesterday} }}, {transaction: t});
+            await trans_header.update({order_status: 'done'}, {where: { order_status: 'shipped', updatedAt: {[Op.lt]: pastWeek} }}, {transaction: t});
+
+            await t.commit()
+            res.status(200).send({isError: false, message: "Update status success"});
+
+        } catch(error){
+            console.log(error);
+            await t.rollback()
+            res.status(400).send({isError: true, message: "Update order status failed"})
+        }
+    }
 }

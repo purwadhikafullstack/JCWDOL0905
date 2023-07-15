@@ -9,5 +9,6 @@ router.patch('/accept/:id', auth, orderController.acceptPayment)
 router.patch('/reject/:id', auth, orderController.rejectPayment)
 router.patch('/ship/:id', auth, orderController.shipOrder)
 router.patch('/receive/:id', auth, orderController.receiveOrder)
+router.patch('/update', auth, orderController.updateStatus)
 
 module.exports = router

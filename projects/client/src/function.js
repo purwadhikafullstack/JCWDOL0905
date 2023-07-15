@@ -53,72 +53,52 @@ export function getTotalWeight(carts){
     return sum
 }
 
+export function checkProductVoucher(voucher, carts){
+  let arrVoucher = []
+  for(let data of voucher){
+    let product = false
+    if(data.voucher_type != 'product') arrVoucher.push(data)
+    else{
+      for(let item of carts){
+        if(item.id_inventory == data.id_inventory){
+          product = true
+          break
+        }
+      }
+      if(product) arrVoucher.push(data)
+    }
+  }
+
+  return arrVoucher
+}
+
 export function showVoucher(item){
     let text = ""
-    if(item.voucher_type=="total purchase"){
-      if(item.voucher_kind=='amount'){
-        text += `Voucher Discount ${rupiah(item.voucher_value)}. `
-      }else if(item.voucher_kind=='percentage'){
-        text += `Voucher Discount ${item.voucher_value}%. `
-      }
+    if(item.voucher_type == 'total purchase') text += 'Voucher Discount '
+    else if(item.voucher_type == 'referral code') text += 'Voucher Discount (Referral) '
+    else if(item.voucher_type == 'shipping') text += 'Voucher Shipping Cost '
+    else if(item.voucher_type == 'product') text += `Voucher Product ${item.product_name} `
 
-      if(item.max_discount!=null){
-        text += `Max Disc ${rupiah(item.max_discount)}. `
-      }
-      if(item.min_purchase_amount!=null){
-        text += `Min Purchase ${rupiah(item.min_purchase_amount)}. `
-      }
-      return text
-    }else if(item.voucher_type=="shipping"){
-      if(item.voucher_kind=='amount'){
-        text += `Voucher Shipping Cost ${rupiah(item.voucher_value)}. `
-      }else if(item.voucher_kind=='percentage'){
-        text += `Voucher Shipping Cost ${item.voucher_value}%. `
-      }
+    if(item.voucher_kind=='amount') text += `${rupiah(item.voucher_value)} `
+    else if(item.voucher_kind=='percentage') text += `${item.voucher_value}% `
 
-      if(item.max_discount!=null){
-        text += `Max Disc ${rupiah(item.max_discount)}. `
-      }
-      if(item.min_purchase_amount!=null){
-        text += `Min Purchase ${rupiah(item.min_purchase_amount)}. `
-      }
-      return text
-    }
+    if(item.max_discount!=null) text += `Max Disc ${rupiah(item.max_discount)}. `
+    if(item.min_purchase_amount!=null) text += `Min Purchase ${rupiah(item.min_purchase_amount)}. `
+    return text
 }
 
 export function calculateVoucher(shippingCost, voucher, voucherId, carts){
-    if(voucherId==0){
-      return 0
-    }else{
-      let disc = 0
-      let arr = voucher.find(x => x.id == voucherId)
-      if(arr.voucher_type == 'total purchase'){
-        if(arr.voucher_kind=='amount'){
-          disc = arr.voucher_value
-          if(arr.max_discount!=null){
-            if(arr.max_discount < disc) return arr.max_discount
-          }
-          return disc
-        }else if(arr.voucher_kind=='percentage'){
-          disc = arr.voucher_value/100 * getTotalPrice(carts)
-          if(arr.max_discount!=null){
-            if(arr.max_discount < disc) return arr.max_discount
-          }
-          return disc
-        }
-      }
-      else if(arr.voucher_type == 'shipping'){
-        if(shippingCost==null) return 0
-        if(arr.voucher_kind=='amount'){
-          disc = arr.voucher_value
-        }else if(arr.voucher_kind=='percentage'){
-          disc = arr.voucher_value/100 * shippingCost
-        }
-        if(arr.max_discount!=null){
-          if(arr.max_discount < disc && arr.max_discount <= shippingCost) return arr.max_discount
-          else if(shippingCost < disc) return shippingCost
-        }
-        return disc
-      }
-    }
+    if(voucherId==0) return 0
+    let disc = 0
+    let arr = voucher.find(x => x.id == voucherId)
+    let reference = getTotalPrice(carts)
+    if(arr.voucher_type == 'shipping') reference = shippingCost
+    else if(arr.voucher_type == 'product') reference = arr.product_price
+
+    if(arr.voucher_kind=='amount') disc = arr.voucher_value
+    else if(arr.voucher_kind=='percentage') disc = arr.voucher_value/100 * reference
+
+    if(arr.max_discount!=null && arr.max_discount < disc) disc = arr.max_discount
+    if(reference < disc) return reference
+    return disc
 }

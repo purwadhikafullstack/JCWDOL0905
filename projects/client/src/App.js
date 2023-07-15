@@ -113,6 +113,16 @@ function App() {
     if (token) {
       countCart()
     }
+
+    async function updateOrderStatus() {
+      try {
+        const response = await api.patch(`order/update`);
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    }
+    updateOrderStatus()
+
   },[])
 
   return (
