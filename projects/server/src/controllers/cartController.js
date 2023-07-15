@@ -23,7 +23,7 @@ module.exports = {
             join products on inventories.id_product = products.id
             left join discounts on discounts.id_inventory = inventories.id
             where id_user=${user.id_user}
-            ORDER BY carts.createdAt DESC;`;
+            ORDER BY carts.updatedAt DESC;`;
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({
