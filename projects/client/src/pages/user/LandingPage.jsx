@@ -5,8 +5,6 @@ import { Category } from "../../component/category";
 import Footer from "../../component/Footer";
 import Suggested from "../../component/ProductSuggestion";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { URL_GEO } from "../../helper";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsrLocation } from "../../redux/locationSlice";
 import { setBranchId } from "../../redux/branchSlice";
@@ -14,6 +12,7 @@ import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 import pin from "../../assets/images/pin.png"
 import PromoBanner from "./PromoBanner";
+import AlertDistance from "../../component/AlertDistance";
 
 
 const LandingPage = () => {
@@ -32,43 +31,11 @@ const LandingPage = () => {
   const currentLocation = { userLocation, userLat, userLng };
   const user = useSelector((state) => state.userSlice); 
   const branchId = useSelector((state) => state.branchSlice.branchId);
+  const token = localStorage.getItem("token")
 
   const [branchs, setBranch] = useState([]);
   const [address, setAddress] = useState([]);
   const [products, setProduct] = useState([]);
-
-  useEffect(() => {
-    function getLocation() {
-      navigator.geolocation.getCurrentPosition(
-        async function (position) {
-          const urlGetLocation = `${URL_GEO}&q=${position.coords.latitude}%2C+${position.coords.longitude}`;
-          const response = await axios.get(urlGetLocation);
-
-          dispatch(
-            setUsrLocation({
-              usrLat: position.coords.latitude,
-              usrLng: position.coords.longitude,
-              usrLocation:
-                response.data.results[0].components.city ||
-                response.data.results[0].components.county ||
-                response.data.results[0].components.municipality ||
-                response.data.results[0].formatted ||
-                "...",
-              usrLocation:
-                response.data.results[0].components.city ||
-                response.data.results[0].components.county ||
-                response.data.results[0].components.municipality ||
-                response.data.results[0].formatted ||
-                "...",
-            })
-          );
-        },
-        (error) => console.log(error),
-        { maximumAge: 5000, timeout: 5000, enableHighAccuracy: true }
-      );
-    }
-    getLocation();
-  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -103,24 +70,31 @@ const LandingPage = () => {
         <Carousel />
         <Category />
         <PromoBanner />
-        <span className="inline-flex items-start">
-          <img src={pin} alt="" className="self-center w-4 h-4 rounded-full mr-1" />
-          <span>
-            {products.length > 0
-              ? `${products[0].branch_name} (${products[0].city})`
-              : ""}
-          </span>
-        </span>
-        <br></br>
-        <span>
-          <strong className="text-lg font-bold sm:text-xl">
-            Product Suggestion
-          </strong>
-          &emsp;
-          <a href="/product" className="text-md sm:text-lg text-green-700">
-            See All Products
-          </a>
-        </span>
+        {products.length > 0 ?
+          <div>
+            <span className="inline-flex items-start">
+              <img src={pin} alt="" className="self-center w-4 h-4 rounded-full mr-1" />
+              <span>
+                {`${products[0].branch_name} (${products[0].city})`}
+              </span>
+            </span>
+
+            <br></br>
+
+            <span>
+              <strong className="text-lg font-bold sm:text-xl">
+                Product Suggestion
+              </strong>
+              &emsp;
+              <a href="/product" className="text-md sm:text-lg text-green-700">
+                See All Products
+              </a>
+            </span>
+          </div>:
+          <div>
+            <AlertDistance token={token}/>
+          </div>
+        }
 
         <Suggested productsData={products} />
       </div>

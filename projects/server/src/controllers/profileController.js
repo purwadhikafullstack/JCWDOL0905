@@ -27,9 +27,9 @@ module.exports = {
     editProfile: async (req, res) => {
         try {          
             let {name, gender, email, birthdate, prevEmail} = req.body;
-            if (!email){
-                return res.status(404).send({isError: true, message: "Please fill the required field (email)"});
-            }
+            if(!birthdate) birthdate = null
+            if (!email) return res.status(400).send({isError: true, message: "Please fill the required field (email)"});
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).send({isError: true, message: "Invalid email format"});
             let findEmail = await users.findOne({ where: { email: email } });
             if (findEmail && prevEmail!=email){
                 return res.status(404).send({ isError: true, message: "Email already registered" });
@@ -37,9 +37,11 @@ module.exports = {
 
             if(req.file != undefined){
                 let imageUrl = process.env.API_URL + "/media/profiles/" + req.file.filename;
-                await users.update({name, gender, email, birthdate, profile_picture: imageUrl}, {where: {id: req.params.id}});
+                if(!birthdate) await users.update({name, gender, email, birthdate: null, profile_picture: imageUrl}, {where: {id: req.params.id}});
+                else await users.update({name, gender, email, birthdate, profile_picture: imageUrl}, {where: {id: req.params.id}});
             }else{
-                await users.update({name, gender, email, birthdate}, {where: {id: req.params.id}});
+                if(birthdate) await users.update({name, gender, email, birthdate: null}, {where: {id: req.params.id}});
+                else await users.update({name, gender, email, birthdate}, {where: {id: req.params.id}});
             }
 
             res.status(200).send({isError: false, message: "Profile updated", data: req.body});

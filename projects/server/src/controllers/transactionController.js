@@ -55,12 +55,12 @@ module.exports = {
             }
 
             if(req.query.start){
-                start = `createdAt > '${req.query.start}'`
+                start = `createdAt >= '${req.query.start}'`
                 if(branch != "" || user != "") start = ` and ${start}`
             }
 
             if(req.query.end){
-                end = `createdAt < '${req.query.end}'`
+                end = `createdAt <= '${req.query.end}'`
                 if(branch != "" || user != "" || start != "") end = ` and ${end}`
             }
 
@@ -115,10 +115,14 @@ module.exports = {
 
     getItem: async (req, res) => {
         try {
-            const itemData = await trans_detail.findAll({where: {id_trans_header: req.params.id}});
-            if (!itemData) {
-                return res.status(400).send({code: 400, message: `Can't get item`})}
-            res.status(200).send({code: 200, message: "Get item success", data: itemData});
+            const [results] = await db.sequelize.query(
+                `select transaction_details.id, product_price, product_qty, product_name, product_image, weight, bonus_qty, id_inventory,
+                inventories.stock, inventories.id_branch, inventories.id_product
+                from transaction_details
+                join inventories on inventories.id = transaction_details.id_inventory
+                where id_trans_header = ${req.params.id} order by transaction_details.createdAt desc;`
+            );
+            res.status(200).send({code: 200, message: "Get item success", data: results});
 
         } catch (error) {
             console.log(error);
@@ -179,16 +183,10 @@ module.exports = {
                     {product_price, product_qty, bonus_qty, id_inventory, id_trans_header: order.dataValues.id, product_name, product_image, weight},
                     {transaction: t}
                 );
-                // await inventory.update({stock: stock - product_qty}, {where: { id: id_inventory }, transaction: t});
-                // await inventory_history.create({status: 'out', reference: 'sale', quantity: product_qty, id_inventory}, {transaction: t});
-
             }
 
             await carts.destroy({where: { id_user: user.id_user }}, {transaction: t});
-            if(id_user_voucher!=null){
-                await user_voucher.update({is_used: 1}, {where: { id: id_user_voucher }, transaction: t});
-            }
-
+            if(id_user_voucher!=null) await user_voucher.update({is_used: 1}, {where: { id: id_user_voucher }, transaction: t});
             await t.commit()
             res.status(200).send({isError: false, message: "Create new order success", data: order});
           

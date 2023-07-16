@@ -9,6 +9,7 @@ import Footer from "../../component/Footer";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../../redux/userSlice";
 import default_picture from "../../assets/images/default.jpg"
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 const EditProfile = () => {
   const token = localStorage.getItem("token")
@@ -19,15 +20,11 @@ const EditProfile = () => {
   const [errorEmail, setErrorEmail] = useState();
   const [profiles, setProfiles] = useState({});
   const [disableBtn, setDisableBtn] = useState(false)
+  const [message, setMessage] = useState()
   const Navigate = useNavigate();
   const dispatch = useDispatch
   const inputFileRef = useRef(null);
   const user = useSelector((state) => state.userSlice)
-
-  const onFileChange = (event) => {
-    setFile(event.target.files[0]);
-    setPreview(URL.createObjectURL(event.target.files[0]));
-  }
 
   useEffect(() => {
     async function fetchProfiles() {
@@ -56,7 +53,6 @@ const EditProfile = () => {
         }
         setEmail(profilesData.email);
       } catch (error) {
-        // toast.error(error.response.data.message);
         console.log(error.response.data.message)
       }
     }
@@ -105,14 +101,36 @@ const EditProfile = () => {
 
       setTimeout(() => {
         window.location.href = '/profile'
-      }, 1000);
+      }, 500);
     } catch (error) {
       toast.error(error.response.data.message);
     }
     setIsLoading(false);
   };
 
-  console.log("diss", disableBtn)
+  const onFileChange = (event) => {
+    setFile()
+    setMessage()
+    try{
+      if(event.target.files.length > 1) throw { message: 'Select 1 image only' }
+      if(event.target.files.length == 1){
+        let imageFile = event.target.files[0]
+        let type = imageFile.type
+
+        let checkType = false
+        if(type=='image/jpg' || type=='image/jpeg' || type=='image/png') checkType = true
+
+        if(!checkType) throw { message: 'Upload only image file with .jpg/.jpeg/.png type' }
+        if(imageFile.size > 1000000) throw { message: 'Max image size 1 MB' }
+
+        setFile(imageFile);
+        setPreview(URL.createObjectURL(event.target.files[0]));
+      }
+      
+    }catch (error){
+      setMessage(error.message)
+    }
+  }
 
   return (
     <>
@@ -141,9 +159,17 @@ const EditProfile = () => {
                 placeholder="Choose profile picture"
                 hidden
               />
-                <a href="#">
-                  <img className="rounded-full h-20 w-20" src={preview} onClick={()=> inputFileRef.current.click()}></img>
-                </a>
+                <button type="button">
+                  <img className="rounded-full h-20 w-20 hover:outline outline-1" src={preview} onClick={()=> inputFileRef.current.click()}></img>
+                  <div class="t-0 absolute left-12 bottom-1">
+                    <p class="flex h-7 w-7 items-center justify-center rounded-full bg-green-500 p-1 text-xs text-white hover:bg-green-600">
+                      <ArrowPathIcon className="rounded-full h-5 w-5" src={preview} onClick={()=> inputFileRef.current.click()}/>
+                    </p>
+                  </div>
+                </button>
+            </div>
+            <div className="text-red-700 text-xs font-semibold">
+              {message && message}
             </div>
           </div>
           <div className="mt-5">
@@ -225,9 +251,9 @@ const EditProfile = () => {
               <div className="flex w-full mt-10">
                 <button
                   type="submit"
-                  disabled={disableBtn}
+                  disabled={disableBtn || message}
                   onClick={handleSubmit}
-                  className="flex mt-2 items-center justify-center focus:outline-none text-white text-sm uppercase sm:text-base bg-green-500 hover:bg-green-600 rounded-2xl py-2 w-full transition duration-150 ease-in"
+                  className="flex mt-2 items-center justify-center focus:outline-none text-white text-sm uppercase sm:text-base bg-green-500 hover:bg-green-600 rounded-2xl py-2 w-full transition duration-150 ease-in disabled:opacity-25"
                 >
                   {isLoading ? "Loading..." : "Update"}
                 </button>

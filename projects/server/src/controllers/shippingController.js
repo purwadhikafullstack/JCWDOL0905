@@ -29,19 +29,19 @@ module.exports = {
 
     calculateCost: async (req, res) => {
         try {
-            let addressDetail = await axios.get(`http://localhost:8000/api/address/${req.body.addressId}`, {
+            let addressDetail = await axios.get(`${process.env.API_URL}/address/${req.body.addressId}`, {
                 'headers': {
                     'secret_key': process.env.SECRET_KEY
                 }
             })
 
-            let branchDetail = await axios.get(`http://localhost:8000/api/branch/${req.body.branchId}`, {
+            let branchDetail = await axios.get(`${process.env.API_URL}/branch/${req.body.branchId}`, {
                 'headers': {
                     'secret_key': process.env.SECRET_KEY
                 }
             })
 
-            let courierResponse = await axios.get(`http://localhost:8000/api/shipping/${req.body.serviceId}`, {
+            let courierResponse = await axios.get(`${process.env.API_URL}/shipping/${req.body.serviceId}`, {
                 'headers': {
                     'secret_key': process.env.SECRET_KEY
                 }

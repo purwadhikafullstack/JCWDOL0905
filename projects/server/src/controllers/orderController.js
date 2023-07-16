@@ -4,6 +4,7 @@ const carts = db.Cart
 const trans_header = db.Transaction_Header;
 const trans_detail = db.Transaction_Detail;
 const inventory = db.Inventory;
+const inventory_history = db.Inventory_History;
 const user_voucher = db.User_Voucher
 const jwt = require("jsonwebtoken");
 const jwtKey = process.env.JWT_SECRET_KEY;
@@ -22,7 +23,7 @@ module.exports = {
     uploadPayment: async (req, res) => {
         try {
             if(req.file != undefined){
-                let imageUrl = req.protocol + "://" + req.get("host") + "/api/media/payment/" + req.file.filename;
+                let imageUrl = `${process.env.API_URL}/media/payment/${req.file.filename}`;
                 await trans_header.update({payment_proof: imageUrl, order_status: 'waiting for payment confirmation'}, {where: {id: req.params.id}});
             }
 
@@ -51,13 +52,33 @@ module.exports = {
             res.status(404).send({isError: true, message: "Reject payment failed"})}
     },
     shipOrder: async (req, res) => {
+        const t = await db.sequelize.transaction();
         try {
-            await trans_header.update({order_status: 'shipped'}, {where: {id: req.params.id}});
+            const response = await axios.get(`${process.env.API_URL}/transaction/item/${req.params.id}`, {
+                'headers': {
+                    'secret_key': process.env.SECRET_KEY
+                }
+            });
+            const itemData = response.data.data;
+
+            for(let item of itemData){
+                let newStock = item.stock - item.product_qty - item.bonus_qty
+                if(newStock < 0) return res.status(400).send({isError: true, message: `The total quantity of ${item.product_name} products on the transaction exceeds the available stock`})
+                await inventory.update({stock: newStock}, {where: { id: item.id_inventory }}, {transaction: t});
+                await inventory_history.create({status: 'out', reference: 'sales', quantity: (item.product_qty + item.bonus_qty), id_inventory: item.id_inventory, current_stock: newStock}, {transaction: t});
+            }
+
+            //where carts > stock
+            
+            await trans_header.update({order_status: 'shipped'}, {where: {id: req.params.id}}, {transaction: t});
+            await t.commit()
             res.status(200).send({code: 200, message: "Shipping order success"});
 
         } catch (error) {
             console.log(error);
-            res.status(404).send({isError: true, message: "Shipping order failed"})}
+            await t.rollback()
+            res.status(404).send({isError: true, message: "Shipping order failed"})
+        }
     },
     receiveOrder: async (req, res) => {
         try {

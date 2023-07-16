@@ -187,13 +187,9 @@ module.exports = {
         where id_user = ${user.id_user}
         and is_used = 0
         and now() between vouchers.start_date and vouchers.end_date;`;
-    
 
         const [results] = await db.sequelize.query(query);
-        res.status(200).send({
-            message: "Successfully fetch user voucher",
-            results,
-        });
+        res.status(200).send({ message: "Successfully fetch user voucher", results });
 
     } catch (error) {
         console.log(error);

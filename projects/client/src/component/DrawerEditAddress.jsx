@@ -1,16 +1,12 @@
 import { useState, useEffect, Fragment } from "react";
-import axios from "axios";
 import { PROVINCE_LIST } from "../helper";
-import { useDispatch, useSelector } from "react-redux";
 import { api } from "../api/api";
 import toast, { Toaster } from "react-hot-toast";
 import { PencilSquareIcon, BackspaceIcon, ChevronLeftIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from '@headlessui/react'
-import { useNavigate } from "react-router-dom";
 
 export default function DrawerEditAddress(props) {
     const [open, setOpen] = useState(false);
-    const [province, setProvince] = useState([]);
     const [city, setCity] = useState([]);
     const [provinceId, setProvinceId] = useState(1);
     const [detail, setDetail] = useState({});
@@ -55,7 +51,6 @@ export default function DrawerEditAddress(props) {
                 is_main : document.getElementById("is_main").checked,
             }
 
-            
             if(data.address_detail == '' || data.label == ''){
                 throw({response: {data: {message: "Please fill all required fields"}}})
             }
@@ -70,9 +65,7 @@ export default function DrawerEditAddress(props) {
             document.getElementById("address_detail").value = "";
             document.getElementById("label").value = "";
 
-            setTimeout(() => {
-                window.location.href = '/address'
-            }, 200);
+            setTimeout(() => { window.location.href = '/address' }, 200);
         } catch (error) {
             toast.error(error.response.data.message);
         }
@@ -80,9 +73,7 @@ export default function DrawerEditAddress(props) {
 
     return (
         <>
-            <button class="font-medium flex-none mr-5">
-                <PencilSquareIcon className="h-5 w-5 fill-white stroke-blue-600" onClick={() => setOpen(true)}/>
-            </button>
+            <button class="font-medium flex-none mr-5"><PencilSquareIcon className="h-5 w-5 fill-white stroke-blue-600" onClick={() => setOpen(true)}/></button>
             <Transition.Root show={open} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={()=> {}}>
                     <div className="fixed inset-0" />
@@ -90,15 +81,7 @@ export default function DrawerEditAddress(props) {
                     <div className="fixed inset-0 overflow-hidden">
                     <div className="absolute inset-0 overflow-hidden">
                         <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-                        <Transition.Child
-                            as={Fragment}
-                            enter="transform transition ease-in-out duration-500 sm:duration-700"
-                            enterFrom="translate-x-full"
-                            enterTo="translate-x-0"
-                            leave="transform transition ease-in-out duration-500 sm:duration-700"
-                            leaveFrom="translate-x-0"
-                            leaveTo="translate-x-full"
-                        >
+                        <Transition.Child as={Fragment} enter="transform transition ease-in-out duration-500 sm:duration-700" enterFrom="translate-x-full" enterTo="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leaveFrom="translate-x-0" leaveTo="translate-x-full">   
                             <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
                             <form className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                                 <div className="h-0 flex-1 overflow-y-auto">
@@ -106,13 +89,9 @@ export default function DrawerEditAddress(props) {
                                     <div className="flex items-center justify-between">
                                     <Dialog.Title className="text-lg font-medium text-white">Update Address</Dialog.Title>
                                     <div className="ml-3 flex h-7 items-center">
-                                        <button
-                                        type="button"
-                                        className="rounded-md bg-green-700 text-green-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                        onClick={() => setOpen(false)}
-                                        >
-                                        <span className="sr-only">Close panel</span>
-                                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                        <button type="button" className="rounded-md bg-green-700 text-green-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white" onClick={() => setOpen(false)}>
+                                            <span className="sr-only">Close panel</span>
+                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
                                     </div>
                                     </div>
@@ -149,9 +128,7 @@ export default function DrawerEditAddress(props) {
                                             </div>
                                         </div>
                                         <div>
-                                            <label htmlFor="province" className="block text-sm font-medium text-gray-900">
-                                                Province
-                                            </label>
+                                            <label htmlFor="province" className="block text-sm font-medium text-gray-900">Province</label>
                                             <div className="mt-1">
                                                 <select
                                                 name="province"
@@ -169,9 +146,7 @@ export default function DrawerEditAddress(props) {
                                         </div>
                                         
                                         <div>
-                                            <label htmlFor="project-name" className="block text-sm font-medium text-gray-900">
-                                                City
-                                            </label>
+                                            <label htmlFor="project-name" className="block text-sm font-medium text-gray-900">City</label>
                                             <div className="mt-1">
                                                 <select
                                                 name="city"
@@ -208,20 +183,8 @@ export default function DrawerEditAddress(props) {
                                 </div>
                                 </div>
                                 <div className="flex flex-shrink-0 justify-end px-4 py-4">
-                                <button
-                                    type="button"
-                                    className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                    onClick={() => setOpen(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleSubmit()}
-                                    className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                >
-                                    Update
-                                </button>
+                                <button type="button" className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setOpen(false)}>Cancel</button>
+                                <button type="button" onClick={() => handleSubmit()} className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">Update</button>
                                 </div>
                             </form>
                             </Dialog.Panel>

@@ -157,6 +157,9 @@ export default function DetailOrder() {
                                 Bonus item: {data.bonus_qty} pcs
                               </p>
                             }
+                            <div className="mt-4 flex text-sm">
+                              <p className="text-gray-500">Stock: {data.stock}</p>
+                            </div>
                           </div>
                         </div>
                       </li>
