@@ -48,9 +48,9 @@ module.exports = {
             let provinceData = provinceList.find(province => province.province_id == provinceId)
             let province = provinceData.province
 
-            let response = await axios.get(`http://localhost:8000/api/city/${cityId}`, {
+            let response = await axios.get(`${process.env.API_URL}/city/${cityId}`, {
                 'headers': {
-                    'secret_key': 'apahayo'
+                    'secret_key': `${process.env.SECRET_KEY}`
                 }
             })
             city = response.data.data.city_name
@@ -94,9 +94,9 @@ module.exports = {
             let provinceData = provinceList.find(province => province.province_id == provinceId)
             let province = provinceData.province
 
-            let response = await axios.get(`http://localhost:8000/api/city/${cityId}`, {
+            let response = await axios.get(`${process.env.API_URL}/city/${cityId}`, {
                 'headers': {
-                    'secret_key': 'apahayo'
+                    'secret_key': `${process.env.SECRET_KEY}`
                 }
             })
             city = response.data.data.city_name

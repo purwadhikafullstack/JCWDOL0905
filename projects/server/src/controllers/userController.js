@@ -34,7 +34,7 @@ module.exports = {
         referralCode = generateRandomReferralCode(10);
         isUnique = await checkReferralCodeUniqueness(referralCode)}
       const result = await users.create({name, email, password: hashPass, phone_number, referral_code: referralCode});
-      const token = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey);
+      const token = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey, { expiresIn: '1h' });
       await tokens.create({id_user: result.id, token: token, token_type: "VERIFICATION"});
       const url = `${client_url}/verify?id_user=${result.id}&token=${token}`;
       const message = `<p>Click this link to verify: <a href='${url}'>${url}</a></p>`;
@@ -49,10 +49,11 @@ module.exports = {
       const tokenData = await tokens.findOne({where: {token: token}});
       if (!tokenData) {
         return res.status(400).send({ code: 400, message: "Invalid or expired token" })}
-      const [affectedRows] = await users.update({ is_verified: 1 },{where: {id: id_user}}) 
+      const checkTokenValidity = jwt.verify(token, jwtKey);
+      const [affectedRows] = await users.update({ is_verified: 1 },{where: {id: checkTokenValidity.id_user}}) 
       if (affectedRows === 0) {
         return res.status(404).send({ code: 404, message: `User not found with id : ${id_user}` })}
-      const deletedRows = await tokens.update({token: null, token_type: null}, {where: {id_user: id_user}});
+      const deletedRows = await tokens.update({token: null, token_type: null}, {where: {id_user: checkTokenValidity.id_user}});
       if (deletedRows === 0) {
         return res.status(404).send({ code: 404, message: "Token is not found" });}
       res.status(200).send({code: 200, message: "Verification success"});
@@ -66,7 +67,7 @@ module.exports = {
       let result = await users.findOne({where: {email: email}});
       if (!result)
         return res.status(404).send({message: "Email doesn't exist"});
-      const newToken = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey)
+      const newToken = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey, { expiresIn: '1h' })
       const [affectedRows] = await tokens.update({ token: newToken, token_type: "VERIFICATION" },{where: {id_user: result.id}})
       if (affectedRows === 0) {
         return res.status(404).send({code: 404, message: `Token for that email is not found, maybe the token already used ,try login `})}
@@ -89,7 +90,7 @@ module.exports = {
         if (err) {
           res.status(404).send({isError: true, message: "Login failed when comparing password"});
         } else if (result) {
-          const token = jwt.sign({id_user: resultUser.id, name: resultUser.name, email: resultUser.email, is_verified: resultUser.is_verified}, jwtKey)
+          const token = jwt.sign({id_user: resultUser.id, name: resultUser.name, email: resultUser.email, is_verified: resultUser.is_verified}, jwtKey, { expiresIn: '1h' })
           await tokens.update({token: token, token_type: "ACCESS_TOKEN"}, {where: {id_user: resultUser.id}});
           delete resultUser.dataValues.password;
           res.status(200).send({isError: false, message: "Login Success", data: {access_token: token, id_user: resultUser.id, user : resultUser}});
@@ -105,7 +106,7 @@ module.exports = {
       let result = await users.findOne({where: {email: email}});
       if (!result)
         return res.status(404).send({message: "Email doesn't exist"});
-      const newToken = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey);      
+      const newToken = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey, { expiresIn: '1h' });      
       await tokens.update({token: newToken, token_type: "FORGOT_PASSWORD"}, {where: {id_user: result.id}});
       const url = `${client_url}/verify-forgot-password?id_user=${result.id}&token=${newToken}`;
       const message = `<p>Click this link to reset password: <a href='${url}'>${url}</a></p>`;
@@ -120,7 +121,7 @@ module.exports = {
       let result = await users.findOne({where: {email: email}});
       if (!result)
         return res.status(404).send({message: "Email doesn't exist"});
-      const newToken = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey)
+      const newToken = jwt.sign({ id_user: result.id, name: result.name, email: result.email }, jwtKey, { expiresIn: '1h' })
       const [affectedRows] = await tokens.update({ token: newToken, token_type: "FORGOT_PASSWORD" },{where: {id_user: result.id}})
       if (affectedRows === 0) {
         return res.status(404).send({code: 404, message: `Token for user id : ${id_user} is not found`})}
@@ -135,8 +136,10 @@ module.exports = {
     const { id_user, token } = req.params;
     try {
       const tokenData = await tokens.findOne({where: {token: token}});
+      const checkTokenValidity = jwt.verify(token, jwtKey);
+      console.log(checkTokenValidity, 'check token validity forgot pw')
       if (!tokenData) {
-        return res.status(400).send({code: 400, message: `Invalid or expired token for id user : ${id_user}`})}
+        return res.status(400).send({code: 400, message: `Invalid or expired token for id user`})}
       res.status(200).send({code: 200, message: "Verification success"});
     } catch (err) {
       console.log(err);
@@ -167,7 +170,9 @@ module.exports = {
   },
   getUserByToken: async (req, res) => {
     try {
-      const user = jwt.verify(req.params.token, jwtKey);
+      let bearerToken = req.headers['authorization'];
+      bearerToken = bearerToken.split(' ')[1]
+      const user = jwt.verify(bearerToken, jwtKey);
       const getUser = await users.findOne({where: {id: user.id_user}})
       res.send({code: 200, message: "Get user by token success", user: getUser})
     } catch(error){

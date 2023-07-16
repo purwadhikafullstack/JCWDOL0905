@@ -25,7 +25,7 @@ module.exports = {
         if (err) {
           res.status(404).send({ isError: true, message: "Login failed when comparing password", });
         } else if (result) {
-          const token = jwt.sign( { id_admin: resultAdmin.id, email: resultAdmin.email, role: resultAdmin.role, }, jwtKey );
+          const token = jwt.sign( { id_admin: resultAdmin.id, email: resultAdmin.email, role: resultAdmin.role, }, jwtKey, { expiresIn: '1h' });
           await admins.update( { token_admin: token }, { where: { id: resultAdmin.id } } );
           let getAdmin = await admins.findOne({ where: { id: resultAdmin.id }, });
           delete getAdmin.dataValues.password;
@@ -100,7 +100,9 @@ module.exports = {
   },
   getAdminByToken: async (req, res) => {
     try {
-      const admin = jwt.verify(req.params.token, jwtKey);
+      let bearerToken = req.headers['authorization'];
+      bearerToken = bearerToken.split(' ')[1]
+      const admin = jwt.verify(bearerToken, jwtKey);
       const getAdmin = await admins.findOne({ where: { id: admin.id_admin } });
       res.send({ code: 200, message: "Get admin by token success", admin: getAdmin, });
     } catch (error) {

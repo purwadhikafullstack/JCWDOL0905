@@ -6,87 +6,55 @@ import {
   TruckIcon,
 } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import VoucherImg from "../../assets/images/voucher-illustration2.png";
-// import default_picture from "../assets/images/default.jpg"
+import { useSelector } from "react-redux";
+import { api } from "../../api/api";
+import { toast } from "react-hot-toast";
 
-const vouchers = [
-  {
-    id: 1,
-    voucher_type: "product",
-    voucher_kind: "amount",
-    // voucher_code: "ABC",
-    voucher_value: 5000,
-    max_discount: null,
-    min_purchase_amount: null,
-    start_date: "2023-06-19 17:00:00",
-    end_date: "2023-07-18 17:00:00",
-    id_inventory: 1,
-    product_name: "Daging Sapi Impor Giling"
-  },
-  {
-    id: 2,
-    voucher_type: "shipping",
-    voucher_kind: "percentage",
-    // voucher_code: "FREEONGKIR",
-    voucher_value: 100,
-    max_discount: null,
-    min_purchase_amount: 50000,
-    start_date: "2023-06-19 17:00:00",
-    end_date: "2023-07-25 17:00:00",
-    id_inventory: null,
-    product_name: null
-  },
-  {
-    id: 3,
-    voucher_type: "total purchase",
-    voucher_kind: "percentage",
-    // voucher_code: "PROMO77",
-    voucher_value: 10,
-    max_discount: 20000,
-    min_purchase_amount: 100000,
-    start_date: "2023-06-19 17:00:00",
-    end_date: "2023-08-01 17:00:00",
-    id_inventory: null,
-    product_name: null
-  },
-  {
-    id: 4,
-    voucher_type: "shipping",
-    voucher_kind: "amount",
-    // voucher_code: "FREESHIP30K",
-    voucher_value: 30000,
-    max_discount: null,
-    min_purchase_amount: 200000,
-    start_date: "2023-06-19 17:00:00",
-    end_date: "2023-07-25 17:00:00",
-    id_inventory: null,
-    product_name: null
-  },
-];
-
-const user_vouchers = [
-  {
-    id_voucher: 1,
-    is_used: 0
-  },
-  {
-    id_voucher: 2,
-    is_used: 1
-  },
-]
 export default function Voucher() {
   const [userClaimedVouchers, setUserClaimedVouchers] = useState([]);
-  const navigate = useNavigate()
+  const {id} = useSelector((state) => state.userSlice)
+  const [userVouchers, setUserVouchers] = useState([])
+  const [vouchers, setVouchers] = useState([])
+
+  const getUserClaimedVoucher = async () => {
+    const response = await api.get(`voucher/claimed/${id}`)
+    setUserVouchers(response.data.data)
+  }
+
+  const getUserAllVoucher = async () => {
+    const response = await api.get(`voucher/claimable/${id}`)
+    setVouchers(response.data.data)
+  }
+
+  const refreshVoucherList = () => {
+    getUserClaimedVoucher()
+    getUserAllVoucher()
+  }
+
+  const postClaimVoucher = async (voucherId) => {
+    try{
+      const response = await api.post(`voucher/claim`,  {userId: id, voucherId: voucherId})
+      toast.success(response.data.message)
+      refreshVoucherList()
+    }catch(error){
+      toast.error(error.response.data.message);
+    }
+  }
+
+
 
   useEffect(() => {
+    refreshVoucherList()
     // Fetch the user's claimed vouchers from the `user_vouchers` array
-    const claimedVouchers = user_vouchers
-      .filter((voucher) => voucher.is_used === 0)
-      .map((voucher) => voucher.id_voucher);
-
-    setUserClaimedVouchers(claimedVouchers);
   }, []);
+
+  useEffect(() => {
+    const claimedVouchers = userVouchers
+    .filter((voucher) => voucher.is_used === 0)
+    .map((voucher) => voucher.id_voucher);
+    setUserClaimedVouchers(claimedVouchers);
+  }, [userVouchers])
 
     function formatIDR(price) {
         if (price !== null) {
@@ -98,6 +66,12 @@ export default function Voucher() {
     function formattedDate(date) {
         return moment(date).format("DD-MM-YYYY");
       }
+
+  const handleClaimVoucher = (voucherId) => {
+    console.log('claimed id', voucherId);
+    postClaimVoucher(voucherId)
+    
+  }
 
   return (
     <div className="bg-neutral-100 min-h-screen">
@@ -121,7 +95,7 @@ export default function Voucher() {
           {vouchers.map((voucher) => {
             
             const isVoucherClaimed = userClaimedVouchers.includes(voucher.id);
-        const isVoucherUsed = user_vouchers.find(
+        const isVoucherUsed = userVouchers.find(
           (userVoucher) => userVoucher.id_voucher === voucher.id && userVoucher.is_used === 1
         );
 
@@ -163,9 +137,12 @@ export default function Voucher() {
                   {voucher.max_discount ? 
                     <div className="text-md font-semibold text-gray-700">UP TO {formatIDR(voucher.max_discount)}</div> : <></>
                     }
-                    {voucher.min_purchase_amount ? 
-                    <div className="text-sm font-semibold text-gray-500">min. purchase {formatIDR(voucher.min_purchase_amount)}</div> : <></>
-                    }
+                    {voucher.Statuses === 'NOT_CLAIMABLE_TXN' && (
+                      <div className="text-sm font-semibold text-gray-500">Spend at least {formatIDR(voucher.min_purchase_amount)} first to be able to claim this voucher</div>
+                    )}
+                    {voucher.Statuses === 'NOT_CLAIMABLE_COUNT' && (
+                      <div className="text-sm font-semibold text-gray-500">Do minimum 3x transaction to get this voucher</div>
+                    )}
                     {voucher.voucher_type === "product" ? 
                     <div className="text-sm font-semibold text-gray-500">on purchase: {voucher.product_name}</div> : <></>
                     } 
@@ -180,19 +157,27 @@ export default function Voucher() {
                   {isVoucherClaimed ? 
                   <button
                   className="m-1 mr-5 w-20 h-8 border border-green-500 hover:border-green-600 text-md font-bold text-green-500 active:border-green-700 rounded-md "
-                  onClick={() => navigate("/")}
                 >
-                  Use
+                  Claimed
                 </button>
-                  : 
-                  <button
-                      className="m-1 mr-5 w-20 h-8 bg-green-500 hover:bg-green-600 text-md font-bold text-white active:bg-green-700 rounded-md"
-                      // onClick={() => claim(voucher)}
-                    >
-                      Claim
-                    </button>}
-                    
-                    
+                  :
+                  <>
+                   {voucher["Statuses"] === "CLAIMABLE" ? (
+                    <button
+                    className="m-1 mr-5 w-20 h-8 bg-green-500 hover:bg-green-600 text-md font-bold text-white active:bg-green-700 rounded-md"
+                    onClick={() => handleClaimVoucher(voucher.id)}
+                  >
+                    Claim
+                  </button>
+                  ) : (
+                    <button
+                    className="m-1 mr-5 w-20 h-16 border border-green-500 hover:border-green-600 text-md font-bold text-green-500 active:border-green-700 rounded-md "
+                  >
+                    Not Claimable
+                  </button>
+                  )}
+                  </>
+                  }
                   </div>
                 </div>
               </div>
