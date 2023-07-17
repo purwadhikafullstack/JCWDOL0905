@@ -29,6 +29,7 @@ export default function Delivered(props) {
 
         localStorage.setItem("address", addressData[index].city);
         setLocation(addressData[index].city)
+        Navigate('/')
     }
 
     useEffect(() => {
@@ -39,13 +40,14 @@ export default function Delivered(props) {
 
             if(localStorage.getItem("branchId")==undefined) sortBranch(userLocation.latitude, userLocation.longitude, branchsData)
             if(branchId==0)setBranchId(localStorage.getItem("branchId"))
-            if(localStorage.getItem("address")==undefined) localStorage.setItem("address", userLocation.position);
+            if(localStorage.getItem("address")==undefined || localStorage.getItem("address")=='undefined'){localStorage.setItem("address", userLocation.position);}
+            Navigate('/')
           }catch(error){
             console.log("Set branch failed");
           }
         }
         setStoreBranchId();
-    }, [branchId, addressData, branchsData]);
+    }, [branchId, addressData, branchsData, userLocation]);
 
     useEffect(() => {
         function getLocation() {
@@ -80,7 +82,7 @@ export default function Delivered(props) {
                                 <span className="inline-flex items-start">
                                     <img src={pin} alt="" className="self-center w-4 h-4 rounded-full mr-1" />
                                     <span>
-                                        Delivered to <b>{location ? location : userLocation.position}</b> &nbsp;&nbsp;
+                                        Delivered to <b>{location=='undefined' || !location ? userLocation.position : location}</b> &nbsp;&nbsp;
                                         <button>
                                             <img onClick={() => setOpen(true)} src={chevrondown} alt="" className="self-center w-3 h-3 rounded-full mx-1" />
                                         </button>
@@ -168,18 +170,10 @@ export default function Delivered(props) {
                                 {addressData.length > 0 &&
                                     <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                                         <div className="flex justify-end space-x-3">
-                                            <button
-                                            type="button"
-                                            className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                            onClick={() => setOpen(false)}
-                                            >
-                                            Cancel
+                                            <button type="button" className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setOpen(false)}>
+                                                Cancel
                                             </button>
-                                            <button
-                                                type="button"
-                                                className="inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                                onClick={() => setAddress()}
-                                                >
+                                            <button type="button" className="inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setAddress()}>
                                                 Save
                                             </button>
                                         </div>

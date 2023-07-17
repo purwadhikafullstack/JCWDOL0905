@@ -23,6 +23,7 @@ export default function UserOrder(props) {
             let start = searchParams.get("start")
             let end = searchParams.get("end")
             let status = searchParams.get("status")
+            let order_id = searchParams.get("order_id")
             let price = searchParams.get("price")
             let date = searchParams.get("date")
             let url = ''
@@ -30,6 +31,7 @@ export default function UserOrder(props) {
             if(start) url += `&start=${start}`
             if(end) url += `&end=${end}`
             if(status) url += `&status=${status}`
+            if(order_id) url += `&order_id=${order_id}`
             if(price) url += `&price=${price}`
             if(date) url += `&start=${date}`
 
@@ -61,6 +63,9 @@ export default function UserOrder(props) {
                         <thead>
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                 <th class="px-6 py-4 font-bold">
+                                    Id
+                                </th>
+                                <th class="px-6 py-4 font-bold">
                                     Order Date
                                 </th>
                                 <th class="px-6 py-4 font-bold">
@@ -80,6 +85,11 @@ export default function UserOrder(props) {
                         {order.map((data) => (
                             <tbody>
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <td class="px-6 py-4">
+                                        <div className="mt-1">
+                                            {data.id}
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div className="mt-1 italic">
                                             {`${data.createdAt.slice(0, 10)} (${data.createdAt.slice(11, 16)})`}
@@ -134,27 +144,29 @@ export default function UserOrder(props) {
                         ))}
                     </table>
                 </div>
-                <div className="flex justify-center text-center items-center mt-5">
-                    <button
-                        disabled={page === 1}
-                        onClick={() => setPage(page-1)}
-                        type="button"
-                        className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
-                        <ChevronLeftIcon className="w-5 h-5" />
-                    </button>
-                    <span className="mx-3 items-center justify-center">
-                        {`Page ${page} of ${totalPages}`}
-                    </span>
-                    <button
-                        disabled={page >= totalPages}
-                        type="button"
-                        onClick={() => setPage(page+1)}
-                        className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
-                        <ChevronRightIcon className="w-5 h-5" />
-                    </button>
-                </div>
+                {totalPages>0 &&
+                    <div className="flex justify-center text-center items-center">
+                        <button
+                            disabled={page === 1}
+                            onClick={() => setPage(page-1)}
+                            type="button"
+                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        >
+                            <ChevronLeftIcon className="w-5 h-5" />
+                        </button>
+                        <span className="mx-3 items-center justify-center">
+                            {`Page ${page} of ${totalPages}`}
+                        </span>
+                        <button
+                            disabled={page >= totalPages}
+                            type="button"
+                            onClick={() => setPage(page+1)}
+                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        >
+                            <ChevronRightIcon className="w-5 h-5" />
+                        </button>
+                    </div>
+                }
             </div>
             <Footer/>
         </>

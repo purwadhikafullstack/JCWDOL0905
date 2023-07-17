@@ -1,13 +1,5 @@
 import NavBar from "../../component/NavBar";
 import Footer from "../../component/Footer";
-import {
-  CheckIcon,
-  ClockIcon,
-  QuestionMarkCircleIcon,
-  XMarkIcon,
-  PlusIcon,
-  MinusIcon,
-} from "@heroicons/react/20/solid";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
@@ -19,6 +11,8 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import CancelOrderModal from "../../component/CancelOrderModal";
 import UploadPaymentModal from "../../component/UploadPaymentModal";
 import ReceiveOrderModal from "../../component/ReceiveOrderModal";
+import { rupiah, showVoucher } from "../../function";
+import OrderInformation from "../../component/OrderInformation";
 
 export default function OrderDetail() {
   const id = useParams().id;
@@ -29,7 +23,6 @@ export default function OrderDetail() {
   const token = localStorage.getItem("token");
   const [carts, setCarts] = useState([]);
   const [order, setOrder] = useState({});
-  const [detail, setDetail] = useState("");
   const [item, setItem] = useState([]);
   const [timer, setTimer] = useState();
   const dispatch = useDispatch();
@@ -41,11 +34,7 @@ export default function OrderDetail() {
         const orderData = response.data.data;
         let countdown = new Date(orderData.updatedAt)
         countdown.setDate(countdown.getDate() + 1)
-
-        if(user.id != orderData.id_user){
-          Navigate('/404')
-        }
-
+        if(user.id != orderData.id_user){Navigate('/404')}
         try{
           const response = await api.get(`transaction/item/${id}`);
           const itemData = response.data.data;
@@ -53,8 +42,6 @@ export default function OrderDetail() {
         }catch(error){
           toast.error(error.response.data.message);
         }
-
-        setDetail(`${orderData.address_label} - ${orderData.address_detail} - ${orderData.address_city} - ${orderData.address_province}`)
         setOrder(orderData);
         setTimer(countdown)
       } catch (error) {
@@ -65,32 +52,16 @@ export default function OrderDetail() {
     fetchData();
   }, [user]);
 
-  const rupiah = (number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(number);
-  };
-
-  const TimerEnd = () => <span>Canceled</span>;
-
   const renderer = ({ hours, minutes, seconds, completed }) => {
-    if (completed) {
-      cancelOrder()
-      // return <TimerEnd />;
-    } else {
+    if (completed) {cancelOrder()}
+    else {
       let h = hours.toString()
       let m = minutes.toString()
       let s = seconds.toString()
       if(h.length==1) h = "0" + h
       if(m.length==1) m = "0" + m
       if(s.length==1) s = "0" + s
-      return (
-        <p>
-          Time Remaining: {h}:{m}:{s}
-        </p>
-      );
-    }
+      return (<p> Time Remaining: {h}:{m}:{s} </p>);}
   };
 
   const cancelOrder = async() => {
@@ -98,9 +69,7 @@ export default function OrderDetail() {
       const response = await api.patch(`order/cancel/${id}`)
       toast.success(response.data.message)
       window.location.href = `/order/${id}`
-    }catch(error){
-      toast.error(error.response.data.message);
-    }
+    }catch(error){toast.error(error.response.data.message);}
   }
 
   return (
@@ -122,20 +91,13 @@ export default function OrderDetail() {
                   <h2 id="cart-heading" className="sr-only">
                     Items in your shopping cart
                   </h2>
-                  
                   {order.order_status && <p>Status: <b>{order.order_status.toUpperCase()}</b></p> }
-
                     {order.order_status=='waiting for payment' && timer != null &&
                       <div>
                           <div className="shadow-md outline outline-offset-2 outline-gray-500 mx-2 my-2">
-                          <p className="mx-1 my-1">Please pay <b>{rupiah(order.final_price)}</b> to:</p>
-                          
+                          <p className="mx-1 my-1">Please pay <b>{rupiah(order.final_price)}</b> to:</p>      
                           <span className="inline-flex items-start px-1 py-1">
-                              <img
-                              src={'https://img1.pngdownload.id/20180802/rpw/kisspng-bank-central-asia-logo-bca-finance-business-logo-bank-central-asia-bca-format-cdr-amp-pn-5b63687e24d811.5430623715332414701509.jpg'}
-                              alt=""
-                              className="self-center h-10 rounded-full mr-1"
-                              />
+                              <img src={'https://img1.pngdownload.id/20180802/rpw/kisspng-bank-central-asia-logo-bca-finance-business-logo-bank-central-asia-bca-format-cdr-amp-pn-5b63687e24d811.5430623715332414701509.jpg'} alt="" className="self-center h-10 rounded-full mr-1"/>
                               <span className="self-center"><b>{'1234 5678 90'}</b></span>
                           </span>
                           <p className="px-1 py-1">{' a/n '}<b>{'PT Groceria'}</b></p>
@@ -143,26 +105,19 @@ export default function OrderDetail() {
                         <Countdown date={timer} renderer={renderer}/>
                       </div>
                     }
-
                     {order.order_status=='waiting for payment' &&
                       <div className="mt-6 flex">
                         <UploadPaymentModal id={id}/>
                       </div>
                     }
-                    
                     {order.order_status=='shipped' &&
                       <div className="mt-6">
                         <ReceiveOrderModal id={id}/>
                       </div>
                     }
                     
-
                   <p className="mt-5 font-bold">Item List</p>
-
-                  <ul
-                    role="list"
-                    className="divide-y divide-gray-200 border-t border-b border-gray-200"
-                  >
+                  <ul role="list" className="divide-y divide-gray-200 border-t border-b border-gray-200">
                     {item.map((data) => (
                       <li key={data.id} className="flex py-6 sm:py-10">
                         <div className="flex-shrink-0">
@@ -224,39 +179,7 @@ export default function OrderDetail() {
                   </h2>
 
                   <dl className="mt-6 space-y-4">
-                  <div>
-                      <label htmlFor="description" className="block text-sm font-medium text-gray-900">
-                          Shipping Address
-                      </label>
-                      <div className="mt-1">
-                        <p className="text-gray-600 sm:text-sm">{detail}</p>
-                      </div>
-                  </div>
-                    
-                    <div className="flex items-center justify-between">
-                        <dt className="text-sm text-gray-600">Total Weight</dt>
-                        <dd className="text-sm font-medium text-gray-900">{order.total_weight} gr</dd>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="text-sm text-gray-600">Subtotal</dt>
-                        <dd className="text-sm font-medium text-gray-900">{rupiah(order.total_price)}</dd>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="text-sm text-gray-600">Shipping Cost</dt>
-                        <dd className="text-sm font-medium text-gray-900">{rupiah(order.shipping_fee)}</dd>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="text-sm text-gray-600">Voucher Discount</dt>
-                        <dd className="text-sm font-medium text-gray-900">{rupiah(order.voucher_discount_amount)}</dd>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                      <dt className="text-base font-medium text-gray-900">
-                        Final Price
-                      </dt>
-                      <dd className="text-base font-medium text-gray-900">
-                        {rupiah(order.final_price)}
-                      </dd>
-                    </div>
+                    <OrderInformation order={order}/>
                     {order.order_status=='waiting for payment' &&
                       <div className="mt-6 flex">
                         <CancelOrderModal id={id}/>
@@ -271,7 +194,6 @@ export default function OrderDetail() {
           <Footer />
         </div>
       }
-      
     </>
   );
 }

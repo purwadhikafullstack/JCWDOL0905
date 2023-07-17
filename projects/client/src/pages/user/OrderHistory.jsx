@@ -17,6 +17,7 @@ export default function OrderHistory() {
   const [status, setStatus] = useState()
   const [date, setDate] = useState()
   const [price, setPrice] = useState()
+  const [orderId, setOrderId] = useState()
   const [update, setUpdate] = useState()
   const cancelButtonRef = useRef(null)
 
@@ -27,45 +28,39 @@ export default function OrderHistory() {
       let url = ''
       if(isDate(document.getElementById('start').value)){
         if(url == '') url += `?start=${document.getElementById('start').value}`
-        setStart(document.getElementById("start").value)
-      }
+        setStart(document.getElementById("start").value)}
       if(isDate(document.getElementById('end').value)){
         if(url == '') url += `?end=${document.getElementById('end').value}`
         else url += `&end=${document.getElementById('end').value}`
-        setEnd(document.getElementById("end").value)
-      }
-
+        setEnd(document.getElementById("end").value)}
       let status = document.getElementById('status').value
       if(status=='waiting for payment' || status=='waiting for payment confirmation' || status=='processed' || status=='shipped' || status=='done' || status=='canceled'){
         if(url == '') url += `?status=${status}`
         else url += `&status=${status}`
-        setStatus(status)
-      }
-
+        setStatus(status)}
+        if(document.getElementById('order_id').value){
+          if(url == '') url += `?order_id=${document.getElementById("order_id").value}`
+          else url += `&order_id=${document.getElementById("order_id").value}`
+          setOrderId(document.getElementById("order_id").value)}
       if(document.getElementById("datecheck").checked){
         if(url == '') url += `?date=${document.getElementById("date").value}`
         else url += `&date=${document.getElementById("date").value}`
-        setDate(document.getElementById("date").value)
-      }
-
+        setDate(document.getElementById("date").value)}
       if(document.getElementById("pricecheck").checked){
         if(url == '') url += `?price=${document.getElementById("price").value}`
         else url += `&price=${document.getElementById("price").value}`
-        setPrice(document.getElementById("price").value)
-      }
-
+        setPrice(document.getElementById("price").value)}
       Navigate(`/order-history${url}`)
       setUpdate(Math.random())
       setOpen(false)
-    } catch(error){
-      toast.error('Filter/sort failed')
-    }
+    } catch(error){toast.error('Filter/sort failed')}
   }
 
   const reset = function (){
     setStart()
     setEnd()
     setStatus()
+    setOrderId()
     setDate()
     setDateCheck(false)
     setPrice()
@@ -130,7 +125,6 @@ export default function OrderHistory() {
                             </div>
                         </div>
                       </div>
-
                       <div className='w-full mr-1'>
                         <label htmlFor="status" className="block text-sm font-medium text-warm-gray-900 w-full">Order Status</label>
                         <div className="mt-1">
@@ -144,7 +138,13 @@ export default function OrderHistory() {
                             <option selected={status=='canceled'} value={'canceled'} key={6}>Canceled</option>
                           </select>
                         </div>
-                    </div>
+                      </div>
+                      <div className='w-full mr-1'>
+                        <label htmlFor="order_id" className="block text-sm font-medium text-warm-gray-900 w-full">Order Id</label>
+                        <div className="mt-1">
+                          <input name="order_id" id="order_id" type='text' defaultValue={orderId} className="block w-full rounded-md border-warm-gray-300 py-3 px-4 text-warm-gray-900 shadow-sm focus:border-teal-500 focus:ring-teal-500"/>
+                        </div>
+                      </div>
                     </div>
                     <div className="mt-5 text-start sm:mt-7">
                       <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">

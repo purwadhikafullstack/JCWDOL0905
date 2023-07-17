@@ -33,67 +33,47 @@ export default function OrderList() {
             const responseDetail = await api.get(`branch/${id_branch}`)
             const branchDetail = responseDetail.data.data
             setBranchDetail(branchDetail)
-            setBranchId(id_branch)
-        }
-
+            setBranchId(id_branch)}
         const responseBranch = await api.get(`branch`)
         setBranch(responseBranch.data.data)
-      } catch (error) {
-        toast.error("Fetch data failed");
-      }
+      } catch (error) {toast.error("Fetch data failed");}
     }
     fetchData();
-}, [branchId]);
+}, []);
 
-  var isDate = function(date) {
-    return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
-  }
-
+  var isDate = function(date) {return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));}
   const handleSubmit = () => {
     try{
       let url = ''
       if(isDate(document.getElementById('start').value)){
         if(url == '') url += `?start=${document.getElementById('start').value}`
-        setStart(document.getElementById("start").value)
-      }
+        setStart(document.getElementById("start").value)}
       if(isDate(document.getElementById('end').value)){
         if(url == '') url += `?end=${document.getElementById('end').value}`
         else url += `&end=${document.getElementById('end').value}`
-        setEnd(document.getElementById("end").value)
-      }
-
+        setEnd(document.getElementById("end").value)}
       let status = document.getElementById('status').value
       if(status=='waiting for payment' || status=='waiting for payment confirmation' || status=='processed' || status=='shipped' || status=='done' || status=='canceled'){
         if(url == '') url += `?status=${status}`
         else url += `&status=${status}`
-        setStatus(status)
-      }
-
+        setStatus(status)}
       if(document.getElementById("datecheck").checked){
         if(url == '') url += `?date=${document.getElementById("date").value}`
         else url += `&date=${document.getElementById("date").value}`
-        setDate(document.getElementById("date").value)
-      }
-
+        setDate(document.getElementById("date").value)}
       if(document.getElementById("pricecheck").checked){
         if(url == '') url += `?price=${document.getElementById("price").value}`
         else url += `&price=${document.getElementById("price").value}`
-        setPrice(document.getElementById("price").value)
-      }
-
+        setPrice(document.getElementById("price").value)}
       if(branchId && branchId != 0){
         if(url == '') url += `?id_branch=${branchId}`
-        else url += `&id_branch=${branchId}`
-      }
-
+        else url += `&id_branch=${branchId}`}
       Navigate(`/admin/orders${url}`)
       setUpdate(Math.random())
       setOpen(false)
-    } catch(error){
-      toast.error('Filter/sort failed')
-    }
+    } catch(error){toast.error('Filter/sort failed')}
   }
-
+  
   const reset = function (){
     setStart()
     setEnd()
@@ -104,37 +84,24 @@ export default function OrderList() {
     setPriceCheck(false)
     setOpen(false)
     Navigate('/admin/orders')
-    setUpdate(Math.random())
-  }
+    setUpdate(Math.random())}
 
   return (
     <>
       <Layout>
         <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6 bg-neutral-100">
-                <div className="flex justify-between items-center my-3 mb-8">
-                    <h2>Order List</h2>
-                </div>
+                <div className="flex justify-between items-center my-3 mb-8"><h2>Order List</h2></div>
                 <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                     {branchDetail && <p className="font-bold">Store Branch: {`${branchDetail.branch_name} (${branchDetail.city})`}</p>}
                     <div className="flex justify-end space-x-3">
                         {role == 'SUPER_ADMIN' && branch != undefined &&
-                            <select
-                            name="branch"
-                            id="branch"
-                            onChange={(e) => setBranchId(e.target.value)}
-                            className="mx-2 block w-fit rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm font-bold"
-                            >
+                            <select name="branch" id="branch" onChange={(e) => setBranchId(e.target.value)} className="mx-2 block w-fit rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm font-bold">
                                 <option key={'all'} value={0}>All Branchs</option>
                                 {branch.map((data)=>{
-                                    return(
-                                        <option key={data.id} value={data.id}>{data.branch_name}</option>
-                                    )
+                                    return(<option key={data.id} value={data.id}>{data.branch_name}</option>)
                                 })}
-                            </select>
-                        }
-                        <button type="button" onClick={() => setOpen(true)} className="whitespace-nowrap rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center">
-                            Filter & Sort
-                        </button>
+                            </select>}
+                        <button type="button" onClick={() => setOpen(true)} className="whitespace-nowrap rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center">Filter & Sort</button>
                     </div>
                 </div>
             </div>
@@ -142,25 +109,17 @@ export default function OrderList() {
       </Layout>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
-          <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-          </Transition.Child>
-
+          <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0"><div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" /></Transition.Child>
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enterTo="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 translate-y-0 sm:scale-100" leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                   <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                    <button type="button" className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setOpen(false)}>
-                      <span className="sr-only">Close</span>
-                      <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
+                    <button type="button" className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setOpen(false)}><span className="sr-only">Close</span><XMarkIcon className="h-6 w-6" aria-hidden="true" /></button>
                   </div>
                   <div>
                     <div className="mt-3 text-start sm:mt-5">
-                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
-                        Filter
-                      </Dialog.Title>
+                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">Filter</Dialog.Title>
                       <div className="mt-2 flex w-full">
                         <div className='w-full mr-1'>
                             <label htmlFor="start" className="block text-sm font-medium text-warm-gray-900 w-full">Start Date</label>
@@ -175,7 +134,6 @@ export default function OrderList() {
                             </div>
                         </div>
                       </div>
-
                       <div className='w-full mr-1'>
                         <label htmlFor="status" className="block text-sm font-medium text-warm-gray-900 w-full">Order Status</label>
                         <div className="mt-1">
@@ -192,9 +150,7 @@ export default function OrderList() {
                     </div>
                     </div>
                     <div className="mt-5 text-start sm:mt-7">
-                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
-                        Order By (Sort)
-                      </Dialog.Title>
+                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">Order By (Sort)</Dialog.Title>
                       <div className="mt-2">
                         <div className="relative flex">
                           <div className="flex">

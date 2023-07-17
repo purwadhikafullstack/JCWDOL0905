@@ -162,32 +162,31 @@ export default function AdminOrder(props) {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-center text-center items-center">
-                                    <button
-                                        disabled={page === 1}
-                                        onClick={() => setPage(page-1)}
-                                        type="button"
-                                        className="relative inline-flex items-center border border-gray-300 bg-white disabled:bg-gray-500 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    >
-                                        <ChevronLeftIcon className="w-5 h-5" />
-                                    </button>
-                                    <span className="mx-3 items-center justify-center">
-                                        {`Page ${page} of ${totalPages}`}
-                                    </span>
-                                    <button
-                                        disabled={page >= totalPages}
-                                        type="button"
-                                        onClick={() => setPage(page+1)}
-                                        className="relative inline-flex items-center border border-gray-300 bg-white disabled:bg-gray-500 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    >
-                                        <ChevronRightIcon className="w-5 h-5" />
-                                    </button>
-                                </div>
+                                {totalPages>0 &&
+                                    <div className="flex justify-center text-center items-center">
+                                        <button
+                                            disabled={page === 1}
+                                            onClick={() => setPage(page-1)}
+                                            type="button"
+                                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                        >
+                                            <ChevronLeftIcon className="w-5 h-5" />
+                                        </button>
+                                        <span className="mx-3 items-center justify-center">
+                                            {`Page ${page} of ${totalPages}`}
+                                        </span>
+                                        <button
+                                            disabled={page >= totalPages}
+                                            type="button"
+                                            onClick={() => setPage(page+1)}
+                                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                        >
+                                            <ChevronRightIcon className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         }
-
-                        
-
                     </div>
                 </div>
             </div>
