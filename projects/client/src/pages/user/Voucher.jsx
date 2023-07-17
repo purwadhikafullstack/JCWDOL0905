@@ -10,8 +10,10 @@ import VoucherImg from "../../assets/images/voucher-illustration2.png";
 import { useSelector } from "react-redux";
 import { api } from "../../api/api";
 import { toast } from "react-hot-toast";
+import { useNavigate} from "react-router-dom";
 
 export default function Voucher() {
+  const Navigate = useNavigate()
   const [userClaimedVouchers, setUserClaimedVouchers] = useState([]);
   const {id} = useSelector((state) => state.userSlice)
   const [userVouchers, setUserVouchers] = useState([])
@@ -68,9 +70,14 @@ export default function Voucher() {
       }
 
   const handleClaimVoucher = (voucherId) => {
-    console.log('claimed id', voucherId);
-    postClaimVoucher(voucherId)
-    
+    let voucher = vouchers.find(x => x.id == voucherId);
+    console.log(voucher)
+    if(voucher.voucher_type=='referral code'){
+      toast.success("Claim referral voucher on profile page")
+      Navigate('/profile')
+    } else{
+      postClaimVoucher(voucherId)
+    }
   }
 
   return (

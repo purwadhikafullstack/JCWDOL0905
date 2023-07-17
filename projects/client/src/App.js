@@ -52,6 +52,8 @@ import DetailOrder from "./pages/admin/DetailOrder";
 import BranchStoreManagement from "./pages/admin/BranchStoreManagement";
 import AdminProfile from "./pages/admin/AdminProfile";
 import Voucher from "./pages/user/Voucher";
+
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
@@ -115,6 +117,16 @@ function App() {
     if (token) {
       countCart()
     }
+
+    async function updateOrderStatus() {
+      try {
+        const response = await api.patch(`order/update`);
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    }
+    updateOrderStatus()
+
   },[])
 
   return (
@@ -164,7 +176,6 @@ function App() {
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.BRANCH_ADMIN, ROLE.SUPER_ADMIN]}> <ManageVoucher /> </ProtectedPageAdmin> } path="/admin/manage-voucher" />
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.BRANCH_ADMIN, ROLE.SUPER_ADMIN]}> <ManageProduct /> </ProtectedPageAdmin> } path="/admin/manage-product" />
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.BRANCH_ADMIN, ROLE.SUPER_ADMIN]}> <ManageStock /> </ProtectedPageAdmin> } path="/admin/manage-stock" />
-              
               <Route element={ <ProtectedPageAdmin roleRequired={[ROLE.SUPER_ADMIN, ROLE.BRANCH_ADMIN]}> <DetailOrder /> </ProtectedPageAdmin> } path="/admin/orders/:id" />
             </Routes>
           </BrowserRouter>

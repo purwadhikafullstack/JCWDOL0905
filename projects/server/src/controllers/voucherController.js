@@ -193,18 +193,19 @@ module.exports = {
 
       const query = `select user_vouchers.id, user_vouchers.id,
         vouchers.voucher_type, vouchers.voucher_kind, vouchers.voucher_value,
-        vouchers.max_discount, vouchers.min_purchase_amount, vouchers.start_date, vouchers.end_date, vouchers.id_inventory
+        vouchers.max_discount, vouchers.min_purchase_amount, vouchers.start_date, vouchers.end_date, vouchers.id_inventory,
+        products.product_name, products.product_price
         from user_vouchers
         join vouchers on vouchers.id = user_vouchers.id_voucher
+        left join inventories on vouchers.id_inventory = inventories.id
+        left join products on products.id = inventories.id_product
         where id_user = ${user.id_user}
         and is_used = 0
         and now() between vouchers.start_date and vouchers.end_date;`;
 
-      const [results] = await db.sequelize.query(query);
-      res.status(200).send({
-        message: "Successfully fetch user voucher",
-        results,
-      });
+        const [results] = await db.sequelize.query(query);
+        res.status(200).send({ message: "Successfully fetch user voucher", results });
+
     } catch (error) {
       console.log(error);
       res

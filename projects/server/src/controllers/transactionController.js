@@ -5,6 +5,8 @@ const trans_header = db.Transaction_Header;
 const trans_detail = db.Transaction_Detail;
 const inventory = db.Inventory;
 const inventory_history = db.Inventory_History;
+const shipping_service = db.Shipping_Service;
+const voucher = db.Voucher;
 const user_voucher = db.User_Voucher
 const jwt = require("jsonwebtoken");
 const jwtKey = process.env.JWT_SECRET_KEY;
@@ -39,53 +41,44 @@ module.exports = {
             let start = ""
             let end = ""
             let status = ""
+            let orderId = ""
             let date = "desc"
             let price = ""
             let where = ""
 
-            console.log("query masuk", req.query)
-
             if(req.query.id_branch){
-                branch = `id_branch = ${req.query.id_branch}`
-            }
-
+                branch = `id_branch = ${req.query.id_branch}`}
             if(req.query.id_user){
                 user = `id_user = ${req.query.id_user}`
-                if(branch != "") user = ` and ${user}`
-            }
-
+                if(branch != "") user = ` and ${user}`}
             if(req.query.start){
-                start = `createdAt > '${req.query.start}'`
-                if(branch != "" || user != "") start = ` and ${start}`
-            }
-
+                start = `createdAt >= '${req.query.start}'`
+                if(branch != "" || user != "") start = ` and ${start}`}
             if(req.query.end){
-                end = `createdAt < '${req.query.end}'`
-                if(branch != "" || user != "" || start != "") end = ` and ${end}`
-            }
-
+                end = `createdAt <= '${req.query.end}'`
+                if(branch != "" || user != "" || start != "") end = ` and ${end}`}
             if(req.query.status){
                 status = `order_status = '${req.query.status}'`
-                if(branch != "" || user != "" || start != "" || end != "") status = ` and ${status}`
-            }
-
-            if(user != "" || branch != "" || start != "" || end != "" || status != ""){
-                where = "where "
-            }
+                if(branch != "" || user != "" || start != "" || end != "") status = ` and ${status}`}
+            if(req.query.order_id){
+                orderId = `id = '${req.query.order_id}'`
+                if(branch != "" || user != "" || start != "" || end != "" || status != "") orderId = ` and ${orderId}`}
+            if(user != "" || branch != "" || start != "" || end != "" || status != "" || orderId != ""){
+                where = "where "}
 
             if(req.query.date=='asc') date = 'asc'
             if(req.query.price=='asc' || req.query.price == 'desc') price = `final_price ${req.query.price}, `
 
             let [total] = await db.sequelize.query(
                 `select count(*) as total_transaction from transaction_headers
-                ${where}${branch}${user}${start}${end}${status};`
+                ${where}${branch}${user}${start}${end}${status}${orderId};`
                 );
             let total_page = Math.ceil(total[0].total_transaction/limit)
 
             let offset = (parseInt(req.query.page) - 1) * limit
 
             const query = `select * from transaction_headers
-            ${where}${branch}${user}${start}${end}${status}
+            ${where}${branch}${user}${start}${end}${status}${orderId}
             order by ${price}createdAt ${date}
             limit ${limit} offset ${offset};`;
         
@@ -103,7 +96,7 @@ module.exports = {
 
     getOrderDetail: async (req, res) => {
         try {
-            const orderData = await trans_header.findOne({where: {id: req.params.id}});
+            const orderData = await trans_header.findOne({where: {id: req.params.id}, include: [{model: shipping_service}, {model: user_voucher, required: false, include: {model: voucher}}]});
             if (!orderData) {
                 return res.status(400).send({code: 400, message: `Can't get order detail`})}
             res.status(200).send({code: 200, message: "Get order detail success", data: orderData});
@@ -115,10 +108,14 @@ module.exports = {
 
     getItem: async (req, res) => {
         try {
-            const itemData = await trans_detail.findAll({where: {id_trans_header: req.params.id}});
-            if (!itemData) {
-                return res.status(400).send({code: 400, message: `Can't get item`})}
-            res.status(200).send({code: 200, message: "Get item success", data: itemData});
+            const [results] = await db.sequelize.query(
+                `select transaction_details.id, product_price, product_qty, product_name, product_image, weight, bonus_qty, id_inventory,
+                inventories.stock, inventories.id_branch, inventories.id_product
+                from transaction_details
+                join inventories on inventories.id = transaction_details.id_inventory
+                where id_trans_header = ${req.params.id} order by transaction_details.createdAt desc;`
+            );
+            res.status(200).send({code: 200, message: "Get item success", data: results});
 
         } catch (error) {
             console.log(error);
@@ -179,16 +176,10 @@ module.exports = {
                     {product_price, product_qty, bonus_qty, id_inventory, id_trans_header: order.dataValues.id, product_name, product_image, weight},
                     {transaction: t}
                 );
-                // await inventory.update({stock: stock - product_qty}, {where: { id: id_inventory }, transaction: t});
-                // await inventory_history.create({status: 'out', reference: 'sale', quantity: product_qty, id_inventory}, {transaction: t});
-
             }
 
             await carts.destroy({where: { id_user: user.id_user }}, {transaction: t});
-            if(id_user_voucher!=null){
-                await user_voucher.update({is_used: 1}, {where: { id: id_user_voucher }, transaction: t});
-            }
-
+            if(id_user_voucher!=null) await user_voucher.update({is_used: 1}, {where: { id: id_user_voucher }, transaction: t});
             await t.commit()
             res.status(200).send({isError: false, message: "Create new order success", data: order});
           

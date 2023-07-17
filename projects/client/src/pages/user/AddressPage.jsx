@@ -12,12 +12,14 @@ import { useNavigate } from "react-router-dom";
 import DrawerNewAddress from "../../component/DrawerNewAddress";
 import DrawerEditAddress from "../../component/DrawerEditAddress";
 import DeleteAddressModal from "../../component/DeleteAddressModal";
+import Delivered from "../../component/Delivered";
 
 export default function AddressPage() {
     const Navigate = useNavigate()
     const user = useSelector((state) => state.userSlice); 
     const branchId = useSelector((state) => state.branchSlice.branchId);
     const [address, setAddress] = useState([]);
+    const [branch, setBranch] = useState([]);
     const [update, setUpdate] = useState(false);
 
     console.log(PROVINCE_LIST[0])
@@ -27,9 +29,10 @@ export default function AddressPage() {
           try {
             const response = await api.get(`address/user/${user.id}`);
             const addressData = response.data.data;
-
             setAddress(addressData);
-    
+
+            const responseBranch = await api.get(`branch`);
+            setBranch(responseBranch.data.data)
           } catch (error) {
             toast.error("Fetch data failed");
           }
@@ -49,6 +52,7 @@ export default function AddressPage() {
                 </div>
                 <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                     <div className="flex justify-end space-x-3">
+                        <Delivered addressData={address} branchsData={branch} addressPage={true}/>
                         <DrawerNewAddress/>
                     </div>
                 </div>

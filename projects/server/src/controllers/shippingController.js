@@ -50,8 +50,8 @@ module.exports = {
             const courierDetail = courierResponse.data.data
 
             data = {
-                origin: addressDetail.data.data.city_id,
-                destination: branchDetail.data.data.city_id,
+                origin: branchDetail.data.data.city_id,
+                destination: addressDetail.data.data.city_id,
                 weight: req.body.orderWeight,
                 courier: courierDetail.courier.toLowerCase(),
             }
