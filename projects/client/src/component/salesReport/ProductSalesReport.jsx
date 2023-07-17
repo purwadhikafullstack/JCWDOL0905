@@ -17,102 +17,11 @@ function Table({ tableData }) {
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                  >
-                    {" "}
-                    ID Transaction{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Branch Name{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Date{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    User Name{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Product Name{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Price (IDR){" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Sold Quantity{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Total Price (IDR){" "}
-                  </th>
-                </tr>
+                <tr> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-6" > {" "} ID Transaction{" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Branch Name{" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Date{" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} User Name{" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Product Name{" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Price (IDR){" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Sold Quantity{" "} </th> <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Total Price (IDR){" "} </th> </tr>
               </thead>
               <tbody className="divide-y text-left divide-gray-200 bg-white">
                 {tableData.map((row) => (
-                  <tr key={row.email}>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6">
-                      {" "}
-                      {row.id || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {row.branchName || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {moment(row.createdAt).format("YYYY-MM-DD HH:mm:ss") ||
-                        ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {row.name || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {row.productName || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {row.product_price || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {row.product_qty || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {row.total_price || ""}{" "}
-                    </td>
-                  </tr>
+                  <tr key={row.email}> <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6"> {" "} {row.id || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {row.branchName || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {moment(row.createdAt).format("YYYY-MM-DD HH:mm:ss") || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {row.name || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {row.productName || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {row.product_price || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {row.product_qty || ""}{" "} </td> <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {row.total_price || ""}{" "} </td> </tr>
                 ))}
               </tbody>
             </table>
@@ -133,55 +42,17 @@ function ProductSalesReport() {
   const [selectedStartDate, setSelectedStartDate] = useState(searchParams.get("startDate")||"");
   const [selectedEndDate, setSelectedEndDate] = useState(searchParams.get("endDate")||"");
   const [orderBy, setOrderBy] = useState(searchParams.get("orderBy") || "createdAt");
-  const [sortDirection, setSortDirection] = useState(
-    searchParams.get("sortDirection") || "ASC"
-  );
+  const [sortDirection, setSortDirection] = useState( searchParams.get("sortDirection") || "ASC" );
   const [tableData, setTableData] = useState([]);
   const isFirstRender = useRef(true);
   const [productName, setProductName] = useState(searchParams.get("productName")||"");
   const [userName, setUserName] = useState(searchParams.get("userName")||"");
   const [transactionId, setTransactionId] = useState(searchParams.get("transactionId")||"");
-
   const { id_branch, role } = useSelector((state) => state.adminSlice);
-
-  // const handleSearch = (id_branch) => {
-  //   setSearchParams({
-  //     ...searchParams,
-  //     page: page.toString(),
-  //     limit: limit.toString(),
-  //     orderBy: orderBy,
-  //     sortDirection: sortDirection,
-  //     branchId: id_branch
-  //   });
-  //   getListOfSalesReport(id_branch)
-  // }
 
   const getListOfSalesReport = async (id_branch) => {
     try {
-      const response = await api.get(`admins/sales-report`, {
-        params: {
-          endDate:
-            selectedEndDate === ""
-              ? null
-              : moment(selectedEndDate)
-                  .endOf("day")
-                  .format("YYYY-MM-DD HH:mm:ss"),
-          startDate:
-            selectedStartDate === ""
-              ? null
-              : moment(selectedStartDate)
-                  .startOf("day")
-                  .format("YYYY-MM-DD HH:mm:ss"),
-          page: page,
-          limit: limit,
-          branchId: id_branch === "All" ? null : id_branch,
-          orderBy: orderBy,
-          orderByMethod: sortDirection,
-          productName: productName === "" ? null : productName,
-          userName: userName === "" ? null : userName,
-          transactionId: transactionId === "" ? null : transactionId
-        },
-      });
+      const response = await api.get(`admins/sales-report`, { params: { endDate: selectedEndDate === "" ? null : moment(selectedEndDate) .endOf("day") .format("YYYY-MM-DD HH:mm:ss"), startDate: selectedStartDate === "" ? null : moment(selectedStartDate) .startOf("day") .format("YYYY-MM-DD HH:mm:ss"), page: page, limit: limit, branchId: id_branch === "All" ? null : id_branch, orderBy: orderBy, orderByMethod: sortDirection, productName: productName === "" ? null : productName, userName: userName === "" ? null : userName, transactionId: transactionId === "" ? null : transactionId }, });
       setTableData(response.data.data.items);
       setTotalPages(response.data.data.totalPages);
     } catch (error) {
@@ -193,13 +64,7 @@ function ProductSalesReport() {
     return role === ROLE.SUPER_ADMIN ? (
       <div className="flex items-center space-x-4">
         <p className="w-24 text-right">Branch Store:</p>
-        <select
-          id="storeId"
-          name="storeId"
-          className="w-52"
-          onChange={(e) => setBranchId(e.target.value)}
-          value={branchId || ""}
-        >
+        <select id="storeId" name="storeId" className="w-52" onChange={(e) => setBranchId(e.target.value)} value={branchId || ""} >
           <option value="All">All Branch</option>
           {storeData.map((data, index) => (
             <option key={index} value={data.id}>
@@ -210,31 +75,15 @@ function ProductSalesReport() {
       </div>
     ) : null;
   };
-
   const handleChangePage = (newPage) => {
     setPage(newPage);
   };
-
   const handleChangeRowPerPage = (newLimit) => {
     setLimit(newLimit);
   };
-
   useEffect(() => {
-    setSearchParams({
-      ...searchParams,
-      page: page.toString(),
-      limit: limit.toString(),
-      orderBy: orderBy,
-      sortDirection: sortDirection,
-      branchId: branchId,
-      productName: productName,
-      userName: userName,
-      transactionId: transactionId,
-      startDate: selectedStartDate,
-      endDate: selectedEndDate
-    });
+    setSearchParams({ ...searchParams, page: page.toString(), limit: limit.toString(), orderBy: orderBy, sortDirection: sortDirection, branchId: branchId, productName: productName, userName: userName, transactionId: transactionId, startDate: selectedStartDate, endDate: selectedEndDate });
   }, [page, limit, setSearchParams, orderBy, sortDirection, branchId, productName, userName, transactionId, selectedStartDate, selectedEndDate]);
-
   const getListOfStoreData = async () => {
     try {
       const response = await api.get(`branch`);
@@ -243,7 +92,6 @@ function ProductSalesReport() {
       console.error(error.response.data.message);
     }
   };
-
   useEffect(() => {
     getListOfStoreData();
     if (role === ROLE.SUPER_ADMIN) {
@@ -274,10 +122,7 @@ function ProductSalesReport() {
           <div className="flex items-center space-x-4">
               <p className="w-24 text-right">Start Date:</p>
               <ReactDatePicker
-                placeholderText="Start Date"
-                selected={selectedStartDate === "" ? "" : new Date(selectedStartDate)}
-                className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6"
-                id="start_date"
+                placeholderText="Start Date" selected={selectedStartDate === "" ? "" : new Date(selectedStartDate)} className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6" id="start_date"
                 onChange={(date) => {
                   if (date === null ) {
                     setSelectedStartDate("")
@@ -290,10 +135,7 @@ function ProductSalesReport() {
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">End Date:</p>
               <ReactDatePicker
-                placeholderText="End Date"
-                selected={selectedEndDate === "" ? "" : new Date(selectedEndDate)}                
-                className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6"
-                id="end_date"
+                placeholderText="End Date" selected={selectedEndDate === "" ? "" : new Date(selectedEndDate)} className="w-52 rounded-md border px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 text-sm leading-6" id="end_date"
                 onChange={(date) => {
                   if (date === null ) {
                     setSelectedEndDate("")
@@ -305,94 +147,44 @@ function ProductSalesReport() {
             </div>
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">Product Name:</p>
-              <input
-                type="text"
-                name="name"
-                className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
-                placeholder="search by product name"
-                required
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-              />
+              <input type="text" name="name" className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset" placeholder="search by product name" required value={productName} onChange={(e) => setProductName(e.target.value)} />
             </div>
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">User Name:</p>
-              <input
-                type="text"
-                name="name"
-                className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
-                placeholder="search by user name"
-                required
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
+              <input type="text" name="name" className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset" placeholder="search by user name" required value={userName} onChange={(e) => setUserName(e.target.value)} />
             </div>      
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">Transaction ID:</p>
-              <input
-                type="text"
-                name="name"
-                className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
-                placeholder="search by Transaction ID"
-                required
-                value={transactionId}
-                onChange={(e) => setTransactionId(e.target.value)}
-              />
+              <input type="text" name="name" className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset" placeholder="search by Transaction ID" required value={transactionId} onChange={(e) => setTransactionId(e.target.value)} />
             </div>        
             {renderSearchByBranch()}
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">Sort By:</p>
-              <select
-                id="orderBy"
-                name="orderBy"
-                className="w-52"
-                onChange={(e) => setOrderBy(e.target.value)}
-                value={orderBy || "createdAt"}
-              >
+              <select id="orderBy" name="orderBy" className="w-52" onChange={(e) => setOrderBy(e.target.value)} value={orderBy || "createdAt"} >
                 <option value="createdAt">Date</option>
                 <option value="productQuantity">Product Quantity</option>
               </select>
             </div>
             <div className="flex items-center space-x-4">
               <p className="w-24 text-right">Sort Order:</p>
-              <select
-                id="orderByMethod"
-                name="orderByMethod"
-                className="w-52"
-                onChange={(e) => setSortDirection(e.target.value)}
-                value={sortDirection || "ASC"}
-              >
+              <select id="orderByMethod" name="orderByMethod" className="w-52" onChange={(e) => setSortDirection(e.target.value)} value={sortDirection || "ASC"} >
                 <option value="ASC">ASC</option>
                 <option value="DESC">DESC</option>
               </select>
             </div>
             <div className="flex items-center space-x-4 w-full">
               <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => getListOfSalesReport(branchId)}
-                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                >
-                  Search
-                </button>
+                <button type="button" onClick={() => getListOfSalesReport(branchId)} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" > Search </button>
               </div>
             </div>
           </div>
         </PopoverFilter>
       </div>
       <Table tableData={tableData} />
-      <Pagination
-        rowsOption={[5, 10, 20, 30]}
-        handleChangeRow={handleChangeRowPerPage}
-        rowPerPage={limit}
-        page={page}
-        handleChangePage={handleChangePage}
-        totalPages={totalPages}
-      />
+      <Pagination rowsOption={[5, 10, 20, 30]} handleChangeRow={handleChangeRowPerPage} rowPerPage={limit} page={page} handleChangePage={handleChangePage} totalPages={totalPages} />
       <Toaster />
     </div>
   );
 }
 
 export default ProductSalesReport;
-

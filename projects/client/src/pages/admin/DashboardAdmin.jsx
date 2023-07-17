@@ -5,11 +5,7 @@ import DashboardChart from "../../component/DashboardChart";
 import { api } from "../../api/api";
 import { useEffect, useState } from "react";
 import { ROLE } from "../../constant/role";
-import {
-  UsersIcon,
-  BanknotesIcon,
-  ShoppingBagIcon,
-} from "@heroicons/react/24/outline";
+import { UsersIcon, BanknotesIcon, ShoppingBagIcon, } from "@heroicons/react/24/outline";
 import { useSearchParams } from "react-router-dom";
 
 const DASHBOARD_TEXT_ROLE_MAPPING = {
@@ -31,21 +27,9 @@ const DashboardAdmin = () => {
     return role === ROLE.SUPER_ADMIN ? (
       <>
         <div className="mt-2">
-          <label
-            htmlFor="location"
-            className="block text-sm text-left font-medium text-gray-700"
-          >
-            {" "}
-            Filter by Branch Store{" "}
-          </label>
+          <label htmlFor="location" className="block text-sm text-left font-medium text-gray-700" > {" "} Filter by Branch Store{" "} </label>
           <div className="flex items-center space-x-4">
-            <select
-              id="storeId"
-              name="storeId"
-              className="w-100"
-              onChange={(e) => setBranchId(e.target.value)}
-              value={branchId || ""}
-            >
+            <select id="storeId" name="storeId" className="w-100" onChange={(e) => setBranchId(e.target.value)} value={branchId || ""} >
               <option value="All">All Branch</option>
               {storeData.map((data, index) => (
                 <option key={index} value={data.id}>
@@ -70,11 +54,7 @@ const DashboardAdmin = () => {
 
   const getDashboardData = async () => {
     try {
-      const response = await api.get(`admins/dashboard-data`, {
-        params: {
-          year: year === "" ? null :year,
-        },
-      });
+      const response = await api.get(`admins/dashboard-data`, { params: { year: year === "" ? null :year, }, });
       setDashboardData(response.data.data);
     } catch (error) {
       console.log(error);
@@ -83,12 +63,7 @@ const DashboardAdmin = () => {
 
   const getDashboardDataById = async (id) => {
     try {
-      const response = await api.get(`admins/dashboard-data-branch/`, {
-        params: {
-          year: year === "" ? null :year,
-          id: id,
-        },
-      });
+      const response = await api.get(`admins/dashboard-data-branch/`, { params: { year: year === "" ? null :year, id: id, }, });
       setDashboardData(response.data.data);
     } catch (error) {
       console.log(error);
@@ -123,54 +98,25 @@ const DashboardAdmin = () => {
       <main className="flex-1">
         <div className="py-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center justify-center">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              {DASHBOARD_TEXT_ROLE_MAPPING[role]}
-            </h1>
+            <h1 className="text-2xl font-semibold text-gray-900"> {DASHBOARD_TEXT_ROLE_MAPPING[role]} </h1>
             {renderSearchByBranch()}
             <div className="mt-2">
-              <label
-                htmlFor="location"
-                className="block text-sm text-left font-medium text-gray-700"
-              >
-                {" "}
-                Filter by transaction year{" "}
-              </label>
+              <label htmlFor="location" className="block text-sm text-left font-medium text-gray-700" > {" "} Filter by transaction year{" "} </label>
               <div className="flex items-center space-x-4">
-              <input
-                  type="text"
-                  name="name"
-                  className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
-                  placeholder="Input year YYYY"
-                  required
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => handleSearchDashboard(branchId)}
-                >
-                  Search
-                </button>
+              <input type="text" name="name" className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset" placeholder="Input year YYYY" required value={year} onChange={(e) => setYear(e.target.value)} />
+                <button type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleSearchDashboard(branchId)} > Search </button>
               </div>
             </div>
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               <div className="relative overflow-hidden rounded-lg bg-gray-800 px-4 py-5 shadow sm:px-6 sm:py-6">
                 <dt>
                   <div className="absolute rounded-md bg-indigo-500 p-3">
-                    <UsersIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
+                    <UsersIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
-                  <p className="ml-8 truncate justify-center text-sm font-medium text-gray-300">
-                    Total Users
-                  </p>
+                  <p className="ml-8 truncate justify-center text-sm font-medium text-gray-300"> Total Users </p>
                 </dt>
                 <dd className="ml-8 flex justify-center items-baseline">
-                  <p className="text-2xl font-semibold text-white">
-                    {dashboardData.totalUser || "0"}
-                  </p>
+                  <p className="text-2xl font-semibold text-white"> {dashboardData.totalUser || "0"} </p>
                 </dd>
               </div>
               <div className="relative overflow-hidden rounded-lg bg-gray-800 px-4 py-5 shadow sm:px-6 sm:py-6">

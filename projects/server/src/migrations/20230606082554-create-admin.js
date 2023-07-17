@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.ENUM("SUPER_ADMIN", "BRANCH_ADMIN")
       },
       token_admin: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(500),
       },
       createdAt: {
         allowNull: false,

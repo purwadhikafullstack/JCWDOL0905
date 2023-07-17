@@ -1,5 +1,5 @@
 import { forwardRef, useState } from "react";
-import { HomeIcon, UserIcon, ArrowLeftOnRectangleIcon, DocumentChartBarIcon, UsersIcon, BuildingStorefrontIcon, RectangleGroupIcon, ShoppingCartIcon, ReceiptPercentIcon, ClipboardDocumentCheckIcon, InboxStackIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { UserIcon, ArrowLeftOnRectangleIcon, DocumentChartBarIcon, UsersIcon, BuildingStorefrontIcon, RectangleGroupIcon, ShoppingCartIcon, ReceiptPercentIcon, ClipboardDocumentCheckIcon, InboxStackIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import logo_groceria from "../assets/images/logo-brand-groceria.png"
 import { useSelector, useDispatch  } from "react-redux";
 import { logoutAdmin } from '../redux/adminSlice'

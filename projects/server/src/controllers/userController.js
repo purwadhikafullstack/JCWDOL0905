@@ -41,8 +41,7 @@ module.exports = {
       await sendEmail(result.email, "Verify Account", message);
       res.status(201).send({isError: false, message: "Register Success! Please Check Email to Verify", data: result});
     } catch (error) {
-      console.log(error); res.status(404).send({isError: true, message: "Register failed"})}
-  },
+      console.log(error); res.status(404).send({isError: true, message: "Register failed"})}},
   verify: async (req, res) => {
     const { id_user, token } = req.params
     try {
@@ -59,8 +58,7 @@ module.exports = {
       res.status(200).send({code: 200, message: "Verification success"});
     } catch (err) {
       console.log(err);
-      return res.status(500).send({ code: 500, message: "Internal server error" })}
-  },
+      return res.status(500).send({ code: 500, message: "Internal server error" })}},
   resendVerification: async (req, res) => {
     try {
       const { email } = req.body;
@@ -76,8 +74,7 @@ module.exports = {
       await sendEmail(result.email, "Verify Account", message);
       res.status(200).send({code: 200, message: "A verification email has been sent. Please check your email and verify"});
     } catch (error) {
-      console.log(error); res.status(500).send({ message: "Internal server error" })}
-  },
+      console.log(error); res.status(500).send({ message: "Internal server error" })}},
   login: async (req, res) => {
     try {
       let { email, password } = req.body;
@@ -98,8 +95,7 @@ module.exports = {
           return res.status(404).send({isError: true, message: "Invalid email or password"})}
       });
     } catch (error) {
-      console.log(error); res.status(404).send({isError: true, message: "Login Failed"})}
-  },
+      console.log(error); res.status(404).send({isError: true, message: "Login Failed"})}},
   forgotPasswordSendEmail: async (req, res) => {
     try {
       const { email } = req.body;
@@ -113,8 +109,7 @@ module.exports = {
       await sendEmail(result.email, "Reset Password", message);
       res.status(200).send({data: {token: newToken}, message: "Check your email to reset password", code: 200})
     } catch (error) {
-      console.log(error)}
-  },
+      console.log(error)}},
   resendEmailForgotPassword: async (req, res) => {
     try {
       const { email } = req.body;
@@ -130,8 +125,7 @@ module.exports = {
       await sendEmail(result.email, "Reset Password", message);
       res.status(200).send({data: {token: newToken}, message: "Check your email to reset password", code: 200});
     } catch (error) {
-      console.log(error)}
-  },
+      console.log(error)}},
   verifyForgotPassword: async (req, res) => {
     const { id_user, token } = req.params;
     try {
@@ -143,8 +137,7 @@ module.exports = {
       res.status(200).send({code: 200, message: "Verification success"});
     } catch (err) {
       console.log(err);
-      return res.status(500).send({ code: 500, message: "Internal server error" })}
-  },
+      return res.status(500).send({ code: 500, message: "Internal server error" })}},
   resetPassword: async (req, res) => {
     const { token, password, confirmPassword } = req.body;
     try {
@@ -166,8 +159,7 @@ module.exports = {
       }
       res.status(200).send({code: 200, message: "Success reset password, please login"});
     } catch (error) {
-      res.status(400).send({ error: "Invalid token" })}
-  },
+      res.status(400).send({ error: "Invalid token" })}},
   getUserByToken: async (req, res) => {
     try {
       let bearerToken = req.headers['authorization'];
@@ -177,8 +169,7 @@ module.exports = {
       res.send({code: 200, message: "Get user by token success", user: getUser})
     } catch(error){
       res.status(400).send({ error: "Invalid token" });
-    }
-  },
+    }},
   changePassword: async (req, res) => {
     try {
       let { id_user, oldPassword, newPassword, confirmNewPassword } = req.body;
@@ -200,6 +191,5 @@ module.exports = {
       res.status(200).send({isError: false, message: "Change password success"});
     } catch (error) {
       console.log(error);
-      res.status(404).send({isError: true, message: "Change password failed"})}
-  }
+      res.status(404).send({isError: true, message: "Change password failed"})}}
 };

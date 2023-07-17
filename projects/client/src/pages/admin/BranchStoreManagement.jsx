@@ -12,12 +12,7 @@ import PopoverFilter from "../../component/PopoverFilter";
 import { useSearchParams } from "react-router-dom";
 import Pagination from "../../component/PaginationRowPerPage";
 
-function Table({
-  tableData,
-  setEditData,
-  setOpenEditModal,
-  setOpenDeleteModal,
-}) {
+function Table({ tableData, setEditData, setOpenEditModal, setOpenDeleteModal, }) {
   return (
     <div className="mt-8 flex flex-col">
       <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -26,95 +21,26 @@ function Table({
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                  >
-                    {" "}
-                    ID Store{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Branch Name{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Province{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    City{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Address{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Longitude{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Latitude{" "}
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                  >
-                    {" "}
-                    Actions{" "}
-                  </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-6" > {" "} ID Store{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Branch Name{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Province{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} City{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Address{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Longitude{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Latitude{" "} </th>
+                  <th scope="col" className="px-3 py-3 text-left text-sm font-semibold text-gray-900" > {" "} Actions{" "} </th>
                 </tr>
               </thead>
               <tbody className="divide-y text-left divide-gray-200 bg-white">
                 {tableData.map((stores) => (
                   <tr key={stores.email}>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6">
-                      {" "}
-                      {stores.id || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {stores.branch_name || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {stores.province || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {stores.city || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {stores.address || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {stores.longitude || ""}{" "}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                      {" "}
-                      {stores.latitude || ""}{" "}
-                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6"> {" "} {stores.id || ""}{" "} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {stores.branch_name || ""}{" "} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {stores.province || ""}{" "} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {stores.city || ""}{" "} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {stores.address || ""}{" "} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {stores.longitude || ""}{" "} </td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500"> {" "} {stores.latitude || ""}{" "} </td>
                     <td className="flex whitespace-nowrap px-3 py-3 text-center text-sm font-medium sm:pr-3 justify-center">
                       <div className="flex row">
                         <PencilIcon
@@ -180,7 +106,6 @@ function BranchStoreManagement() {
     setLimit(newLimit);
   };
 
-
   useEffect(() => {
     setSearchParams({ 
       page: page.toString(),
@@ -216,31 +141,16 @@ function BranchStoreManagement() {
   return (
     <Layout>
       <div className="px-4 sm:px-6 lg:px-8">
-        <h1 className="text-xl font-semibold text-gray-900 text-center justify-center">
-          Branch Store Management
-        </h1>
+        <h1 className="text-xl font-semibold text-gray-900 text-center justify-center"> Branch Store Management </h1>
         <div className="flex justify-end">
-          <button
-            className="items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-            onClick={() => setOpenModal(true)}
-          >
-            Add New Store
-          </button>
+          <button className="items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" onClick={() => setOpenModal(true)} > Add New Store </button>
         </div>
         <div className="flex justify-start">
           <PopoverFilter positionClass="">
             <div className="flex flex-wrap space-y-2">
               <div className="flex items-center space-x-4">
                 <p className="w-24 text-right">Branch Store Name:</p>
-                <input
-                  type="text"
-                  name="branchName"
-                  className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
-                  placeholder="Search by branch name"
-                  required
-                  value={branchName}
-                  onChange={(e) => setBranchName(e.target.value)}
-                />
+                <input type="text" name="branchName" className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset" placeholder="Search by branch name" required value={branchName} onChange={(e) => setBranchName(e.target.value)} />
               </div>
               <div className="flex items-center space-x-4">
                 <p className="w-24 text-right">Province:</p>
@@ -256,62 +166,21 @@ function BranchStoreManagement() {
               </div>
               <div className="flex items-center space-x-4">
                 <p className="w-24 text-right">City:</p>
-                <input
-                  type="text"
-                  name="cityName"
-                  className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset"
-                  placeholder="Search by city name"
-                  required
-                  value={cityName}
-                  onChange={(e) => setCityName(e.target.value)}
-                />
+                <input type="text" name="cityName" className="w-52 rounded-md text-sm px-4 py-2 focus:outline-none focus:border-green-400 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset" placeholder="Search by city name" required value={cityName} onChange={(e) => setCityName(e.target.value)} />
               </div>
               <div className="flex items-center space-x-4 w-full">
                 <div className="flex items-end">
-                  <button
-                    type="button"
-                    onClick={() => getListOfStoreData()}
-                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                  >
-                    Search
-                  </button>
+                  <button type="button" onClick={() => getListOfStoreData()} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" > Search </button>
                 </div>
               </div>
             </div>
           </PopoverFilter>
         </div>
-        <Table
-          tableData={storeData}
-          setEditData={setEditData}
-          setOpenEditModal={setOpenEditModal}
-          setOpenDeleteModal={setOpenDeleteModal}
-        />
-           <Pagination
-          rowsOption={[5, 10, 20, 30]}
-          handleChangeRow={handleChangeRowPerPage}
-          rowPerPage={limit}
-          page={page}
-          handleChangePage={handleChangePage}
-          totalPages={totalPages}
-        />
-        <ModalCreateBranchStore
-          open={openModal}
-          setOpen={setOpenModal}
-          getListOfStoreData={getListOfStoreData}
-        />
-        <ModalEditBranchStore
-          open={openEditModal}
-          setOpen={setOpenEditModal}
-          editData={editData}
-          setEditData={setEditData}
-          getListOfStoreData={getListOfStoreData}
-        />
-        <ModalDeleteBranchStore
-          open={openDeleteModal}
-          setOpen={setOpenDeleteModal}
-          deleteData={editData}
-          getListOfStoreData={getListOfStoreData}
-        />
+        <Table tableData={storeData} setEditData={setEditData} setOpenEditModal={setOpenEditModal} setOpenDeleteModal={setOpenDeleteModal} />
+        <Pagination rowsOption={[5, 10, 20, 30]} handleChangeRow={handleChangeRowPerPage} rowPerPage={limit} page={page} handleChangePage={handleChangePage} totalPages={totalPages} />
+        <ModalCreateBranchStore open={openModal} setOpen={setOpenModal} getListOfStoreData={getListOfStoreData} />
+        <ModalEditBranchStore open={openEditModal} setOpen={setOpenEditModal} editData={editData} setEditData={setEditData} getListOfStoreData={getListOfStoreData} />
+        <ModalDeleteBranchStore open={openDeleteModal} setOpen={setOpenDeleteModal} deleteData={editData} getListOfStoreData={getListOfStoreData} />
       </div>
       <Toaster />
     </Layout>

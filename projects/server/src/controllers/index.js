@@ -15,6 +15,8 @@ const shippingController = require("./shippingController")
 const transactionController = require("./transactionController")
 const orderController = require("./orderController")
 const geoController = require("./geoController")
+const dashboardController = require("./dashboardController")
+const salesReportController = require("./salesReportController")
 
 module.exports = {
     userController,
@@ -34,4 +36,6 @@ module.exports = {
     transactionController,
     orderController,
     geoController,
+    dashboardController,
+    salesReportController
 }

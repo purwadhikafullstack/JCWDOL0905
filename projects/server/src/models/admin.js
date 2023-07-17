@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       token_admin: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(500),
       },
       createdAt: {
         type: DataTypes.DATE,
