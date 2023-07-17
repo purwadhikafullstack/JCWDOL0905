@@ -33,6 +33,10 @@ export default function DetailOrder() {
       try {
         const response = await api.get(`transaction/${id}`);
         const orderData = response.data.data;
+        console.log(orderData)
+        console.log(role)
+        console.log(id_branch)
+        setOrder(orderData);
 
         if(id_branch != orderData.id_branch && role != 'SUPER_ADMIN'){
           Navigate('/404')
@@ -47,19 +51,18 @@ export default function DetailOrder() {
         }
 
         setDetail(`${orderData.address_label} - ${orderData.address_detail} - ${orderData.address_city} - ${orderData.address_province}`)
-        setOrder(orderData);
       } catch (error) {
         toast.error(error.response.data.message);
         Navigate('/404')
       }
     }
     fetchData();
-  }, []);
+  }, [role, id_branch]);
+
 
   return (
     <>
         <Layout>
-      {id_branch == order.id_branch || role == 'SUPER_ADMIN' &&
         <div>
           <div className="bg-white">
             <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -174,7 +177,9 @@ export default function DetailOrder() {
                   </h2>
 
                   <dl className="mt-6 space-y-4">
-                  <OrderInformation order={order}/>
+
+                  {order.id != undefined && <OrderInformation order={order}/>}
+
                     {(order.order_status=='waiting for payment' || order.order_status=='waiting for payment confirmation' || order.order_status=='processed') &&
                       <div className="mt-6 flex">
                         <CancelOrderModal id={id} admin={true}/>
@@ -187,7 +192,6 @@ export default function DetailOrder() {
             <Toaster />
           </div>
         </div>
-      }
       </Layout>
     </>
   );
