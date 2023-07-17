@@ -7,8 +7,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { countItem } from "../../redux/cartSlice";
 import pin from "../../assets/images/pin.png"
-import { checkDiscount, countDiscount, rupiah, getTotalPrice, getTotalWeight } from "../../function";
-import CheckoutInformation from "../../component/CheckoutInformation";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const user = useSelector((state) => state.userSlice);
@@ -150,11 +149,9 @@ export default function Cart() {
                           : 
                           <p className="mt-1 text-sm font-medium text-gray-900">
                              {rupiah(item.product_price)}
-                          </p>}
-                          {checkDiscount(item) == 'bonus_qty' &&
-                            <p className="mt-1 text-sm font-medium text-gray-900">
-                              Bonus item: {item.bonus_qty} pcs
-                            </p>}
+                          </p>
+                          }
+                          
                         </div>
                         <div className="mt-4 sm:mt-0 sm:pr-9">
                           <div class="flex items-center">

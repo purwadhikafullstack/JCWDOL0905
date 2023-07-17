@@ -42,7 +42,12 @@ const VerificationBridge = () => {
         <div className="mt-5 mb-5">
           <div className="font-medium self-center text-xl text-center text-black">Invalid token for verification</div>
         </div>
-      </div>
+        <button 
+          className="flex mt-2 items-center justify-center focus:outline-none text-white text-sm uppercase sm:text-base bg-green-500 hover:bg-green-700 rounded-2xl py-2 w-full transition duration-150 ease-in"
+          onClick={() => Navigate("/resend-verification")}>
+            Resend Verification Email
+        </button>
+      </div>      
     </div>
     )}
   </div>

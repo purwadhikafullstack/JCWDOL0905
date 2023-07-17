@@ -44,9 +44,12 @@ function AdminProfile() {
         </>
         ): null;
     }
-    const fetchAdmin = async (token_admin) => {
+    const fetchAdmin = async () => {
+        const config = {
+            headers: { Authorization: `Bearer ${token_admin}` },
+          };
         try {
-            const res = await api.get(`/profiles/admin/${token_admin}`);
+            const res = await api.get(`/profiles/admin/profile`, config);
             setAdminProfileData(res.data.data)
 
         } catch (error) {
@@ -55,9 +58,7 @@ function AdminProfile() {
     };
 
     useEffect(() => {
-        if (token_admin) {
-            fetchAdmin(token_admin);
-        }
+        fetchAdmin();
     }, [])
 
     return (

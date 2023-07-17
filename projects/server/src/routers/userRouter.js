@@ -5,7 +5,7 @@ const auth = require('../middleware/auth')
 
 router.post('/register', auth, userController.register)
 router.post('/login', auth, userController.login)
-router.get("/auth/:token", auth, userController.getUserByToken)
+router.get("/auth", auth, userController.getUserByToken)
 router.get("/:id_user/verify/:token", auth, userController.verify);
 router.post("/resend-verification", auth, userController.resendVerification);
 router.post("/forgot-password", auth, userController.forgotPasswordSendEmail);

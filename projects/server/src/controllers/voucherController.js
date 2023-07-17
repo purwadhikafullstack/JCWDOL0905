@@ -6,26 +6,41 @@ const branch = db.Store_Branch;
 const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const jwtKey = process.env.JWT_SECRET_KEY;
-
+const user_voucher = db.User_Voucher
 
 module.exports = {
   createVoucher: async (req, res) => {
     try {
-      let { voucher_type, id_inventory, voucher_kind, voucher_value, max_discount, min_purchase_amount, start_date, end_date } = req.body;
-      
-      if ( !voucher_type || !voucher_kind || !voucher_value || !start_date || !end_date) {
+      let {
+        voucher_type,
+        id_inventory,
+        voucher_kind,
+        voucher_value,
+        max_discount,
+        min_purchase_amount,
+        start_date,
+        end_date,
+      } = req.body;
+
+      if (
+        !voucher_type ||
+        !voucher_kind ||
+        !voucher_value ||
+        !start_date ||
+        !end_date
+      ) {
         return res.status(400).send({
           isError: true,
           message: "Please complete the data",
         });
       }
-      
-      let data = {...req.body};
-      data.start_date = new Date(start_date)
-      data.end_date = new Date(end_date)
+
+      let data = { ...req.body };
+      data.start_date = new Date(start_date);
+      data.end_date = new Date(end_date);
 
       const now = new Date();
-      now.setHours(0,0,0,0)
+      now.setHours(0, 0, 0, 0);
       if (new Date(start_date) < now) {
         return res.status(400).send({
           isError: true,
@@ -68,8 +83,7 @@ module.exports = {
         ) {
           return res.status(400).send({
             isError: true,
-            message:
-              "Voucher value cannot be greater than the product's price",
+            message: "Voucher value cannot be greater than the product's price",
           });
         }
 
@@ -112,12 +126,11 @@ module.exports = {
       }
 
       const result = await voucher.create(data);
-        return res.status(200).send({
-          isError: false,
-          message: "Successfully create a new voucher",
-          data: result,
-        });
-
+      return res.status(200).send({
+        isError: false,
+        message: "Successfully create a new voucher",
+        data: result,
+      });
     } catch (err) {
       console.log(err);
       res.status(400).send({
@@ -134,33 +147,35 @@ module.exports = {
       const voucherCode = req.query.code || null;
       const voucherType = req.query.type || null;
 
-      const typeQuery = voucherType ? {voucher_type : voucherType} : {};
+      const typeQuery = voucherType ? { voucher_type: voucherType } : {};
       // const codeQuery = voucherCode ? { voucher_code: { [Op.like]: `%${voucherCode}%` } } : {};
 
-        const result = await voucher.findAndCountAll({
-          where: {
-            end_date: {
-              [Op.gte]: new Date(),
-            },
-             ...typeQuery
+      const result = await voucher.findAndCountAll({
+        where: {
+          end_date: {
+            [Op.gte]: new Date(),
           },
-          include: {
-            required : false,
-            model: inventory,
-            include: [{model: product}, {model: branch, attributes: ["branch_name"]}]
-          },
-          order: [['createdAt', sort]],
-          limit: pageSize,
-          offset: (page - 1) * pageSize,
-        });
+          ...typeQuery,
+        },
+        include: {
+          required: false,
+          model: inventory,
+          include: [
+            { model: product },
+            { model: branch, attributes: ["branch_name"] },
+          ],
+        },
+        order: [["createdAt", sort]],
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+      });
 
-        res.status(200).send({
-          isError: true,
-          message: "Successfully get all vouchers",
-          data: result.rows,
-          count: result.count
-        });
-
+      res.status(200).send({
+        isError: true,
+        message: "Successfully get all vouchers",
+        data: result.rows,
+        count: result.count,
+      });
     } catch (err) {
       console.log(err);
       res.status(400).send({
@@ -172,11 +187,11 @@ module.exports = {
 
   getUserVoucher: async (req, res) => {
     try {
-        let bearerToken = req.headers['authorization'];
-        bearerToken = bearerToken.split(' ')[1]
-        const user = jwt.verify(bearerToken, jwtKey);
+      let bearerToken = req.headers["authorization"];
+      bearerToken = bearerToken.split(" ")[1];
+      const user = jwt.verify(bearerToken, jwtKey);
 
-        const query = `select user_vouchers.id, user_vouchers.id,
+      const query = `select user_vouchers.id, user_vouchers.id,
         vouchers.voucher_type, vouchers.voucher_kind, vouchers.voucher_value,
         vouchers.max_discount, vouchers.min_purchase_amount, vouchers.start_date, vouchers.end_date, vouchers.id_inventory,
         products.product_name, products.product_price
@@ -192,7 +207,118 @@ module.exports = {
         res.status(200).send({ message: "Successfully fetch user voucher", results });
 
     } catch (error) {
-        console.log(error);
-        res.status(400).send({isError: true, message: "Get user voucher failed"})}
+      console.log(error);
+      res
+        .status(400)
+        .send({ isError: true, message: "Get user voucher failed" });
+    }
   },
+
+  getVoucherClaimable: async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const voucherQuery = `SELECT
+      Vouchers.id,
+      Vouchers.voucher_type,
+      Vouchers.voucher_kind,
+      Vouchers.voucher_value,
+      Vouchers.max_discount,
+      Vouchers.min_purchase_amount,
+      Vouchers.start_date,
+      Vouchers.end_date,
+      Products.product_name,
+      CASE 
+        WHEN Vouchers.voucher_type = 'total purchase'
+          AND COALESCE((
+            SELECT SUM(Transaction_Headers.final_price) AS Total_price
+            FROM Transaction_Headers
+            WHERE Transaction_Headers.id_user = ${userId} AND Transaction_Headers.order_status IN ('done','shipped')
+          ), 0) > Vouchers.min_purchase_amount THEN 'CLAIMABLE'
+          
+        WHEN Vouchers.voucher_type = 'total purchase'
+          AND COALESCE((
+            SELECT SUM(Transaction_Headers.final_price) AS Total_price
+            FROM Transaction_Headers
+            WHERE Transaction_Headers.id_user = ${userId} AND Transaction_Headers.order_status IN ('done','shipped')
+          ), 0) < Vouchers.min_purchase_amount THEN 'NOT_CLAIMABLE_TXN'
+          
+        WHEN Vouchers.voucher_type = 'shipping'
+          AND COALESCE((
+            SELECT COUNT(*) AS Count
+            FROM Transaction_Headers
+            WHERE Transaction_Headers.id_user = ${userId} AND Transaction_Headers.order_status IN ('done','shipped')
+          ), 0) > 3 THEN 'CLAIMABLE'
+          
+        WHEN Vouchers.voucher_type = 'shipping'
+          AND COALESCE((
+            SELECT COUNT(*) AS Count
+            FROM Transaction_Headers
+            WHERE Transaction_Headers.id_user = ${userId} AND Transaction_Headers.order_status IN ('done','shipped')
+          ), 0) < 3 THEN 'NOT_CLAIMABLE_COUNT'
+          
+        ELSE 'CLAIMABLE'
+      END AS Statuses
+    FROM
+      Vouchers
+    LEFT JOIN Inventories ON Vouchers.id_inventory = Inventories.id
+    LEFT JOIN Products ON Inventories.id_product = Products.id
+    WHERE now() between vouchers.start_date and vouchers.end_date;
+    `;
+      const [data] = await db.sequelize.query(voucherQuery);
+      res.status(200).send({
+        message: "Successfully fetch user voucher",
+        data: data,
+      });
+    } catch (error) {
+      res
+        .status(400)
+        .send({ isError: true, message: "Get available voucher failed" });
+    }
+  },
+
+  getUsedVoucher: async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const usedVoucherQuery = `SELECT
+      User_Vouchers.id_voucher,
+      User_Vouchers.is_used
+    FROM
+      User_Vouchers
+    WHERE
+      User_Vouchers.id_user =  ${userId};`;
+
+      const [data] = await db.sequelize.query(usedVoucherQuery);
+      res.status(200).send({
+        message: "Successfully fetch user voucher",
+        data: data,
+      });
+    } catch (error) {
+      res
+        .status(400)
+        .send({ isError: true, message: "Get available voucher failed" });
+    }
+  },
+  postClaimVoucher: async (req, res) => {
+    try {
+      const {userId, voucherId} = req.body
+
+      const result = await user_voucher.create({
+        id_user: userId,
+        id_voucher: voucherId,
+        is_used: 0
+    });
+
+    res.status(201).send({
+        message: "Successfully claim voucher",
+        data: result,
+    });
+      
+    } catch (error) {
+      res
+        .status(400)
+        .send({ isError: true, message: "Claim voucher failed" });
+    }
+  }
 };

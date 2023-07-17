@@ -60,15 +60,11 @@ module.exports = {
             res.status(404).send({isError: true, message: "Edit profile failed"})}
     },
     getAdminProfile: async (req, res) => {
-        const admin = jwt.verify(req.params.token, jwtKey);
-
-        console.log(admin);
-        const resultBranchAdmin = await admins.findOne({ where: {id: admin.id_admin}, attributes: ["id", "admin_name", "email", "role", "id_branch"], include: [ { model: branch, attributes: ["branch_name", "address", "city", "province"], }, ] });
-
-        console.log(resultBranchAdmin, 'resultbranch');
-        const {rows} = resultBranchAdmin
-        res.status(200).send({isError: false, message: "Get Admin Profile", data: resultBranchAdmin});
-
+        let bearerToken = req.headers['authorization'];
+        bearerToken = bearerToken.split(' ')[1]
+        const admin = jwt.verify(bearerToken, jwtKey);
+        const result = await admins.findOne({ where: {id: admin.id_admin}, attributes: ["id", "admin_name", "email", "role", "id_branch"], include: [ { model: branch, attributes: ["branch_name", "address", "city", "province"], }, ] });
+        res.status(200).send({isError: false, message: "Get Admin Profile Success", data: result});
     },
 
     checkReferral: async (req, res) => {
