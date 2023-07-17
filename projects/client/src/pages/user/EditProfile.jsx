@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
 import toast, { Toaster } from "react-hot-toast";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import logo_groceria from "../../assets/images/logo-brand-groceria.png";
 import NavBar from "../../component/NavBar";
 import Footer from "../../component/Footer";
@@ -22,22 +21,20 @@ const EditProfile = () => {
   const [disableBtn, setDisableBtn] = useState(false)
   const [message, setMessage] = useState()
   const Navigate = useNavigate();
-  const dispatch = useDispatch
   const inputFileRef = useRef(null);
   const user = useSelector((state) => state.userSlice)
+
+  var isDate = function(date) { return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));}
 
   useEffect(() => {
     async function fetchProfiles() {
       try {
         const response = await api.get(`profiles/${user.id}`);
         const profilesData = response.data.data;
-
         var birthdate = new Date(profilesData.birthdate.slice(0, 10));
-
         let yyyy = birthdate.getFullYear();
         let mm = birthdate.getMonth() + 1;
         let dd = birthdate.getDate();
-
         if (dd < 10) dd = "0" + dd;
         if (mm < 10) mm = "0" + mm;
 
@@ -45,12 +42,8 @@ const EditProfile = () => {
         profilesData.birthdate = formattedDate;
 
         setProfiles(profilesData);
-        
-        if(profilesData.profile_picture==undefined){
-          setPreview(default_picture)
-        }else{
-          setPreview(profilesData.profile_picture)
-        }
+        if(profilesData.profile_picture==undefined){setPreview(default_picture)}
+        else{setPreview(profilesData.profile_picture)}
         setEmail(profilesData.email);
       } catch (error) {
         console.log(error.response.data.message)
@@ -76,11 +69,8 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     let birthdate = document.getElementById("birthdate").value
-    if(birthdate==''){
-      birthdate = null;
-    }
+    if(isDate(birthdate)==false){birthdate = null;}
 
     const formData = new FormData();
     formData.append("file", file)
@@ -99,12 +89,10 @@ const EditProfile = () => {
       document.getElementById("email").value = "";
       document.getElementById("birthdate").value = "";
 
-      setTimeout(() => {
-        window.location.href = '/profile'
-      }, 500);
+      setTimeout(() => {window.location.href = '/profile'}, 200);
     } catch (error) {
       toast.error(error.response.data.message);
-    }
+      setIsLoading(false);}
     setIsLoading(false);
   };
 
@@ -116,20 +104,13 @@ const EditProfile = () => {
       if(event.target.files.length == 1){
         let imageFile = event.target.files[0]
         let type = imageFile.type
-
         let checkType = false
         if(type=='image/jpg' || type=='image/jpeg' || type=='image/png') checkType = true
-
         if(!checkType) throw { message: 'Upload only image file with .jpg/.jpeg/.png type' }
         if(imageFile.size > 1000000) throw { message: 'Max image size 1 MB' }
-
         setFile(imageFile);
-        setPreview(URL.createObjectURL(event.target.files[0]));
-      }
-      
-    }catch (error){
-      setMessage(error.message)
-    }
+        setPreview(URL.createObjectURL(event.target.files[0]));}
+    }catch (error){setMessage(error.message)}
   }
 
   return (
@@ -148,17 +129,7 @@ const EditProfile = () => {
                 Profile Picture:
             </label>
             <div className="relative">
-              <input
-                type="file"
-                id="file"
-                name="profile_picture"
-                ref={inputFileRef}
-                onChange={onFileChange}
-                accept="image/jpg, image/jpeg, image/png, image/gif"
-                className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400"
-                placeholder="Choose profile picture"
-                hidden
-              />
+              <input type="file" id="file" name="profile_picture" ref={inputFileRef} onChange={onFileChange} accept="image/jpg, image/jpeg, image/png, image/gif" className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400" placeholder="Choose profile picture" hidden/>
                 <button type="button">
                   <img className="rounded-full h-20 w-20 hover:outline outline-1" src={preview} onClick={()=> inputFileRef.current.click()}></img>
                   <div class="t-0 absolute left-12 bottom-1">
@@ -175,40 +146,22 @@ const EditProfile = () => {
           <div className="mt-5">
             <form autoComplete="off">
               <div className="flex flex-col mb-3">
-                <label className="mb-1 text-xs tracking-wide text-gray-600">
-                  Name:
-                </label>
+                <label className="mb-1 text-xs tracking-wide text-gray-600">Name:</label>
                 <div className="relative">
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    defaultValue={profiles.name}
-                    className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400"
-                    placeholder="Insert name"
-                  />
+                  <input type="text" id="name" name="name" defaultValue={profiles.name} className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400" placeholder="Insert name"/>
                 </div>
               </div>
               <div className="flex flex-col mb-3">
-                <label className="mb-1 text-xs tracking-wide text-gray-600">
-                  Gender:
-                </label>
+                <label className="mb-1 text-xs tracking-wide text-gray-600">Gender:</label>
                 <div className="relative">
                   <select id="gender" name="gender">
                     {profiles.gender != "male" ? (
                       <option value="male">Male</option>
-                    ) : (
-                      <option value="male" selected>
-                        Male
-                      </option>
+                    ) : (<option value="male" selected>Male</option>
                     )}
                     {profiles.gender == "female" ? (
-                      <option value="female" selected>
-                        Female
-                      </option>
-                    ) : (
-                      <option value="female">Female</option>
-                    )}
+                      <option value="female" selected>Female</option>
+                    ) : (<option value="female">Female</option>)}
                   </select>
                 </div>
               </div>
@@ -217,44 +170,19 @@ const EditProfile = () => {
                   Email:
                 </label>
                 <div className="relative">
-                  <input
-                    onChange={(e) => validateEmail(e.target.value)}
-                    type="email"
-                    id="email"
-                    name="email"
-                    defaultValue={profiles.email}
-                    className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400"
-                    placeholder="Enter your email"
-                    required
-                  />
+                  <input onChange={(e) => validateEmail(e.target.value)} type="email" id="email" name="email" defaultValue={profiles.email} className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400" placeholder="Enter your email" required/>
                 </div>
-                <div className="text-red-700 text-xs font-semibold">
-                  {errorEmail ? errorEmail : null}
-                </div>
+                <div className="text-red-700 text-xs font-semibold">{errorEmail ? errorEmail : null}</div>
               </div>
               <div className="flex flex-col mb-3">
-                <label className="mb-1 text-xs tracking-wide text-gray-600">
-                  Birthdate:
-                </label>
+                <label className="mb-1 text-xs tracking-wide text-gray-600">Birthdate:</label>
                 <div className="relative">
-                  <input
-                    type="date"
-                    id="birthdate"
-                    name="birthdate"
-                    defaultValue={profiles.birthdate}
-                    className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400"
-                    placeholder="Insert birthdate"
-                  />
+                  <input type="date" id="birthdate" name="birthdate" defaultValue={profiles.birthdate} className="text-sm placeholder-gray-500 pl-5 pr-4 rounded-2xl border border-gray-400 w-full py-2 focus:outline-none focus:border-green-400" placeholder="Insert birthdate"/>
                 </div>
               </div>
 
               <div className="flex w-full mt-10">
-                <button
-                  type="submit"
-                  disabled={disableBtn || message}
-                  onClick={handleSubmit}
-                  className="flex mt-2 items-center justify-center focus:outline-none text-white text-sm uppercase sm:text-base bg-green-500 hover:bg-green-600 rounded-2xl py-2 w-full transition duration-150 ease-in disabled:opacity-25"
-                >
+                <button type="submit" disabled={disableBtn || message} onClick={handleSubmit} className="flex mt-2 items-center justify-center focus:outline-none text-white text-sm uppercase sm:text-base bg-green-500 hover:bg-green-600 rounded-2xl py-2 w-full transition duration-150 ease-in disabled:opacity-25">
                   {isLoading ? "Loading..." : "Update"}
                 </button>
                 <Toaster />

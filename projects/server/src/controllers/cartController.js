@@ -26,10 +26,7 @@ module.exports = {
             order by carts.createdAt desc;`;
         
             const [results] = await db.sequelize.query(query);
-            res.status(200).send({
-                message: "Successfully fetch cart items",
-                results,
-            });
+            res.status(200).send({message: "Successfully fetch cart items", results,});
 
         } catch (error) {
             console.log(error);
@@ -43,11 +40,7 @@ module.exports = {
             const user = jwt.verify(bearerToken, jwtKey);
 
             let count = await carts.count({where:{ id_user: user.id_user }});
-            res.status(200).send({
-                message: "Cart successfully counted",
-                data: count,
-            });
-
+            res.status(200).send({message: "Cart successfully counted", data: count,});
         } catch (error) {
             console.log(error);
             res.status(404).send({isError: true, message: "Count cart item failed"})
@@ -98,11 +91,7 @@ module.exports = {
                 id_inventory:inventoryId,
             });
         
-            res.status(201).send({
-                message: "Successfully add item to cart",
-                data: addItem,
-            });
-
+            res.status(201).send({message: "Successfully add item to cart", data: addItem,});
         } catch (error) {
             console.log(error);
             res.status(404).send({isError: true, message: "Add item to cart failed"})
@@ -115,14 +104,8 @@ module.exports = {
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
 
-            const result = await carts.destroy({
-                where: { id_user: user.id_user },
-            });
-        
-            res.status(201).send({
-                message: "Successfully delete cart",
-                deleteCount: result,
-            });
+            const result = await carts.destroy({where: { id_user: user.id_user },});
+            res.status(200).send({message: "Successfully delete cart", deleteCount: result,});
 
         } catch (error) {
             console.log(error);
@@ -133,19 +116,10 @@ module.exports = {
     deleteCartItem: async (req, res) => {
         try {
             let cartId = req.params.id
-
             let findCartItem = await carts.findOne({ where: { id: cartId } });
-            if (!findCartItem){
-                return res.status(404).send({ isError: true, message: "Cart item not exist" });
-            }
-
-            await carts.destroy({
-                where: { id: cartId },
-            });
-        
-            res.status(200).send({
-                message: "Successfully delete cart item",
-            });
+            if (!findCartItem){return res.status(404).send({ isError: true, message: "Cart item not exist" });}
+            await carts.destroy({where: { id: cartId },});
+            res.status(200).send({message: "Successfully delete cart item",});
 
         } catch (error) {
             console.log(error);
@@ -159,33 +133,21 @@ module.exports = {
             let num = req.body.num
 
             let findCartItem = await carts.findOne({ where: { id: cartId } });
-            if (!findCartItem){
-                return res.status(404).send({ isError: true, message: "Cart item not exist" });
-            }
+            if (!findCartItem){return res.status(404).send({ isError: true, message: "Cart item not exist" });}
 
             let findInventory = await inventories.findOne({ where: { id: findCartItem.id_inventory } });
-            if (!findInventory){
-                return res.status(404).send({ isError: true, message: "Inventory not exist" });
-            }
+            if (!findInventory){return res.status(404).send({ isError: true, message: "Inventory not exist" });}
 
             let qty = findCartItem.product_qty
             let bonus_qty = findCartItem.bonus_qty
             let stock = findInventory.stock
             let newQty = qty + num
 
-            if(newQty > stock){
-                return res.status(400).send({isError: true, message: "Item quantity can't exceed the available stock"})
-            }
-
-            if((newQty + bonus_qty) > stock){
-                return res.status(400).send({isError: true, message: "Item quantity + bonus item can't exceed the available stock"})
-            }
+            if(newQty > stock){return res.status(400).send({isError: true, message: "Item quantity can't exceed the available stock"})}
+            if((newQty + bonus_qty) > stock){return res.status(400).send({isError: true, message: "Item quantity + bonus item can't exceed the available stock"})}
 
             if(newQty < 1){
-                await carts.destroy({
-                    where: { id: cartId },
-                });
-
+                await carts.destroy({where: { id: cartId },});
                 return res.status(200).send({ message: "Successfully delete cart item" });
             }
 
