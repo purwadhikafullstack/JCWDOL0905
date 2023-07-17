@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { countItem } from "../../redux/cartSlice";
 import pin from "../../assets/images/pin.png"
 import { useNavigate } from "react-router-dom";
+import { checkDiscount, countDiscount, rupiah } from "../../function";
+import CheckoutInformation from "../../component/CheckoutInformation";
 
 export default function Cart() {
   const user = useSelector((state) => state.userSlice);
