@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import NavBar from "../../component/NavBar";
 import { ProductsList } from "../../component/productsList";
 import { useSelector } from "react-redux";
+import NoResultImg from "../../assets/images/no-result.png";
 
 export default function ProductsPage() {
   const [productsInfo, setProductsInfo] = useState([]);
@@ -15,12 +16,12 @@ export default function ProductsPage() {
   const [sort, setSort] = useState(0);
   const [activePage, setActivePage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-
+  const [noResult, setNoResult] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const searchedName = searchParams.get("product_name");
 
-  const branchId = useSelector((state) => state.branchSlice.branchId);  
+  const branchId = useSelector((state) => state.branchSlice.branchId);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -50,15 +51,16 @@ export default function ProductsPage() {
         }
 
         const productData = await api.get(url, {
-          params : {
-            branchId
-          }
+          params: {
+            branchId,
+          },
         });
-
-        searchedName && productData.data.data.length < 1 && toast.error(`${searchValue} is not found`);
+        if (searchedName && productData.data.data.length < 1) {
+          setNoResult(true);
+        }
         setProductsInfo(productData.data.data);
-
-        setTotalPage(Math.ceil(productData.data.count / 12));
+        console.log(productData.data)
+        setTotalPage(Math.ceil((productData.data.count - 1) / 12));
       } catch (err) {
         console.log(err);
       }
@@ -72,34 +74,57 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="bg-neutral-100 min-h-screen">
+    <div className="bg-white min-h-screen">
       <NavBar />
       <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6">
         <h2 className="sr-only">Products</h2>
-        
+
         <Toaster />
         <Category />
 
-        <div className="my-12 flex justify-end drop-shadow-md">
-          <select className="w-72 rounded-md border border-gray-200 focus:border-green-500 active:border-green-500 hover:border-green-500 target:border-green-500" id="sortBy" data-te-select-init value={sort} onChange={handleSortChange}>
-            <option value="1">Sort by Product Name A-Z</option>
-            <option value="2">Sort by Product Name Z-A</option>
-            <option value="3">Sort by Price Lowest-Highest</option>
-            <option value="4">Sort by Price Highest-Lowest</option>
-          </select>
-        </div>
+        {noResult ? (
+          <div className="flex h-full flex-col items-center mb-8 justify-center bg-white rounded-md mb-4">
+            <div className="flex mt-1 md:mt-8 lg:mt-10">
+              <img
+                src={NoResultImg}
+                alt="No result"
+                className=" h-44 lg:h-72"
+              />
+            </div>
+            <div className="text-lg lg:text-xl text-gray-500 text-center font-semibold p-5 mr-4">
+              No Result
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="my-12 flex justify-end drop-shadow-md">
+              <select
+                className="w-72 rounded-md border border-gray-200 focus:border-green-500 active:border-green-500 hover:border-green-500 target:border-green-500"
+                id="sortBy"
+                data-te-select-init
+                value={sort}
+                onChange={handleSortChange}
+              >
+                <option value="1">Sort by Product Name A-Z</option>
+                <option value="2">Sort by Product Name Z-A</option>
+                <option value="3">Sort by Price Lowest-Highest</option>
+                <option value="4">Sort by Price Highest-Lowest</option>
+              </select>
+            </div>
 
-        <ProductsList productsInfo={productsInfo} />
+            <ProductsList productsInfo={productsInfo} />
 
-        <div className="my-12 flex justify-center">
-          <Pagination
-            activePage={activePage}
-            totalPages={totalPage}
-            onPageChange={(e, pageInfo) => {
-              setActivePage(pageInfo.activePage);
-            }}
-          />
-        </div>
+            <div className="my-12 flex justify-center">
+              <Pagination
+                activePage={activePage}
+                totalPages={totalPage}
+                onPageChange={(e, pageInfo) => {
+                  setActivePage(pageInfo.activePage);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

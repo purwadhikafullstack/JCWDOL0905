@@ -1,3 +1,5 @@
+import { checkActiveDiscount } from "../function";
+
 export const ProductsList = ({ productsInfo }) => {
 
   function formatIDR(price) {
@@ -40,7 +42,7 @@ export const ProductsList = ({ productsInfo }) => {
               </div>
 
               <div className="flex">
-                {productInfo.Discounts && (
+                {checkActiveDiscount(productInfo.Discounts) && (
                   <div className="text-sm bg-orange-400 text-white font-semibold px-2 my-0.5 rounded-full">
                     {productInfo.Discounts?.[0]?.discount_type ===
                     "buy one get one"
@@ -54,7 +56,7 @@ export const ProductsList = ({ productsInfo }) => {
                   </div>
                 )}
 
-                {productInfo.Discounts &&
+                {checkActiveDiscount(productInfo.Discounts) &&
                   (productInfo.Discounts?.[0]?.discount_type === "amount" ||
                     productInfo.Discounts?.[0]?.discount_type ===
                       "percentage") && (

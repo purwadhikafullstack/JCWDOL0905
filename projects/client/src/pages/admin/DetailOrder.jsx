@@ -33,9 +33,6 @@ export default function DetailOrder() {
       try {
         const response = await api.get(`transaction/${id}`);
         const orderData = response.data.data;
-        console.log(orderData)
-        console.log(role)
-        console.log(id_branch)
         setOrder(orderData);
 
         if(id_branch != orderData.id_branch && role != 'SUPER_ADMIN'){

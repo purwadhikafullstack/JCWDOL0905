@@ -14,6 +14,18 @@ export const checkDiscount = (item) => {
     return false
 }
 
+export const checkActiveDiscount = (discount) => {
+    let today = new Date()
+    let start = new Date(discount?.[0]?.start_date)
+    let end = new Date(discount?.[0]?.end_date)
+    end.setDate(end.getDate() + 1);
+
+    if (start <= today && end >= today) {
+      return true
+    }
+    return false
+}
+
 export const countDiscount = (item) => {
     if(item.discount_type == 'amount'){
       return item.product_price - item.discount_value

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { api } from "../../api/api";
 import toast from "react-hot-toast";
 
-export default function DeleteProductModal({ open, setOpen, onClose, productId}) {
+export default function DeleteProductModal({ open, setOpen, onClose, productId, fetchProducts}) {
   const [modalOpen, setModalOpen] = useState(open);
   const token = localStorage.getItem("token_admin");
   const cancelButtonRef = useRef(null);
@@ -29,7 +29,7 @@ export default function DeleteProductModal({ open, setOpen, onClose, productId})
         },
       });
       toast.success(response.data.message);
-      window.location.reload();
+      fetchProducts()
       handleClose();
     } catch (error) {
       console.log(error);

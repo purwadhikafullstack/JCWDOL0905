@@ -47,10 +47,10 @@ module.exports = {
         where: {
             id_inventory: id_inventory,
             start_date: {
-                [Op.lte]: data.end_date // Discount starts before or on end_date
+                [Op.lte]: data.end_date
             },
             end_date: {
-                [Op.gte]: data.start_date // Discount ends after or on start_date
+                [Op.gte]: data.start_date
               }
         }
       })
@@ -119,9 +119,6 @@ module.exports = {
       const productName = req.query.name || null;
       const discountType = req.query.type || null;
       const branchId = req.query.branchId || 1;
-      console.log("branchId", branchId)
-      
-
       const typeQuery = discountType ? {discount_type : discountType} : {};
       const searchQuery = productName ? { product_name: { [Op.like]: `%${productName}%` } } : {};
 
@@ -167,12 +164,9 @@ module.exports = {
       }
 
       const searchInventory = productName ? {id_inventory : inventoryIds} : {};
-
+      
       const result = await discount.findAndCountAll({
         where: {
-          end_date: {
-              [Op.gte]: new Date(),
-            },
             ...searchInventory,
             ...typeQuery,
         },
@@ -202,5 +196,4 @@ module.exports = {
       });
     }
   },
-  
 };

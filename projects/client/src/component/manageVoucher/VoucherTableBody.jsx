@@ -39,7 +39,9 @@ export default function VoucherTableBody({ vouchers, branchId }) {
               )}
             </td>
             <td className="px-3 py-3 text-sm text-gray-500">
-              {voucher.voucher_kind === "percentage" ? voucher.voucher_value + "%" : formatIDR(voucher.voucher_value)}
+              {voucher.voucher_kind === "percentage"
+                ? voucher.voucher_value + "%"
+                : formatIDR(voucher.voucher_value)}
             </td>
             <td className="px-3 py-3 text-sm text-gray-500">
               {formatIDR(voucher.max_discount) || "-"}
@@ -50,6 +52,22 @@ export default function VoucherTableBody({ vouchers, branchId }) {
             <td className="px-3 py-3 text-sm text-gray-500">
               {formattedDate(voucher.start_date)} -{" "}
               {formattedDate(voucher.end_date)}
+            </td>
+            <td className="px-3 py-3 text-sm text-gray-500">
+              {new Date(voucher.end_date) < new Date() ? (
+                <div className="w-20 text-center text-red-600 border border-red-600 bg-red-100 rounded rounded-full">
+                  Inactive
+                </div>
+              ) : new Date(voucher.start_date) <= new Date() &&
+                new Date(voucher.end_date) >= new Date() ? (
+                <div className="text-green-600 text-center w-20 border border-green-600 bg-green-100 rounded rounded-full">
+                  Active
+                </div>
+              ) : (
+                <div className="text-blue-600 text-center w-20 border border-blue-600 bg-blue-100 rounded rounded-full">
+                  Upcoming
+                </div>
+              )}
             </td>
           </tr>
         )

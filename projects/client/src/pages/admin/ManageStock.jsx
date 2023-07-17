@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { api } from "../../api/api";
 import Layout from "../../component/Layout";
 import { Toaster } from "react-hot-toast";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useSelector } from "react-redux";
 import { Pagination } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
-import UpdateStockModal from "../../component/UpdateStockModal";
+import UpdateStockModal from "../../component/manageStock/UpdateStockModal";
 import { useSearchParams} from "react-router-dom";
+import Table from "../../component/Table";
+import StockTableBody from "../../component/manageStock/StockTableBody";
 
 const ManageStock = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,7 +28,6 @@ const ManageStock = () => {
   const [selectedProduct, setSelectedProduct] = useState({})
   const role = useSelector((state) => state.adminSlice.role);
   const id_branch = useSelector((state) => state.adminSlice.id_branch);
-
   const branchId = role === "BRANCH_ADMIN" ? id_branch : selectedBranchId;
 
   useEffect(() => {
@@ -71,10 +71,10 @@ const ManageStock = () => {
             sort: sort,
             name: searchedProduct,
             category: selectedCategory,
-            page: activePage
+            page: activePage,
+            adm: 1
           },
         });
-
         setInventories(productData.data.data);
         setTotalPage(Math.ceil(productData.data.count / 12));
       } catch (error) {
@@ -90,33 +90,23 @@ const ManageStock = () => {
     setOrder(values.order);
     setActivePage(1);
   };
-
   const handleFilterCategory = (e) => {
     setSelectedCategory(e.target.value)
     setActivePage(1);
   };
-
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       setActivePage(1);
       setSearchedProduct(search)
   }};
-
   const openEditModal = (inventoryData) => {
     setSelectedProduct(inventoryData);
     setEditModalOpen(true);
   };
-
   const closeEditModal = () => {
     setSelectedProduct({});
     setEditModalOpen(false);
   };
-
-  function formatIDR(price) {
-    let idr = Math.ceil(price).toLocaleString("id-ID");
-    return `Rp ${idr}`;
-  }
-
   return (
     <Layout>
       <div className="flex min-w-screen min-h-screen">
@@ -176,13 +166,9 @@ const ManageStock = () => {
               </div>
 
               <div className="flex mt-4 md:ml-8 md:mt-0 items-center">
-                <label className="block w-16 text-md font-medium leading-6 text-gray-900 mr-2 ">
-                  Sort by:
-                </label>
+                <label className="block w-16 text-md font-medium leading-6 text-gray-900 mr-2 ">Sort by:</label>
                 <select
-                  className="w-56 lg:w-60 rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500"
-                  id="filter" value={JSON.stringify({ order, sort })}
-                  onChange={handleSortChange}
+                  className="w-56 lg:w-60 rounded-md border border-gray-300 focus:ring-2 focus:ring-inset focus:ring-green-600 active:border-green-500 hover:border-green-500 target:border-green-500" id="filter" value={JSON.stringify({ order, sort })} onChange={handleSortChange}
                 >
                   <option value='{"order":"product_name","sort":"ASC"}'>Product Name A-Z</option>
                   <option value='{"order":"product_name","sort":"DESC"}'>Product Name Z-A</option>
@@ -192,120 +178,11 @@ const ManageStock = () => {
               </div>
             </div>
 
-            <div className="mt-8 flex flex-col">
-              <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                  <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-300">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th
-                            scope="col"
-                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                          >
-                            ID
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                          >Category
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                          >
-                            Product
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                          >
-                            Discount
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                          >
-                            Price
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3 text-left text-sm font-semibold text-gray-900"
-                          >
-                            Stock
-                          </th>
-                          <th
-                            scope="col"
-                            className="flex px-3 py-3 sm:pr-3 text-sm text-center items-center justify-center font-semibold text-gray-900"
-                          >
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y text-left divide-gray-200 bg-white">
-                        {inventories.map((inventory) => (
-                          <tr key={inventory.id}>
-                            <td className="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900 sm:pl-6">
-                              {inventory.id}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                              {inventory.Product?.Category?.category_name}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                              {inventory.Product.product_name}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                              {inventory.Discounts?.[0]?.discount_type ===
-                              "buy one get one"
-                                ? inventory.Discounts?.[0]?.discount_type
-                                : inventory.Discounts?.[0]?.discount_type ===
-                                  "percentage"
-                                ? `${inventory.Discounts?.[0]?.discount_value}%`
-                                : inventory.Discounts?.[0]?.discount_type ===
-                                  "amount"
-                                ? `${formatIDR(
-                                    inventory.Discounts?.[0]?.discount_value
-                                  )} off`
-                                : null}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                              {formatIDR(inventory.discounted_price)}
-                              {inventory.Discounts?.[0]?.discount_type ===
-                                "amount" ||
-                              inventory.Discounts?.[0]?.discount_type ===
-                                "percentage" ? (
-                                    <span className="ml-2 text-sm text-gray-400 line-through">
-                                    {formatIDR(inventory.Product.product_price)}
-                                  </span>
-                              ) : (
-                                <></>
-                              )}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                              {inventory.stock}
-                            </td>
-                            <td className="flex whitespace-nowrap px-3 py-3 text-center text-sm font-medium sm:pr-3 justify-center">
-                              <div className="flex row">
-                                <button className="hover:bg-gray-100 hover:rounded-md active:bg-gray-200 active:rounded-md p-1" onClick={() => openEditModal(inventory)}>
-                                <PencilSquareIcon
-                                  className="fill-green-500 hover:fill-green-600 active:fill-green-600 block h-6 w-6"
-                                  aria-hidden="true"
-                                />
-                                </button>
-                                
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Table
+              headCols={["ID", "Category", "Product", "Discount", "Price", "Stock", "Actions" ]} tableBody={<StockTableBody inventories={inventories} openEditModal={openEditModal}/>}
+            />
             <div className="my-12 flex justify-center">
-              <Pagination
-                activePage={activePage}
+              <Pagination activePage={activePage}
                 totalPages={totalPage}
                 onPageChange={(e, pageInfo) => {
                   setActivePage(pageInfo.activePage);
@@ -320,5 +197,4 @@ const ManageStock = () => {
     </Layout>
   );
 };
-
 export default ManageStock;

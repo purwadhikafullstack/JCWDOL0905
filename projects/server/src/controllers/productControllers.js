@@ -18,6 +18,19 @@ module.exports = {
           });
         }
 
+        const isProductExist = await product.findOne({
+          where: {
+            product_name,
+          },
+        });
+  
+        if (isProductExist) {
+          return res.status(400).send({
+            isError: true,
+            message: "Product name already exist",
+          });
+        }
+
         if (!req.file) {
           return res.status(400).send({
             isError: true,
@@ -109,6 +122,21 @@ module.exports = {
   },
   updateProduct: async (req, res) => {
     try {
+      const {product_name} = req.body;
+      const productWithSameName = await product.findOne({
+        where: {
+          product_name: product_name,
+          id: { [Op.ne]: req.params.id }, // Excludes the current product ID
+        },
+      });
+
+      if (productWithSameName) {
+        return res.status(400).send({
+          isError: false,
+          message: "Same product name already exists",
+        });
+      }
+
       if (!req.file) {
         await product.update(
           {

@@ -74,7 +74,7 @@ module.exports = {
       attributes: {
         include: [
           [
-            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() limit 1),0)"),
+            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() and start_date <= CURDATE() limit 1),0)"),
             'discounted_price',
           ],
         ],
@@ -88,7 +88,7 @@ module.exports = {
       isError: false,
       message: "Successfully fetch inventories",
       data: allInventories.rows,
-      count: allInventories.count,
+      count: allInventories.count ,
     });
 
     } catch (err) {
@@ -230,7 +230,7 @@ module.exports = {
       attributes: {
         include: [
           [
-            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() limit 1),0)"),
+            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() and start_date <= CURDATE() limit 1),0)"),
             'discounted_price',
           ],
         ],
@@ -256,7 +256,6 @@ module.exports = {
     const id = req.params.id;
     try {
       const { stock, status, quantity } = req.body;
-      console.log(stock)
 
       const inventoryData = await inventory.findOne({
         where: {id : id}
@@ -265,7 +264,9 @@ module.exports = {
       if (!inventoryData) {
         return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true})
       }
-
+      if (status === 'out' && inventoryData.stock < quantity) {
+        return res.status(404).send({ isError: true, message: "Can't reduce quantity more than available stock", navigate: true})
+      }
       const data = await inventory.update({
         stock: stock
       },{

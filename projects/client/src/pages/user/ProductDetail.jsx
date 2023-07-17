@@ -9,6 +9,7 @@ import { countItem } from "../../redux/cartSlice";
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import ProductInformation from "../../component/ProductInformation";
+import { checkDiscount } from "../../function";
 
 const ProductDetail = () => {
     const dispatch = useDispatch()
@@ -23,7 +24,6 @@ const ProductDetail = () => {
     const [productQty, setProductQty] = useState(1)
     const [errorQuantity, setErrorQuantity] = useState();
     const [bonusQty, setBonusQty] = useState(0)
-
 
     let validateQuantity = (value) => {
       if (value == "") {
@@ -66,7 +66,6 @@ const ProductDetail = () => {
                         break;
                     }
                 }
-
                 if(deleteCart){
                     if (window.confirm("You have items from other branch on your cart. Delete current cart?") == true) {
                         const deleteCart = await api.delete(`cart`, {'headers': {'Authorization': `Bearer ${token}`}});
@@ -138,6 +137,9 @@ const ProductDetail = () => {
       e.preventDefault()
       if (productQty > 1) {
         setProductQty(parseInt(productQty) - 1)
+        if (parseInt(productQty) - 1 <= product.stock) {
+          setErrorQuantity("")
+        }
       }
     }
 
@@ -161,30 +163,28 @@ const ProductDetail = () => {
                     {token && (
                       <div className="flex">
                         <div className="flex mr-8">
-                          <button disabled={productQty === 1} className="flex items-center justify-center disabled:opacity-50" onClick={decreaseQty}>
+                          <button disabled={productQty <= 1} className="flex items-center justify-center disabled:opacity-50" onClick={decreaseQty}>
                             <MinusCircleIcon className="
                             block h-7 w-7 stroke-gray-600 hover:stroke-green-600 active:stroke-green-600 " />
                           </button>
-                          <input id="quantity" className={`w-16 mx-3 border border-gray-300 border-b-2 border-t-0 border-x-0  rounded-md justify-center items-center focus:border-green-500 focus:ring-green-500 active:border-green-500 text-xl font-bold text-gray-600 text-center ${errorQuantity ? "focus:border-red-500 focus:ring-red-500 active:border-red-500" : ""}`} type="number" defaultValue={1} value={productQty} onChange={(e) => validateQuantity(e.target.value)}></input>
-                          <button disabled={productQty === product.stock} onClick={increaseQty} className="flex items-center justify-center disabled:opacity-50 disabled:stroke-gray">
+                          <input id="quantity" className={`w-16 mx-3 border border-gray-300 border-b-2 border-t-0 border-x-0  rounded-md justify-center items-center focus:border-green-500 focus:ring-green-500 active:border-green-500 text-xl font-bold text-gray-600 text-center ${errorQuantity ? "focus:border-red-500 focus:ring-red-500 active:border-red-500" : ""}`} type="number" defaultValue={1} value={productQty} onChange={(e) => validateQuantity(e.target.value)}/>
+                          <button disabled={productQty >= product.stock || errorQuantity} onClick={increaseQty} className="flex items-center justify-center disabled:opacity-50 disabled:stroke-gray">
                             <PlusCircleIcon className="block h-7 w-7 stroke-gray-600 hover:stroke-green-600 active:stroke-green-600" />
 
                           </button>
                         </div>
                         <button
                         onClick={() => addToCart(id)}
-                        disabled={product.stock === 0 || errorQuantity}
+                        disabled={productQty > product.stock || product.stock <= 0 || productQty < 1 || errorQuantity}
                         className="flex items-center justify-center disabled:opacity-60 rounded-md border border-transparent bg-green-500 py-2 px-8 text-lg font-bold text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                       >
                         Add to Cart
                       </button>
                       </div>
-                      
                     )}
                   </div>
               </section>
               <div className="text-red-700 text-sm font-semibold mt-2 h-10">{errorQuantity ? errorQuantity : " "}</div>
-            
             </div>
           </div>
         </div>

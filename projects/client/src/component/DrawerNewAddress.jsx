@@ -17,7 +17,6 @@ export default function DrawerNewAddress() {
             if(open==false){
                 setProvinceId(1)
             }
-
             const response = await api.get(`city?provinceId=${provinceId}`)
             const cityData = response.data.data
 
@@ -74,23 +73,21 @@ export default function DrawerNewAddress() {
             <Transition.Root show={open} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={()=> {}}>
                     <div className="fixed inset-0" />
+
                     <div className="fixed inset-0 overflow-hidden">
                     <div className="absolute inset-0 overflow-hidden">
                         <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-                        <Transition.Child as={Fragment} enter="transform transition ease-in-out duration-500 sm:duration-700" enterFrom="translate-x-full" enterTo="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leaveFrom="translate-x-0" leaveTo="translate-x-full">                            <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
+                        <Transition.Child as={Fragment} enter="transform transition ease-in-out duration-500 sm:duration-700" enterFrom="translate-x-full" enterTo="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leaveFrom="translate-x-0" leaveTo="translate-x-full">   
+                            <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
                             <form className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                                 <div className="h-0 flex-1 overflow-y-auto">
                                 <div className="bg-green-700 py-6 px-4 sm:px-6">
                                     <div className="flex items-center justify-between">
                                     <Dialog.Title className="text-lg font-medium text-white">New Address</Dialog.Title>
                                     <div className="ml-3 flex h-7 items-center">
-                                        <button
-                                        type="button"
-                                        className="rounded-md bg-green-700 text-green-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                        onClick={() => setOpen(false)}
-                                        >
-                                        <span className="sr-only">Close panel</span>
-                                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                        <button type="button" className="rounded-md bg-green-700 text-green-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white" onClick={() => setOpen(false)}>
+                                            <span className="sr-only">Close panel</span>
+                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
                                     </div>
                                     </div>
@@ -108,6 +105,7 @@ export default function DrawerNewAddress() {
                                                 name="label"
                                                 id="label"
                                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                                            
                                                 />
                                             </div>
                                         </div>
@@ -121,14 +119,11 @@ export default function DrawerNewAddress() {
                                                 name="address_detail"
                                                 rows={3}
                                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                                                defaultValue={''}
                                                 />
                                             </div>
                                         </div>
                                         <div>
-                                            <label htmlFor="province" className="block text-sm font-medium text-gray-900">
-                                                Province
-                                            </label>
+                                            <label htmlFor="province" className="block text-sm font-medium text-gray-900">Province</label>
                                             <div className="mt-1">
                                                 <select
                                                 name="province"
@@ -144,11 +139,9 @@ export default function DrawerNewAddress() {
                                                 </select>
                                             </div>
                                         </div>
-  
+                                        
                                         <div>
-                                            <label htmlFor="project-name" className="block text-sm font-medium text-gray-900">
-                                                City
-                                            </label>
+                                            <label htmlFor="project-name" className="block text-sm font-medium text-gray-900">City</label>
                                             <div className="mt-1">
                                                 <select
                                                 name="city"
@@ -163,6 +156,7 @@ export default function DrawerNewAddress() {
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div className="relative flex items-start py-4">
                                             <div className="min-w-0 flex-1 text-sm">
                                                 <label htmlFor="is_main" className="font-medium text-gray-700">
@@ -183,8 +177,8 @@ export default function DrawerNewAddress() {
                                 </div>
                                 </div>
                                 <div className="flex flex-shrink-0 justify-end px-4 py-4">
-                                    <button type="button" className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setOpen(false)}>Cancel</button>
-                                    <button type="button" onClick={() => handleSubmit()} className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">Add Address</button>
+                                <button type="button" className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onClick={() => setOpen(false)}>Cancel</button>
+                                <button type="button" onClick={() => handleSubmit()} className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">Submit</button>
                                 </div>
                             </form>
                             </Dialog.Panel>

@@ -153,7 +153,11 @@ export default function Cart() {
                              {rupiah(item.product_price)}
                           </p>
                           }
-                          
+                          {checkDiscount(item) == 'bonus_qty' &&
+                            <p className="mt-1 text-sm font-medium text-gray-900">
+                              Bonus item: {item.bonus_qty} pcs
+                            </p>
+                          }
                         </div>
                         <div className="mt-4 sm:mt-0 sm:pr-9">
                           <div class="flex items-center">

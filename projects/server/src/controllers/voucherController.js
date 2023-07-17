@@ -11,34 +11,39 @@ const user_voucher = db.User_Voucher
 module.exports = {
   createVoucher: async (req, res) => {
     try {
-      let {
-        voucher_type,
-        id_inventory,
-        voucher_kind,
-        voucher_value,
-        max_discount,
-        min_purchase_amount,
-        start_date,
-        end_date,
-      } = req.body;
-
-      if (
-        !voucher_type ||
-        !voucher_kind ||
-        !voucher_value ||
-        !start_date ||
-        !end_date
-      ) {
+      let { voucher_type, id_inventory, voucher_kind, voucher_value, max_discount, min_purchase_amount, start_date, end_date } = req.body;
+      
+      if ( !voucher_type || !voucher_kind || !voucher_value || !start_date || !end_date) {
         return res.status(400).send({
           isError: true,
           message: "Please complete the data",
         });
       }
 
-      let data = { ...req.body };
-      data.start_date = new Date(start_date);
-      data.end_date = new Date(end_date);
-
+      if (voucher_type === "total purchase" || voucher_type === "shipping" || voucher_type === "referral code" ) {
+        const voucherExists = await voucher.findOne({ where : {voucher_type : voucher_type, start_date: {
+          [Op.lte]: end_date 
+        },
+        end_date: {
+          [Op.gte]: start_date
+        } } })
+        if (voucherExists) {
+          return res.status(400).send({
+            isError: true,
+            message: `Active voucher with type ${voucher_type} already exists`,
+          });
+        }
+      }
+      
+      let data = {...req.body};
+      data.start_date = new Date(start_date)
+      data.end_date = new Date(end_date)
+      if (voucher_type !== "total purchase") {
+        data.min_purchase_amount = null;
+      }
+      if (voucher_kind === "amount") {
+        data.max_discount = null;
+      }
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       if (new Date(start_date) < now) {
@@ -55,6 +60,13 @@ module.exports = {
         });
       }
 
+      if (voucher_kind === "percentage" && voucher_value > 100) {
+        return res.status(400).send({
+          isError: true,
+          message: "Voucher value cannot be greater than 100%",
+        });
+      }
+
       if (voucher_type === "product") {
         if (!id_inventory) {
           return res.status(400).send({
@@ -63,6 +75,19 @@ module.exports = {
           });
         }
 
+        const voucherProductExists = await voucher.findOne({ where : {id_inventory : id_inventory, start_date: {
+          [Op.lte]: end_date 
+        },
+        end_date: {
+          [Op.gte]: start_date
+        } } })
+
+        if (voucherProductExists) {
+          return res.status(400).send({
+            isError: true,
+            message: `Active voucher already exists`,
+          });
+        }
         const featuredProduct = await inventory.findOne({
           where: {
             id: id_inventory,
@@ -83,14 +108,8 @@ module.exports = {
         ) {
           return res.status(400).send({
             isError: true,
-            message: "Voucher value cannot be greater than the product's price",
-          });
-        }
-
-        if (voucher_kind === "percentage" && voucher_value > 100) {
-          return res.status(400).send({
-            isError: true,
-            message: "Voucher value cannot be greater than 100",
+            message:
+              "Voucher value cannot be greater than the product's price",
           });
         }
 
@@ -103,20 +122,13 @@ module.exports = {
       }
 
       if (voucher_type === "total purchase") {
-        if (!max_discount || !min_purchase_amount) {
+        if ( !min_purchase_amount ) {
           return res.status(400).send({
             isError: true,
             message: "Please complete the data",
           });
         }
-
-        if (voucher_kind === "percentage" && voucher_value > 100) {
-          return res.status(400).send({
-            isError: true,
-            message: "Voucher value cannot be greater than or equal to 100",
-          });
-        }
-
+        
         const result = await voucher.create(data);
         return res.status(200).send({
           isError: false,
@@ -144,38 +156,31 @@ module.exports = {
       const page = parseInt(req.query.page) || 1;
       const pageSize = 12;
       const sort = req.query.sort || "ASC";
-      const voucherCode = req.query.code || null;
       const voucherType = req.query.type || null;
 
-      const typeQuery = voucherType ? { voucher_type: voucherType } : {};
-      // const codeQuery = voucherCode ? { voucher_code: { [Op.like]: `%${voucherCode}%` } } : {};
+      const typeQuery = voucherType ? {voucher_type : voucherType} : {};
 
-      const result = await voucher.findAndCountAll({
-        where: {
-          end_date: {
-            [Op.gte]: new Date(),
+        const result = await voucher.findAndCountAll({
+          where: {
+             ...typeQuery
           },
-          ...typeQuery,
-        },
-        include: {
-          required: false,
-          model: inventory,
-          include: [
-            { model: product },
-            { model: branch, attributes: ["branch_name"] },
-          ],
-        },
-        order: [["createdAt", sort]],
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
-      });
+          include: {
+            required : false,
+            model: inventory,
+            include: [{model: product}, {model: branch, attributes: ["branch_name"]}]
+          },
+          order: [['createdAt', sort]],
+          limit: pageSize,
+          offset: (page - 1) * pageSize,
+        });
 
-      res.status(200).send({
-        isError: true,
-        message: "Successfully get all vouchers",
-        data: result.rows,
-        count: result.count,
-      });
+        res.status(200).send({
+          isError: true,
+          message: "Successfully get all vouchers",
+          data: result.rows,
+          count: result.count
+        });
+
     } catch (err) {
       console.log(err);
       res.status(400).send({
@@ -228,6 +233,7 @@ module.exports = {
       Vouchers.start_date,
       Vouchers.end_date,
       Products.product_name,
+      Store_branches.branch_name,
       CASE 
         WHEN Vouchers.voucher_type = 'total purchase'
           AND COALESCE((
@@ -263,6 +269,7 @@ module.exports = {
       Vouchers
     LEFT JOIN Inventories ON Vouchers.id_inventory = Inventories.id
     LEFT JOIN Products ON Inventories.id_product = Products.id
+    LEFT JOIN Store_branches On Inventories.id_branch = Store_branches.id
     WHERE now() between vouchers.start_date and vouchers.end_date;
     `;
       const [data] = await db.sequelize.query(voucherQuery);

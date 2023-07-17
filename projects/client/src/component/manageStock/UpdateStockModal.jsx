@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useEffect } from "react";
-import { api } from "../api/api";
+import { api } from "../../api/api";
 import toast from "react-hot-toast";
 
 export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
@@ -17,6 +17,7 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
       .integer("Addition quantity must be an integer"),
     substraction: Yup.number("Substraction quantity must be a number")
       .min(0, "Substraction must be at least 0")
+      .max(inventory.stock, "Can't reduce more than product's stock")
       .integer("Substraction quantity must be an integer"),
   });
 
@@ -203,7 +204,6 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
                                     </Field>
                                   </div>
 
-                                  {/* </Form> */}
                                 </div>
                               </div>
                             </div>

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { checkActiveDiscount } from "../function";
 
 const ProductInformation = (props) => {
     let product = props.product
@@ -38,7 +39,7 @@ const ProductInformation = (props) => {
                     {formatIDR(product?.discounted_price)}
                   </div>
 
-                  {product.Discounts && (
+                  {checkActiveDiscount(product.Discounts) && (
                     <div className="text-sm bg-orange-400 text-white font-semibold px-2 rounded-full">
                       {product.Discounts?.[0]?.discount_type === "buy one get one"
                         ? product.Discounts?.[0]?.discount_type
@@ -49,7 +50,7 @@ const ProductInformation = (props) => {
                         : null}
                     </div>
                   )}
-                  {product.Discounts &&
+                  {checkActiveDiscount(product.Discounts) &&
                     (product.Discounts?.[0]?.discount_type === "amount" ||
                     product.Discounts?.[0]?.discount_type === "percentage") && (
                       <div className="ml-3 mb-0.5 text-lg text-gray-400 line-through">
