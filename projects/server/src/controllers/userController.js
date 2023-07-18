@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const tokens = db.Token;
 const sendEmail = require("../helper/sendEmail");
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') });
 const jwtKey = process.env.JWT_SECRET_KEY;
 const { checkReferralCodeUniqueness, generateRandomReferralCode } = require('../helper/referralCodeGenerator');
 const { where } = require("sequelize");
