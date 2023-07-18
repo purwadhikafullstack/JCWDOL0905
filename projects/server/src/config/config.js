@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config({ path: join(__dirname, '../.env') });
 
 module.exports = {
   development: {
@@ -16,9 +16,9 @@ module.exports = {
     dialect: "mysql",
   },
   production: {
-    username: "jcwdol0905",
-    password: "group05",
-    database: "jcwdol0905",
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     host: "127.0.0.1",
     dialect: "mysql",
   },
