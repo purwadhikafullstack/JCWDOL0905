@@ -7,20 +7,20 @@ module.exports = {
     password: "groupol0905",
     database: "jcwdol0905",
     host: "127.0.0.1",
-    dialect: "mysql",
+    dialect: "mysql"
   },
   test: {
     username: "jcwdol0905",
     password: "groupol0905",
     database: "jcwdol0905",
     host: "127.0.0.1",
-    dialect: "mysql",
+    dialect: "mysql"
   },
   production: {
     username: "jcwdol0905",
     password: "groupol0905",
     database: "jcwdol0905",
     host: "127.0.0.1",
-    dialect: "mysql",
-  },
+    dialect: "mysql"
+  }
 };
