@@ -1,4 +1,5 @@
-const key = process.env.SECRET_KEY
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') });
 
 module.exports = (req, res, next) => {
     if (req.headers.secret_key == key) {
