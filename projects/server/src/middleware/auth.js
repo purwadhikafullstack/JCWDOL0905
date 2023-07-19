@@ -1,13 +1,13 @@
-require("dotenv/config");
+require("dotenv").config({path:"./../.env"})
 
 module.exports = (req, res, next) => {
-    const key = "apahayo"
     console.log('Headers Secret Key')
     console.log(req.headers.secret_key)
-    console.log(key)
-    if (req.headers.secret_key == key) {
-        return next()
-    }
+    console.log('>>>')
+    console.log(process.env.SECRET_KEY)
+    // if (req.headers.secret_key == key) {
+    //     return next()
+    // }
 
     res.status(500).send("auth fail")
 }
