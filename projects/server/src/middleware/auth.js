@@ -1,5 +1,3 @@
-const { join } = require("path");
-require('dotenv').config({ path: join(__dirname, '../.env') });
 const key = process.env.SECRET_KEY
 
 module.exports = (req, res, next) => {
