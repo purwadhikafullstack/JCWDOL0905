@@ -3,6 +3,8 @@ require("dotenv").config({ path: join(__dirname, "../.env") });
 const key = "apahayo"
 
 module.exports = (req, res, next) => {
+    console.log(req.headers.secret_key)
+    console.log(key)
     if (req.headers.secret_key == key) {
         return next()
     }
