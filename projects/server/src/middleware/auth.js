@@ -1,7 +1,7 @@
 require("dotenv/config");
-const key = "apahayo"
 
 module.exports = (req, res, next) => {
+    const key = "apahayo"
     console.log('Headers Secret Key')
     console.log(req.headers.secret_key)
     console.log(key)
