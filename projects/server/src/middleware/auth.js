@@ -1,4 +1,5 @@
-require("dotenv").config({path:"./../.env"})
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, './../.env') });
 
 module.exports = (req, res, next) => {
     console.log('Headers Secret Key')
