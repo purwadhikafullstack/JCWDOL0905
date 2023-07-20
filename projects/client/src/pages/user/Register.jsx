@@ -68,7 +68,7 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await api.post("users/register", {name: name, email: email, password: password, phone_number: phoneNumber});
+      const response = await api.post("users/register", {name: name, email: email, password: password, phone_number: phoneNumber}, {headers: {secret_key: 'apahayo'}});
       toast.success(response.data.message);
       setTimeout(() => {Navigate('/resend-verification')}, 1500);
     } catch (error) {
