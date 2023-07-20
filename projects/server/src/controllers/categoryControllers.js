@@ -27,7 +27,7 @@ module.exports = {
         });
       }
 
-      let imageUrl = req.protocol + "://" + req.get("host") + "/api/categories/" + req.file.filename;
+      let imageUrl = process.env.API_URL + "/categories/" + req.file.filename;
 
       const newCategory = await category.create({
         category_name: category_name,
@@ -113,7 +113,7 @@ module.exports = {
         });
       }
 
-      let imageUrl = req.protocol + "://" + req.get("host") + "/api/categories/" + req.file.filename;
+      let imageUrl = process.env.API_URL + "/categories/" + req.file.filename;
 
       const updatedCategory = await category.update(
         {

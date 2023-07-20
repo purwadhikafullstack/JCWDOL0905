@@ -168,7 +168,7 @@ export default function AdminOrder(props) {
                                             disabled={page === 1}
                                             onClick={() => setPage(page-1)}
                                             type="button"
-                                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                                         >
                                             <ChevronLeftIcon className="w-5 h-5" />
                                         </button>
@@ -179,7 +179,7 @@ export default function AdminOrder(props) {
                                             disabled={page >= totalPages}
                                             type="button"
                                             onClick={() => setPage(page+1)}
-                                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                            className="relative inline-flex items-center border border-gray-300 bg-white disabled:opacity-25 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                                         >
                                             <ChevronRightIcon className="w-5 h-5" />
                                         </button>

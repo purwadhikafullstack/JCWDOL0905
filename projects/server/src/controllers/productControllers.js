@@ -38,7 +38,7 @@ module.exports = {
           });
         }
 
-        let imageUrl = req.protocol + "://" + req.get("host") + "/api/products/" + req.file.filename;
+        let imageUrl = process.env.API_URL + "/products/" + req.file.filename;
 
         const newProduct = await product.create({
           product_name: product_name,
@@ -153,7 +153,7 @@ module.exports = {
         });
       }
 
-      let imageUrl = req.protocol + "://" + req.get("host") + "/api/products/" + req.file.filename;
+      let imageUrl = process.env.API_URL + "/products/" + req.file.filename;
 
       await product.update(
         {

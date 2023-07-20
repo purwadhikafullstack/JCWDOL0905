@@ -28,7 +28,7 @@ export default function CategoryForm({handleClose, cancelButtonRef, title}) {
                                 id="category_name"
                                 name="category_name"
                                 type="text"
-                                className={`block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 ${
+                                className={`block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 ${
                                     form.errors.category_name && form.touched.category_name
                                       ? "ring-2 ring-red-600"
                                       : ""
@@ -59,7 +59,7 @@ export default function CategoryForm({handleClose, cancelButtonRef, title}) {
                                 id="image"
                                 name="image"
                                 type="file"
-                                className={`block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 ${
+                                className={`block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 ${
                                     form.errors.image && form.touched.image
                                       ? "ring-2 ring-red-600"
                                       : ""

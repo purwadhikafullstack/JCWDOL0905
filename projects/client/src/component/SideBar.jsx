@@ -21,7 +21,6 @@ const initNavigation = [
 const SideBar = forwardRef((props, ref) => {
   const { role } = useSelector((state) => state.adminSlice);
   const [navigation, setNavigation] = useState(initNavigation);
-  // const [subMenuOpen, setSubMenuOpen] = useState(false)
 
   const dispatch = useDispatch()
   const Navigate = useNavigate()
