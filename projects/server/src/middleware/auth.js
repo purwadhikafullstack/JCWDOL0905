@@ -1,7 +1,7 @@
 const key = process.env.SECRET_KEY
 
 module.exports = (req, res, next) => {
-    if (req.headers.secretKey == key) {
+    if (req.headers.secretkey == key) {
         return next()
     }
 

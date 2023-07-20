@@ -105,7 +105,6 @@ const ProductDetail = () => {
             if(error.response.data.navigate){
                 Navigate('/404')
             }
-            toast.error(error.response.data.message);
           }
         }
         fetchData();
