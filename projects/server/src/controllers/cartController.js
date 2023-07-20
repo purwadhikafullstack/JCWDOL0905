@@ -12,18 +12,18 @@ module.exports = {
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
 
-            const query = `select carts.id, carts.product_qty, carts.bonus_qty, carts.id_inventory,
-            inventories.stock, inventories.id_branch,
-            store_branches.branch_name, store_branches.city,
-            products.id as product_id, products.product_name, products.product_price, products.weight, products.product_image, products.product_description,
-            discounts.discount_type, discounts.discount_value, discounts.start_date, discounts.end_date
-            from carts
-            join inventories on carts.id_inventory = inventories.id
-            join store_branches on store_branches.id = inventories.id_branch
-            join products on inventories.id_product = products.id
-            left join discounts on discounts.id_inventory = inventories.id
+            const query = `select Carts.id, Carts.product_qty, Carts.bonus_qty, Carts.id_inventory,
+            Inventories.stock, Inventories.id_branch,
+            Store_Branches.branch_name, Store_Branches.city,
+            Products.id as product_id, Products.product_name, Products.product_price, Products.weight, Products.product_image, Products.product_description,
+            Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date
+            from Carts
+            join Inventories on Carts.id_inventory = Inventories.id
+            join Store_Branches on Store_Branches.id = Inventories.id_branch
+            join Products on Inventories.id_product = Products.id
+            left join Discounts on Discounts.id_inventory = Inventories.id
             where id_user=${user.id_user}
-            order by carts.createdAt desc;`;
+            order by Carts.createdAt desc;`;
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({message: "Successfully fetch cart items", results,});

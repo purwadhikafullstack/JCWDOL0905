@@ -88,7 +88,6 @@ function App() {
         dispatch(loginAdmin(res.data.admin));
         dispatch(setAccessTokenAdmin(token_admin));
       } catch (error) {
-        console.log(error);
         window.location.href = "/token-invalid-admin";
         localStorage.removeItem("token_admin");
       }

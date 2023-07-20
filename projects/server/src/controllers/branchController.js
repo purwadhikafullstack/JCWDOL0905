@@ -66,7 +66,6 @@ module.exports = {
         whereCondition.province = { [Op.like]: `%${provinceName}%` };
       }
 
-      console.log(whereCondition, 'whereCondition', page, limit)
       const branchData = await branch.findAndCountAll({where: whereCondition, limit: limit, offset: offset});
       const { count, rows } = branchData;
       const totalPages = Math.ceil(count / Number(limit));
@@ -182,7 +181,6 @@ module.exports = {
   deleteBranch: async (req, res) => {
     try {
       const { id } = req.params;
-      console.log(id, 'this is id');
       let resultBranch = await branch.findOne({ where: { id: id } });
       if (!resultBranch) {
         return res.status(404).send({ isError: true, message: "branch not found" });

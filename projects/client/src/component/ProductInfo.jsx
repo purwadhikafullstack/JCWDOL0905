@@ -1,7 +1,7 @@
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export default function ProductInfo({products, openEditModal, openDeleteModal}) {
-    function formatIDR(price) {
+    function formatIDR(price=0) {
         let idr = Math.round(price).toLocaleString("id-ID");
         return `Rp ${idr}`;
       }

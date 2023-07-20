@@ -83,7 +83,6 @@ const DashboardAdmin = () => {
   };
 
   useEffect(() => {
-    console.log(role, id_branch);
     getListOfStoreData();
     if (role === ROLE.SUPER_ADMIN) {
       handleSearchDashboard("All");

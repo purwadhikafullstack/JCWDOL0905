@@ -46,7 +46,6 @@ function Table({ tableData, setEditData, setOpenEditModal, setOpenDeleteModal, }
                         <PencilIcon
                           className="h-5 w-5 fill-yellow-600 cursor-pointer mr-10"
                           onClick={() => {
-                            console.log("edit");
                             setEditData({
                               id: stores.id,
                               branchName: stores.branch_name,
@@ -60,7 +59,6 @@ function Table({ tableData, setEditData, setOpenEditModal, setOpenDeleteModal, }
                         <TrashIcon
                           className="h-5 w-5 fill-red-600 cursor-pointer"
                           onClick={() => {
-                            console.log("delete");
                             setEditData({
                               id: stores.id,
                               branchName: stores.branch_name,

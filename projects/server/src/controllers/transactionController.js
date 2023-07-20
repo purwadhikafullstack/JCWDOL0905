@@ -70,14 +70,14 @@ module.exports = {
             if(req.query.price=='asc' || req.query.price == 'desc') price = `final_price ${req.query.price}, `
 
             let [total] = await db.sequelize.query(
-                `select count(*) as total_transaction from transaction_headers
+                `select count(*) as total_transaction from Transaction_Headers
                 ${where}${branch}${user}${start}${end}${status}${orderId};`
                 );
             let total_page = Math.ceil(total[0].total_transaction/limit)
 
             let offset = (parseInt(req.query.page) - 1) * limit
 
-            const query = `select * from transaction_headers
+            const query = `select * from Transaction_Headers
             ${where}${branch}${user}${start}${end}${status}${orderId}
             order by ${price}createdAt ${date}
             limit ${limit} offset ${offset};`;
@@ -109,11 +109,11 @@ module.exports = {
     getItem: async (req, res) => {
         try {
             const [results] = await db.sequelize.query(
-                `select transaction_details.id, product_price, product_qty, product_name, product_image, weight, bonus_qty, id_inventory,
-                inventories.stock, inventories.id_branch, inventories.id_product
-                from transaction_details
-                join inventories on inventories.id = transaction_details.id_inventory
-                where id_trans_header = ${req.params.id} order by transaction_details.createdAt desc;`
+                `select Transaction_Details.id, product_price, product_qty, product_name, product_image, weight, bonus_qty, id_inventory,
+                Inventories.stock, Inventories.id_branch, Inventories.id_product
+                from Transaction_Details
+                join Inventories on Inventories.id = Transaction_Details.id_inventory
+                where id_trans_header = ${req.params.id} order by Transaction_Details.createdAt desc;`
             );
             res.status(200).send({code: 200, message: "Get item success", data: results});
 
@@ -138,21 +138,21 @@ module.exports = {
             const responseCart = await axios.get(`${process.env.API_URL}/cart`, {
                 'headers': {
                     'Authorization': `Bearer ${bearerToken}`,
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             });
             const cartData = responseCart.data.results;
 
             const responseBranch = await axios.get(`${process.env.API_URL}/branch/${id_branch}`, {
                 'headers': {
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             });
             const branchData = responseBranch.data.data;
 
             const responseAddress = await axios.get(`${process.env.API_URL}/address/${id_address}`, {
                 'headers': {
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             });
             const addressData = responseAddress.data.data;

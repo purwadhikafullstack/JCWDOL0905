@@ -80,9 +80,7 @@ export default function ModalCreateBranchStore({ open, setOpen, getListOfStoreDa
   const getListOfCity = async () => {
     try {
       const provinceId = provinceName.split("-")[0]
-      console.log(provinceId);
       const response = await api.get(`city?provinceId=${provinceId}`);
-      console.log(response,'resp');
       setCityList(response.data.data);
     } catch (error) {
       toast.error(error.response.data.message);

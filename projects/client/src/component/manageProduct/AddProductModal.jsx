@@ -65,7 +65,6 @@ export default function AddProductModal({ open, setOpen, onClose, categories, fe
       fetchProducts()
       handleClose();
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data.message);
     }
   };
@@ -77,7 +76,6 @@ export default function AddProductModal({ open, setOpen, onClose, categories, fe
       onSubmit={(values) => addProduct(values)}
     >
       {(props) => {
-        // console.log(props);
         return (
           <>
             <Transition.Root show={modalOpen} as={Fragment}>

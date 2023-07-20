@@ -23,7 +23,6 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
 
   useEffect(() => {
     setModalOpen(open);
-    console.log("inventory", inventory)
   }, [open]);
 
   const handleClose = () => {
@@ -62,7 +61,6 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
       onSubmit={(values) => editProduct(values)}
     >
       {(props) => {
-        // console.log(props);
         return (
           <>
             <Transition.Root show={modalOpen} as={Fragment}>

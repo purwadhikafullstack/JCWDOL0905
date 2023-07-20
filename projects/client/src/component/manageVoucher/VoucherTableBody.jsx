@@ -1,9 +1,9 @@
 import moment from "moment";
 
 export default function VoucherTableBody({ vouchers, branchId }) {
-  function formatIDR(price) {
+  function formatIDR(price=0) {
     if (price !== null) {
-      let idr = Math.floor(price).toLocaleString("id-ID");
+      let idr = Math.ceil(price).toLocaleString("id-ID");
       return `Rp ${idr}`;
     }
   }

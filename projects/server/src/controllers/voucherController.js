@@ -196,17 +196,17 @@ module.exports = {
       bearerToken = bearerToken.split(" ")[1];
       const user = jwt.verify(bearerToken, jwtKey);
 
-      const query = `select user_vouchers.id, user_vouchers.id,
-        vouchers.voucher_type, vouchers.voucher_kind, vouchers.voucher_value,
-        vouchers.max_discount, vouchers.min_purchase_amount, vouchers.start_date, vouchers.end_date, vouchers.id_inventory,
-        products.product_name, products.product_price
-        from user_vouchers
-        join vouchers on vouchers.id = user_vouchers.id_voucher
-        left join inventories on vouchers.id_inventory = inventories.id
-        left join products on products.id = inventories.id_product
+      const query = `select User_Vouchers.id,
+        Vouchers.voucher_type, Vouchers.voucher_kind, Vouchers.voucher_value,
+        Vouchers.max_discount, Vouchers.min_purchase_amount, Vouchers.start_date, Vouchers.end_date, Vouchers.id_inventory,
+        Products.product_name, Products.product_price
+        from User_Vouchers
+        join Vouchers on Vouchers.id = User_Vouchers.id_voucher
+        left join Inventories on Vouchers.id_inventory = Inventories.id
+        left join Products on Products.id = Inventories.id_product
         where id_user = ${user.id_user}
         and is_used = 0
-        and now() between vouchers.start_date and vouchers.end_date;`;
+        and now() between Vouchers.start_date and Vouchers.end_date;`;
 
         const [results] = await db.sequelize.query(query);
         res.status(200).send({ message: "Successfully fetch user voucher", results });

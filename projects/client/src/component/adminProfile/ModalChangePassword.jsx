@@ -63,7 +63,6 @@ export default function ModalChangePassword({ open, setOpen }) {
     }
   };
 
-  console.log(id, 'id admin');
   const postCreateBranchAdmin = async () => {
     setIsLoading(true);
     try {

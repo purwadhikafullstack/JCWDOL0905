@@ -59,7 +59,6 @@ export default function ProductsPage() {
           setNoResult(true);
         }
         setProductsInfo(productData.data.data);
-        console.log(productData.data)
         setTotalPage(Math.ceil((productData.data.count - 1) / 12));
       } catch (err) {
         console.log(err);

@@ -56,7 +56,7 @@ module.exports = {
         try {
             const response = await axios.get(`${process.env.API_URL}/transaction/item/${req.params.id}`, {
                 'headers': {
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             });
             const itemData = response.data.data;
