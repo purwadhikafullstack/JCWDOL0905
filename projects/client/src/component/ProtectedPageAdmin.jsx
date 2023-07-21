@@ -16,7 +16,6 @@ const ProtectedPageAdmin = ({ children, roleRequired }) => {
   }
 
   if (!isHaveRoleAccess) {
-    toast.error("You don't have access to this page");
     const path = ROLE_DEFAULT_PATH[role]
     return <Navigate to={path} />
   }

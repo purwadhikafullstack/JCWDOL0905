@@ -185,7 +185,7 @@ export default function ModalCreateBranchStore({ open, setOpen, getListOfStoreDa
                   <div className="text-red-700 text-xs text-left font-semibold"> {" "} {errorAddress ? errorAddress : null}{" "} </div>
                 </div>
                 <div className="mt-5 sm:mt-6 flex">
-                  <button disabled={isLoading} type="button" className={`mr-2 inline-flex w-full justify-center rounded-md border border-transparent ${ isLoading ? "bg-gray-300 cursor-not-allowed" : "bg-green-600 hover:bg-green-700" } px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:text-sm`} onClick={() => { postCreateBranchAdmin() }} > Add Branch Admin </button>
+                  <button disabled={isLoading} type="button" className={`mr-2 inline-flex w-full justify-center rounded-md border border-transparent ${ isLoading ? "bg-gray-300 cursor-not-allowed" : "bg-green-600 hover:bg-green-700" } px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:text-sm`} onClick={() => { postCreateBranchAdmin() }} > Add Branch Store </button>
                   <button type="button" className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:text-sm" onClick={() => setOpen(false)} > Cancel </button>
                 </div>
               </Dialog.Panel>

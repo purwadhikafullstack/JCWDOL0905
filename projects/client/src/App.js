@@ -126,6 +126,21 @@ function App() {
     }
     updateOrderStatus()
 
+    async function getBranch() {
+      try {
+        const response = await api.get(`branch`);
+        const branchData = response.data.data
+        let branch = branchData.find(x => x.id === branchId)
+        if (!branch) {
+          localStorage.setItem("branchId", 0)
+          dispatch(setBranchId({ branchId: 0 }));
+
+        } 
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getBranch()
   },[])
 
   return (
