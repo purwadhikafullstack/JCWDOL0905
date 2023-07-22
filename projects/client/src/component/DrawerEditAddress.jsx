@@ -155,7 +155,7 @@ export default function DrawerEditAddress(props) {
                                                 >
                                                     {city.map((data)=>{
                                                         return(
-                                                            <option selected={data.city_id==detail.city_id} key={data.city_id} value={data.city_id}>{data.city_name}</option>
+                                                            <option selected={data.city_id==detail.city_id} key={data.city_id} value={data.city_id}>{data.type} {data.city_name}</option>
                                                         )
                                                     })}
                                                 </select>

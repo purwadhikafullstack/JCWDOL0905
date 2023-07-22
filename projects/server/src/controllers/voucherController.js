@@ -233,7 +233,7 @@ module.exports = {
       Vouchers.start_date,
       Vouchers.end_date,
       Products.product_name,
-      Store_branches.branch_name,
+      Store_Branches.branch_name,
       CASE 
         WHEN Vouchers.voucher_type = 'total purchase'
           AND COALESCE((
@@ -269,7 +269,7 @@ module.exports = {
       Vouchers
     LEFT JOIN Inventories ON Vouchers.id_inventory = Inventories.id
     LEFT JOIN Products ON Inventories.id_product = Products.id
-    LEFT JOIN Store_branches On Inventories.id_branch = Store_branches.id
+    LEFT JOIN Store_Branches On Inventories.id_branch = Store_Branches.id
     WHERE now() between vouchers.start_date and vouchers.end_date;
     `;
       const [data] = await db.sequelize.query(voucherQuery);

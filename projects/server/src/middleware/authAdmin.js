@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-dotenv.config();
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') });
 
 module.exports = {
   verifyToken: (req, res, next) => {

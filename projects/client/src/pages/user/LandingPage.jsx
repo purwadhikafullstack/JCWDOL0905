@@ -96,7 +96,7 @@ const LandingPage = () => {
           </div>
         }
 
-        <Suggested productsData={products} />
+        {products.length >= 4 ? <Suggested productsData={products} /> : <></> }
       </div>
       <Footer />
     </div>
