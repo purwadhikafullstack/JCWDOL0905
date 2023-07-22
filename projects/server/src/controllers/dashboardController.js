@@ -55,8 +55,8 @@ module.exports = {
   
       let maxMonthlySales = 0;
       for (const monthSales of totalSalesResult) {
-        if (Number(monthSales.totalSales) > maxMonthlySales) {
-          maxMonthlySales = Number(monthSales.totalSales);
+        if (Number(monthSales.dataValues.totalSales) > maxMonthlySales) {
+          maxMonthlySales = Number(monthSales.dataValues.totalSales);
         }
       }
       const data = { totalUser, totalTransactions: totalTransactions, totalSales: totalSales, totalSalesResult: totalSalesResult, maxMonthlySales, };

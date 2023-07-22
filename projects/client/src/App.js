@@ -130,7 +130,8 @@ function App() {
       try {
         const response = await api.get(`branch`);
         const branchData = response.data.data
-        let branch = branchData.find(x => x.id === branchId)
+        let branch = branchData.find(x => x.id == branchId)
+
         if (!branch) {
           localStorage.setItem("branchId", 0)
           dispatch(setBranchId({ branchId: 0 }));
