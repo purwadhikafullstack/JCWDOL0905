@@ -8,6 +8,7 @@ const {Op} = require("sequelize");
 
 module.exports = {
   addProduct: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
         const { product_name, product_price, weight, product_description, id_category } = req.body;
         if (!product_name || !product_price || !weight || !product_description || !id_category) {
@@ -39,7 +40,7 @@ module.exports = {
           product_description: product_description,
           product_image: imageUrl,
           id_category: id_category,
-        });
+        }, {transaction: t});
         const branches = await stores.findAll();
         const newInventories = [];
         const initStocks = [];
@@ -48,7 +49,7 @@ module.exports = {
             id_product: newProduct.id,
             id_branch: branch.id,
             stock: 0
-          });
+          }, {transaction: t});
           newInventories.push(newInventory);
           const initStock = await inventoryHistory.create({
             status: "in",
@@ -56,13 +57,15 @@ module.exports = {
             quantity: 0,
             id_inventory: newInventory.id,
             current_stock: 0
-          });
+          }, {transaction: t});
           initStocks.push(initStock);
         }
+        await t.commit()
         res.status(200).send({ isError: false, message: "Successfully add a product", data: newProduct, });  
     } catch (err) {
       console.log(err);
       res.status(400).send({ isError: true, message: "Error adding a product", });
+      await t.rollback()
     }
   },
   fetchAllProducts: async (req, res) => {
@@ -129,6 +132,7 @@ module.exports = {
     }
   },
   deleteProduct: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
       const inventories = await inventory.findAll({
         where: {id_product: req.params.id}
@@ -140,19 +144,21 @@ module.exports = {
           quantity: inv.stock,
           id_inventory: inv.id,
           current_stock: 0,
-        })
+        }, {transaction: t})
         await inv.update({
           stock: 0
-        })
+        }, {transaction: t})
       }
       await product.destroy({
         where: {
           id: req.params.id,
         },
-      });
+      }, {transaction: t});
+      await t.commit()
       res.status(200).send({ isError: false, message: "Successfully delete product", });
     } catch (err) {
       console.log(err);
+      await t.rollback()
       res.status(400).send({ isError: true, message: "Delete product failed", });
     }
   },
