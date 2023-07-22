@@ -63,7 +63,6 @@ export default function Profile() {
         <NavBar />
         <div className="bg-white">
             <main className="overflow-hidden">
-            {/* Contact section */}
             <section
                 className="relative bg-white"
                 aria-labelledby="contact-heading"
@@ -75,9 +74,7 @@ export default function Profile() {
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="relative bg-white shadow-xl">
                     <div className="grid grid-cols-1 lg:grid-cols-2">
-                    {/* Contact information */}
                     <div className="relative overflow-hidden bg-gradient-to-b from-teal-500 to-teal-600 py-10 px-6 sm:px-10 xl:p-12">
-                        {/* Decorative angle backgrounds */}
                         <div
                         className="pointer-events-none absolute inset-0 sm:hidden"
                         aria-hidden="true"

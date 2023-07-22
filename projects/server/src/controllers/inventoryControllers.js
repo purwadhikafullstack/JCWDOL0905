@@ -14,17 +14,14 @@ module.exports = {
     const branchId = req.query.branchId;
     const page = parseInt(req.query.page) || 1;
     const pageSize = 12;
-
     const category_id = parseInt(req.query.category) || null;
     const productName = req.query.name || null;
     const sort = req.query.sort || "ASC";
     const order = req.query.order === "product_price" ? 'discounted_price' : "`Product.product_name`";
     const admin = req.query.adm || null;
-
     const categoryQuery = category_id ? { id_category: category_id } : {};
     const productQuery = productName ? { product_name: { [Op.like]: `%${productName}%` } } : {};
     const stockQuery = !admin ? {stock: { [Op.gte]: 1} } : {};
-
     const allInventories = await inventory.findAndCountAll({
       where: {
         id_branch: branchId,
@@ -58,20 +55,10 @@ module.exports = {
       limit: pageSize,
       offset: (page - 1) * pageSize,
     });
-
-    res.status(200).send({
-      isError: false,
-      message: "Successfully fetch inventories",
-      data: allInventories.rows,
-      count: allInventories.count ,
-    });
-
+    res.status(200).send({ isError: false, message: "Successfully fetch inventories", data: allInventories.rows, count: allInventories.count , });
     } catch (err) {
       console.log(err);
-      res.status(400).send({
-        isError: true,
-        message: "Fetch inventories failed",
-      });
+      res.status(400).send({ isError: true, message: "Fetch inventories failed", });
     }
   },
   findInventory: async (req, res) => {
@@ -84,13 +71,7 @@ module.exports = {
         }else if(findInventory.id_branch!=branchId){
           return res.status(404).send({ isError: true, message: "Id branch not valid", navigate: true });
         }
-    
-        res.status(200).send({
-            status: "Successfully find inventory",
-            data: findInventory,
-            navigate: false
-        });
-
+        res.status(200).send({ status: "Successfully find inventory", data: findInventory, navigate: false });
     } catch (error) {
       console.log(error);
       res.status(404).send({ isError: true, message: "Find inventory failed" });
@@ -99,14 +80,14 @@ module.exports = {
   findInventoryHistory: async (req, res) => {
     let { productName, orderBy, orderByMethod, branchId, startDate, endDate, page, limit, } = req.query;
     const mapOrderBy = { id: "Inventory_Histories.id", productName: "CombinedQuery.productName", createdAt: "Inventory_Histories.createdAt", };
-    productName = productName ? `%${productName}%` : ""; // formating that for like query
-    orderBy = mapOrderBy[orderBy] || "Inventory_Histories.id"; // Default to 'Inventory_Histories.id' if not provided
-    orderByMethod = orderByMethod || "ASC"; // Default to 'ASC' if not provided
-    branchId = branchId || ""; // Empty string if not provided
-    startDate = startDate || "1970-01-01 00:00:00"; // Default to a very early date if not provided
-    endDate = endDate || "9999-12-31 23:59:59"; // Default to a very late date if not provided
-    page = parseInt(page) || 1; // Default to 1 if not provided or invalid
-    limit = parseInt(limit) || 10; // Default to 10 if not provided or invalid
+    productName = productName ? `%${productName}%` : "";
+    orderBy = mapOrderBy[orderBy] || "Inventory_Histories.id";
+    orderByMethod = orderByMethod || "ASC";
+    branchId = branchId || "";
+    startDate = startDate || "1970-01-01 00:00:00";
+    endDate = endDate || "9999-12-31 23:59:59";
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
     const offset = (page - 1) * limit;
     const query = `
     SELECT
@@ -145,7 +126,6 @@ module.exports = {
         LIMIT :limit
         OFFSET :offset;
   `;
-
     const countQuery = `
     SELECT COUNT(*) AS total
     FROM
@@ -166,39 +146,19 @@ module.exports = {
         ${productName ? "CombinedQuery.productName LIKE :productName" : "1 = 1"}
         AND Inventory_Histories.createdAt BETWEEN :startDate AND :endDate;
   `;
-
     const result = await db.sequelize.query(query, { replacements: { branchId, productName, startDate, endDate, limit, offset, }, });
     const countResult = await db.sequelize.query(countQuery, { replacements: { branchId, productName, startDate, endDate, }, });
     const totalItems = countResult[0][0].total;
     const totalPages = Math.ceil(totalItems / limit);
-    console.log(countResult[0][0].total, "count result");
     const data = { totalItems, totalPages, currentPage: page, items: result[0], };
     return res.status(200).send({ status: "Successfully find invesssntory", data: data, });
   },
-  
   getInventoryById: async (req, res) => {
     const id = req.params.id;
     try {
       const inventoryData = await inventory.findOne({
-        where: {
-          id: id,
-          stock: {
-            [Op.gte]: 1,
-          }
-        },
-        include: [{
-          model: product
-        },
-        {
-          model: discount,
-          where: {
-            end_date: {
-              [Op.gte]: new Date(),
-            }
-          },
-          required: false,
-        }
-      ],
+        where: { id: id, stock: { [Op.gte]: 1, } },
+        include: [{ model: product }, { model: discount, where: { end_date: { [Op.gte]: new Date(), } }, required: false, } ],
       attributes: {
         include: [
           [
@@ -208,17 +168,8 @@ module.exports = {
         ],
       },
       })
-
-      if (!inventoryData) {
-        return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true})
-      }
-    
-      res.status(200).send({
-        isError: false,
-        message: "Successfully fetch inventory by id",
-        data: inventoryData,
-      });
-
+      if (!inventoryData) { return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true}) }
+      res.status(200).send({ isError: false, message: "Successfully fetch inventory by id", data: inventoryData, });
     } catch (error) {
       console.log(error);
       res.status(404).send({isError: true, message: "Fetch inventory by Id failed"})
@@ -228,36 +179,18 @@ module.exports = {
     const id = req.params.id;
     try {
       const { stock, status, quantity } = req.body;
-
       const inventoryData = await inventory.findOne({
         where: {id : id}
       })
-
-      if (!inventoryData) {
-        return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true})
-      }
-      if (status === 'out' && inventoryData.stock < quantity) {
-        return res.status(404).send({ isError: true, message: "Can't reduce quantity more than available stock", navigate: true})
-      }
+      if (!inventoryData) { return res.status(404).send({ isError: true, message: "Inventory not exist", navigate: true}) }
+      if (status === 'out' && inventoryData.stock < quantity) { return res.status(404).send({ isError: true, message: "Can't reduce quantity more than available stock", navigate: true}) }
       const data = await inventory.update({
         stock: stock
       },{
         where: {id: id},
       })
-      
-      const result = await inventoryHistory.create({
-        status: status,
-        reference: 'manual',
-        quantity: quantity,
-        id_inventory: id,
-        current_stock: stock
-      })
-
-      res.status(200).send({
-        isError: false,
-        message: "Successfully update stock",
-        data: result
-      });
+      const result = await inventoryHistory.create({ status: status, reference: 'manual', quantity: quantity, id_inventory: id, current_stock: stock })
+      res.status(200).send({ isError: false, message: "Successfully update stock", data: result });
     } catch (error) {
       res.status(404).send({isError: true, message: "Update stock failed"})
     }

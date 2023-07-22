@@ -11,9 +11,7 @@ export default function Carousel() {
     const cards = [banner1, banner2, banner3, banner4];
    
     const settings = {
-     // fade: true,
      dots: true,
-   
      infinite: true,
      autoplay: true,
      speed: 500,

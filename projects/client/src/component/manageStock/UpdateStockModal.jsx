@@ -106,7 +106,6 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory, fe
                                   Update Stock
                                 </Dialog.Title>
                                 <div className="mt-8 mb-4 w-96">
-                                  {/* <Form> */}
                                   <div className="flex mb-4">
                                     <div className="flex w-20 h-20 bg-neutral-300 shrink-0 mr-3">
                                       <div className="square-image-container rounded-md">

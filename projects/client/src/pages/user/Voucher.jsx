@@ -48,7 +48,6 @@ export default function Voucher() {
 
   useEffect(() => {
     refreshVoucherList()
-    // Fetch the user's claimed vouchers from the `user_vouchers` array
   }, []);
 
   useEffect(() => {
@@ -107,7 +106,6 @@ export default function Voucher() {
         );
 
         if (isVoucherUsed) {
-          // Skip rendering if the voucher is already claimed and used
           return null;
         }
             return (

@@ -30,7 +30,6 @@ const VerificationPasswordBridge = () => {
 
   useEffect(() => {
     verifyUser();
-    // eslint-disable-next-line
   }, []);
 
   return (
