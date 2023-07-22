@@ -114,7 +114,6 @@ export default function Delivered(props) {
                             <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
                             <form className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                                 <div className="flex-1">
-                                    {/* Header */}
                                     <div className="bg-gray-50 px-4 py-6 sm:px-6">
                                         <div className="flex items-start justify-between space-x-3">
                                         <div className="space-y-1">
@@ -136,7 +135,6 @@ export default function Delivered(props) {
                                         </div>
                                     </div>
 
-                                    {/* Divider container */}
                                     <div className="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
                                         <div className="space-y-1 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                                             <div>
@@ -168,7 +166,6 @@ export default function Delivered(props) {
                                     </div>
                                 </div>
 
-                                {/* Action buttons */}
                                 {addressData.length > 0 &&
                                     <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                                         <div className="flex justify-end space-x-3">

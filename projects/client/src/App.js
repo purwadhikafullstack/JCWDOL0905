@@ -53,18 +53,15 @@ import BranchStoreManagement from "./pages/admin/BranchStoreManagement";
 import AdminProfile from "./pages/admin/AdminProfile";
 import Voucher from "./pages/user/Voucher";
 
-
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     const branchId = localStorage.getItem("branchId");
     const token_admin = localStorage.getItem("token_admin");
     dispatch(setBranchId({ branchId: branchId }));
     setTimeout(() => {setIsLoading(false)}, 1000);
-
     const fetchUser = async (token) => {
       try {
         const res = await api.get(`/users/auth`, {
@@ -95,7 +92,6 @@ function App() {
     if (token_admin) {
       fetchAdmin(token_admin);
     } 
-      
     async function countCart() {
       try {
         const response = await api.get(`cart/count`, {
@@ -116,7 +112,6 @@ function App() {
     if (token) {
       countCart()
     }
-
     async function updateOrderStatus() {
       try {
         const response = await api.patch(`order/update`);
@@ -125,7 +120,6 @@ function App() {
       }
     }
     updateOrderStatus()
-
     async function getBranch() {
       try {
         const response = await api.get(`branch`);

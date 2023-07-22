@@ -57,7 +57,6 @@ export default function DesktopMenu(props) {
           </div>
         </div>
 
-        {/* Profile dropdown */}
         <Menu as="div" className="relative ml-8 flex-shrink-0">
           <div>
             <Menu.Button className="ml-auto flex rounded-full bg-green-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-800">

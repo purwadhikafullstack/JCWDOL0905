@@ -67,8 +67,6 @@ module.exports = {
                 await inventory.update({stock: newStock}, {where: { id: item.id_inventory }}, {transaction: t});
                 await inventory_history.create({status: 'out', reference: 'sales', quantity: (item.product_qty + item.bonus_qty), id_inventory: item.id_inventory, current_stock: newStock}, {transaction: t});
             }
-
-            //where carts > stock
             
             await trans_header.update({order_status: 'shipped'}, {where: {id: req.params.id}}, {transaction: t});
             await t.commit()

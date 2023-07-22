@@ -74,7 +74,6 @@ export default function CategoryForm({handleClose, cancelButtonRef, title}) {
                           </div>
                         )}
                         </Field>
-                        {/* </form> */}
                       </div>
                     </div>
                   </div>

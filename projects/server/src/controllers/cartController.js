@@ -45,8 +45,6 @@ module.exports = {
                 where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock`
             const [results] = await db.sequelize.query(query);
             let count = results[0].count
-
-            // let count = await carts.count({where:{ id_user: user.id_user }});
             res.status(200).send({message: "Cart successfully counted", data: count,});
         } catch (error) {
             console.log(error);

@@ -2,7 +2,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../css/style.css'
-import banner1 from '../assets/images/banner1.jpg'
+import banner1 from '../assets/images/banner1.png'
 import banner2 from '../assets/images/banner2.jpg'
 import banner3 from '../assets/images/banner3.jpg'
 import banner4 from '../assets/images/banner4.jpg'
@@ -11,9 +11,7 @@ export default function Carousel() {
     const cards = [banner1, banner2, banner3, banner4];
    
     const settings = {
-     // fade: true,
      dots: true,
-   
      infinite: true,
      autoplay: true,
      speed: 500,
