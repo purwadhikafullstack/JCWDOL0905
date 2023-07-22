@@ -22,7 +22,7 @@ module.exports = {
             join Store_Branches on Store_Branches.id = Inventories.id_branch
             join Products on Inventories.id_product = Products.id
             left join Discounts on Discounts.id_inventory = Inventories.id
-            where id_user=${user.id_user}
+            where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock
             order by Carts.createdAt desc;`;
         
             const [results] = await db.sequelize.query(query);
@@ -38,8 +38,15 @@ module.exports = {
             let bearerToken = req.headers['authorization'];
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
+            const query = `select count(*) as count from Carts
+                join Inventories on Carts.id_inventory = Inventories.id
+                join Store_Branches on Store_Branches.id = Inventories.id_branch
+                join Products on Inventories.id_product = Products.id
+                left join Discounts on Discounts.id_inventory = Inventories.id
+                where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock`
+            const [results] = await db.sequelize.query(query);
 
-            let count = await carts.count({where:{ id_user: user.id_user }});
+            let count = results[0].count
             res.status(200).send({message: "Cart successfully counted", data: count,});
         } catch (error) {
             console.log(error);
