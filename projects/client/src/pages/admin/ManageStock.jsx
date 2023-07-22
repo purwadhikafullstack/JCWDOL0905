@@ -41,6 +41,26 @@ const ManageStock = () => {
     });
   }, [activePage, sort, order, selectedCategory, searchedProduct, selectedBranchId]);
 
+  async function fetchInventories() {
+    try {
+      const productData = await api.get('/inventory', {
+        params: {
+          branchId,
+          order: order,
+          sort: sort,
+          name: searchedProduct,
+          category: selectedCategory,
+          page: activePage,
+          adm: 1
+        },
+      });
+      setInventories(productData.data.data);
+      setTotalPage(Math.ceil(productData.data.count / 12));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     async function getStoreBranches() {
         try {
@@ -62,25 +82,6 @@ const ManageStock = () => {
       }
     fetchCategories();
 
-    async function fetchInventories() {
-      try {
-        const productData = await api.get('/inventory', {
-          params: {
-            branchId,
-            order: order,
-            sort: sort,
-            name: searchedProduct,
-            category: selectedCategory,
-            page: activePage,
-            adm: 1
-          },
-        });
-        setInventories(productData.data.data);
-        setTotalPage(Math.ceil(productData.data.count / 12));
-      } catch (error) {
-        console.log(error);
-      }
-    }
     fetchInventories();
   }, [order, sort, activePage, selectedBranchId, selectedCategory, searchedProduct]);
 
@@ -192,7 +193,7 @@ const ManageStock = () => {
           </div>
           <div></div>
         </div>
-        {editModalOpen && (<UpdateStockModal open={editModalOpen} setOpen={setEditModalOpen} inventory={selectedProduct} cancelButtonRef={null} onClose={closeEditModal} />)}
+        {editModalOpen && (<UpdateStockModal open={editModalOpen} setOpen={setEditModalOpen} inventory={selectedProduct} cancelButtonRef={null} onClose={closeEditModal} fetchInventories={fetchInventories}/>)}
       </div>
     </Layout>
   );

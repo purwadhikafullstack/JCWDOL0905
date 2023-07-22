@@ -150,7 +150,7 @@ export default function DrawerNewAddress() {
                                                 >
                                                     {city.map((data)=>{
                                                         return(
-                                                            <option key={data.city_id} value={data.city_id}>{data.city_name}</option>
+                                                            <option key={data.city_id} value={data.city_id}> {data.type} {data.city_name}</option>
                                                         )
                                                     })}
                                                 </select>

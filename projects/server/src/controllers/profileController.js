@@ -39,15 +39,11 @@ module.exports = {
             if(req.file != undefined){
                 let imageUrl = process.env.API_URL + "/media/profiles/" + req.file.filename;
                 if(!birthdate){
-                    console.log("satu")
                     await users.update({name, gender, email, birthdate: null, profile_picture: imageUrl}, {where: {id: req.params.id}});
-                    console.log("dua")
                 }
                 else{
-                    console.log("tiga")
                     await users.update({name, gender, email, birthdate, profile_picture: imageUrl}, {where: {id: req.params.id}});}
             }else{
-                console.log("empat")
                 if(!birthdate) {await users.update({name, gender, email, birthdate: null}, {where: {id: req.params.id}});}
                 else{ await users.update({name, gender, email, birthdate}, {where: {id: req.params.id}}); }
             }

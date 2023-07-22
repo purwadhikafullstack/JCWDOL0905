@@ -133,7 +133,6 @@ module.exports = {
     try {
       const tokenData = await tokens.findOne({where: {token: token}});
       const checkTokenValidity = jwt.verify(token, jwtKey);
-      console.log(checkTokenValidity, 'check token validity forgot pw')
       if (!tokenData) {
         return res.status(400).send({code: 400, message: `Invalid or expired token for id user`})}
       res.status(200).send({code: 200, message: "Verification success"});

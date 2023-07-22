@@ -49,9 +49,9 @@ export default function ProductSelector({ inventories, selectedCategory, onProdu
         onProductSelect(null)
       }, [selectedCategory]);
 
-      function formatIDR(price) {
+      function formatIDR(price=0) {
         if (price !== null) {
-          let idr = Math.floor(price).toLocaleString("id-ID");
+          let idr = Math.ceil(price).toLocaleString("id-ID");
           return `Rp ${idr}`;
         }
       }

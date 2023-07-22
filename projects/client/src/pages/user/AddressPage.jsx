@@ -22,8 +22,6 @@ export default function AddressPage() {
     const [branch, setBranch] = useState([]);
     const [update, setUpdate] = useState(false);
 
-    console.log(PROVINCE_LIST[0])
-
     useEffect(() => {
         async function fetchData() {
           try {

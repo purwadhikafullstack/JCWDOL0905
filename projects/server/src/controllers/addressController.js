@@ -50,7 +50,7 @@ module.exports = {
 
             let response = await axios.get(`${process.env.API_URL}/city/${cityId}`, {
                 'headers': {
-                    'secret_key': `${process.env.SECRET_KEY}`
+                    'secretKey': `${process.env.SECRET_KEY}`
                 }
             })
             city = response.data.data.city_name
@@ -96,7 +96,7 @@ module.exports = {
 
             let response = await axios.get(`${process.env.API_URL}/city/${cityId}`, {
                 'headers': {
-                    'secret_key': `${process.env.SECRET_KEY}`
+                    'secretKey': `${process.env.SECRET_KEY}`
                 }
             })
             city = response.data.data.city_name

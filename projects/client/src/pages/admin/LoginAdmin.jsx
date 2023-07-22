@@ -23,7 +23,7 @@ const LoginAdmin = () => {
     if (token_admin) {
       setTimeout(() => {Navigate('/admin/dashboard')}, 1500)
     }
-  })
+  }, [])
 
   let validateEmail = (value) => {
     if (value === "") {

@@ -7,7 +7,7 @@ import { checkActiveDiscount } from "../function";
 
 const ProductInformation = (props) => {
     let product = props.product
-    function formatIDR(price) {
+    function formatIDR(price=0) {
         let idr = Math.ceil(price).toLocaleString("id-ID");
         return `Rp ${idr}`;
     }

@@ -4,14 +4,14 @@ const address = db.Address;
 module.exports = {
     getSuggestedProduct: async (req, res) => {
         try {
-            const query = `SELECT inventories.id, stock, pr.product_name, pr.product_price, pr.product_description, pr.product_image, pr.weight,
+            const query = `SELECT Inventories.id, stock, pr.product_name, pr.product_price, pr.product_description, pr.product_image, pr.weight,
             br.branch_name, br.city,
-            discounts.discount_type, discounts.discount_value, discounts.start_date, discounts.end_date
-            FROM inventories
-            join products pr on pr.id = inventories.id_product
-            join store_branches br on br.id = inventories.id_branch
-            left join discounts on discounts.id_inventory = inventories.id
-            where id_branch=${req.params.id_branch} and stock>0
+            Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date
+            FROM Inventories
+            join Products pr on pr.id = Inventories.id_product
+            join Store_Branches br on br.id = Inventories.id_branch
+            left join Discounts on Discounts.id_inventory = Inventories.id
+            where id_branch=${req.params.id_branch} and stock>0 and pr.deletedAt is null
             limit 10;`;
         
             const [results] = await db.sequelize.query(query);

@@ -29,7 +29,6 @@ export default function Voucher() {
   const getUserAllVoucher = async () => {
     const response = await api.get(`voucher/claimable/${id}`)
     setVouchers(response.data.data)
-    console.log(response.data.data)
   }
 
   const refreshVoucherList = () => {
@@ -59,9 +58,9 @@ export default function Voucher() {
     setUserClaimedVouchers(claimedVouchers);
   }, [userVouchers])
 
-    function formatIDR(price) {
+    function formatIDR(price=0) {
         if (price !== null) {
-          let idr = Math.floor(price).toLocaleString("id-ID");
+          let idr = Math.ceil(price).toLocaleString("id-ID");
           return `Rp ${idr}`;
         }
       }

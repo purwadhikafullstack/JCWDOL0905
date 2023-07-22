@@ -19,9 +19,7 @@ module.exports = {
         }
 
         const isProductExist = await product.findOne({
-          where: {
-            product_name,
-          },
+          where: { product_name, },
         });
   
         if (isProductExist) {
@@ -38,7 +36,7 @@ module.exports = {
           });
         }
 
-        let imageUrl = req.protocol + "://" + req.get("host") + "/api/products/" + req.file.filename;
+        let imageUrl = process.env.API_URL + "/products/" + req.file.filename;
 
         const newProduct = await product.create({
           product_name: product_name,
@@ -139,12 +137,8 @@ module.exports = {
 
       if (!req.file) {
         await product.update(
-          {
-            ...req.body
-          },
-          {
-            where: { id: req.params.id },
-          }
+          { ...req.body },
+          { where: { id: req.params.id },}
         );
 
         return res.status(200).send({
@@ -153,8 +147,7 @@ module.exports = {
         });
       }
 
-      let imageUrl = req.protocol + "://" + req.get("host") + "/api/products/" + req.file.filename;
-
+      let imageUrl = process.env.API_URL + "/products/" + req.file.filename;
       await product.update(
         {
           ...req.body,
@@ -179,6 +172,21 @@ module.exports = {
   },
   deleteProduct: async (req, res) => {
     try {
+      const inventories = await inventory.findAll({
+        where: {id_product: req.params.id}
+      })
+      for (const inv of inventories) {
+        await inventoryHistory.create({
+          status: 'out',
+          reference: 'delete',
+          quantity: inv.stock,
+          id_inventory: inv.id,
+          current_stock: 0,
+        })
+        await inv.update({
+          stock: 0
+        })
+      }
       await product.destroy({
         where: {
           id: req.params.id,
@@ -186,7 +194,7 @@ module.exports = {
       });
       res.status(200).send({
         isError: false,
-        message: "Successfully delete category",
+        message: "Successfully delete product",
       });
     } catch (err) {
       console.log(err);

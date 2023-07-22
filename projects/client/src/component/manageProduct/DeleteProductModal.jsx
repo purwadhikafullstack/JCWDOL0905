@@ -32,7 +32,6 @@ export default function DeleteProductModal({ open, setOpen, onClose, productId, 
       fetchProducts()
       handleClose();
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data);
     }
   };

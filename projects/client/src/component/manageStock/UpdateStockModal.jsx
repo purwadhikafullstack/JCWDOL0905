@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { api } from "../../api/api";
 import toast from "react-hot-toast";
 
-export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
+export default function UpdateStockModal({ open, setOpen, onClose, inventory, fetchInventories}) {
   const [modalOpen, setModalOpen] = useState(open);
   const token = localStorage.getItem("token_admin");
   const cancelButtonRef = useRef(null);
@@ -23,7 +23,6 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
 
   useEffect(() => {
     setModalOpen(open);
-    console.log("inventory", inventory)
   }, [open]);
 
   const handleClose = () => {
@@ -48,7 +47,7 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
       };
       const response = await api.patch(`/inventory/${inventory.id}`, data, config);
       toast.success(response.data.message);
-      window.location.reload();
+      fetchInventories()
       handleClose();
     } catch (error) {
       toast.error(error.response.data.message);
@@ -62,7 +61,6 @@ export default function UpdateStockModal({ open, setOpen, onClose, inventory}) {
       onSubmit={(values) => editProduct(values)}
     >
       {(props) => {
-        // console.log(props);
         return (
           <>
             <Transition.Root show={modalOpen} as={Fragment}>

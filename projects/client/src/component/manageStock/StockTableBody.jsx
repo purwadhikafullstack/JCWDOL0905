@@ -1,7 +1,7 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
 export default function StockTableBody({ inventories, openEditModal }) {
-  function formatIDR(price) {
+  function formatIDR(price=0) {
     let idr = Math.ceil(price).toLocaleString("id-ID");
     return `Rp ${idr}`;
   }

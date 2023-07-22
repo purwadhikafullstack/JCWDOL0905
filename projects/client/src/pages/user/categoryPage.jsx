@@ -8,6 +8,7 @@ import NavBar from "../../component/NavBar";
 import { ProductsList } from "../../component/productsList";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import Footer from "../../component/Footer";
 
 export default function ProductsByCategory() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,7 +53,6 @@ export default function ProductsByCategory() {
             page: activePage
           }
         });
-        console.log(productData.data)
         setProductsInfo(productData.data.data);
         setTotalPage(Math.ceil(productData.data.count / 12));       
       } catch (err) {
@@ -70,7 +70,7 @@ export default function ProductsByCategory() {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-gray-100 min-h-screen">
       <NavBar />
       <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6">
         <h2 className="sr-only">Products</h2>
@@ -97,6 +97,7 @@ export default function ProductsByCategory() {
           />
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

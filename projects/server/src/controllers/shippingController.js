@@ -31,19 +31,19 @@ module.exports = {
         try {
             let addressDetail = await axios.get(`${process.env.API_URL}/address/${req.body.addressId}`, {
                 'headers': {
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             })
 
             let branchDetail = await axios.get(`${process.env.API_URL}/branch/${req.body.branchId}`, {
                 'headers': {
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             })
 
             let courierResponse = await axios.get(`${process.env.API_URL}/shipping/${req.body.serviceId}`, {
                 'headers': {
-                    'secret_key': process.env.SECRET_KEY
+                    'secretKey': process.env.SECRET_KEY
                 }
             })
 

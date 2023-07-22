@@ -4,36 +4,11 @@ const product = db.Product;
 const inventoryHistory = db.Inventory_History;
 const discount = db.Discount;
 const category = db.Category;
+const storeBranch = db.Store_Branches;
 const { Op } = require("sequelize");
 const { literal } = require('sequelize');
 
 module.exports = {
-  addInventory: async (req, res) => {
-    try {
-      const { id_product, id_branch, stock } = req.body;
-
-      if (!id_product || !id_branch || !stock) {
-        return res.status(400).send({
-          isError: true,
-          message: "Please complete your data",
-        });
-      }
-
-      const newInventory = await inventory.create(req.body);
-
-      res.status(200).send({
-        isError: false,
-        message: "Successfully add a product to store branch",
-        data: newInventory,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(400).send({
-        isError: true,
-        message: "Error adding a product to store branch",
-      });
-    }
-  },
   fetchAllInventories: async (req, res) => {
     try {
     const branchId = req.query.branchId;
@@ -74,7 +49,7 @@ module.exports = {
       attributes: {
         include: [
           [
-            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() and start_date <= CURDATE() limit 1),0)"),
+            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from Discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() and start_date <= CURDATE() limit 1),0)"),
             'discounted_price',
           ],
         ],
@@ -122,7 +97,6 @@ module.exports = {
     }
   },
   findInventoryHistory: async (req, res) => {
-    console.log('calling findInventoryHistory');
     let { productName, orderBy, orderByMethod, branchId, startDate, endDate, page, limit, } = req.query;
     const mapOrderBy = { id: "Inventory_Histories.id", productName: "CombinedQuery.productName", createdAt: "Inventory_Histories.createdAt", };
     productName = productName ? `%${productName}%` : ""; // formating that for like query
@@ -171,8 +145,6 @@ module.exports = {
         LIMIT :limit
         OFFSET :offset;
   `;
-
-  console.log(query, 'this is query');
 
     const countQuery = `
     SELECT COUNT(*) AS total
@@ -230,7 +202,7 @@ module.exports = {
       attributes: {
         include: [
           [
-            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() and start_date <= CURDATE() limit 1),0)"),
+            literal("`Product`.`product_price` -  IFNULL((select case when d.discount_type =  'percentage' then `Product`.`product_price` *  d.discount_value * 0.01 when d.discount_type =  'amount' then  d.discount_value when d.discount_type = 'buy one get one' then 0 end as discount from Discounts d where d.id_inventory = `Inventory`.`id` and end_date >= CURDATE() and start_date <= CURDATE() limit 1),0)"),
             'discounted_price',
           ],
         ],

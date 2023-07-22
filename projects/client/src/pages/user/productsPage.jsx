@@ -9,6 +9,7 @@ import NavBar from "../../component/NavBar";
 import { ProductsList } from "../../component/productsList";
 import { useSelector } from "react-redux";
 import NoResultImg from "../../assets/images/no-result.png";
+import Footer from "../../component/Footer";
 
 export default function ProductsPage() {
   const [productsInfo, setProductsInfo] = useState([]);
@@ -59,7 +60,6 @@ export default function ProductsPage() {
           setNoResult(true);
         }
         setProductsInfo(productData.data.data);
-        console.log(productData.data)
         setTotalPage(Math.ceil((productData.data.count - 1) / 12));
       } catch (err) {
         console.log(err);
@@ -74,7 +74,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-gray-100 min-h-screen">
       <NavBar />
       <div className="mx-auto max-w-2xl py-1 px-4 sm:py-8 sm:px-6 md:max-w-4xl md:px-6 md:py-6 lg:max-w-7xl lg:px-8 md:py-6">
         <h2 className="sr-only">Products</h2>
@@ -83,7 +83,7 @@ export default function ProductsPage() {
         <Category />
 
         {noResult ? (
-          <div className="flex h-full flex-col items-center mb-8 justify-center bg-white rounded-md mb-4">
+          <div className="flex h-full flex-col items-center mb-8 justify-center mb-4">
             <div className="flex mt-1 md:mt-8 lg:mt-10">
               <img
                 src={NoResultImg}
@@ -126,6 +126,7 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

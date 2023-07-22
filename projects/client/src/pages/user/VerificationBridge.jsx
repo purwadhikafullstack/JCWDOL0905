@@ -16,7 +16,6 @@ const VerificationBridge = () => {
       const response = await api.get(`users/${idUser}/verify/${token}`);
 
       if (response.status === 200) {
-        console.log('Verification successful');
         Navigate("/verification-success")
       } else {
         console.error('Verification failed');

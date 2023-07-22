@@ -1,5 +1,8 @@
 const db = require("../models");
 const branch = db.Store_Branch;
+const product = db.Product;
+const inventory = db.Inventory;
+const inventoryHistory = db.Inventory_History;
 const axios = require("axios")
 const { Op } = require("sequelize");
 
@@ -66,7 +69,6 @@ module.exports = {
         whereCondition.province = { [Op.like]: `%${provinceName}%` };
       }
 
-      console.log(whereCondition, 'whereCondition', page, limit)
       const branchData = await branch.findAndCountAll({where: whereCondition, limit: limit, offset: offset});
       const { count, rows } = branchData;
       const totalPages = Math.ceil(count / Number(limit));
@@ -76,31 +78,24 @@ module.exports = {
         items: rows
       }
       if (!branchData) {
-        return res
-          .status(400)
-          .send({ code: 400, message: `Cant't get branch data` });
+        return res.status(400).send({ code: 400, message: `Cant't get branch data` });
       }
-      res
-        .status(200)
-        .send({
+      res.status(200).send({
           code: 200,
           message: "Get branch data success",
           data: data,
         });
     } catch (error) {
       console.log(error);
-      res
-        .status(404)
-        .send({ isError: true, message: "Get branch data failed" });
+      res.status(404).send({ isError: true, message: "Get branch data failed" });
     }
   },
   createBranch: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
       let { branch_name, address, city, province } = req.body;
       if (!branch_name || !address || !city || !province)
-        return res
-          .status(404)
-          .send({
+        return res.status(404).send({
             isError: true,
             message: "Please fill all the required fields",
           });
@@ -121,19 +116,33 @@ module.exports = {
         province_id: provinceId,
         latitude: latitude,
         longitude: longitude
-      });
-      res
-        .status(201)
-        .send({
+      },{transaction: t});
+
+      const allProducts = await product.findAll({attributes: ['id']});
+      const newInventories = [];
+
+      for (const product of allProducts) {
+        const newInventory = await inventory.create({stock: 0, id_product: product.id, id_branch: result.id},{transaction: t})
+        newInventories.push(newInventory);
+
+        await inventoryHistory.create({
+          status: "in",
+          reference: "initial",
+          quantity: 0,
+          id_inventory: newInventory.id,
+          current_stock: 0
+        },{transaction: t})
+      }
+      await t.commit()
+      res.status(201).send({
           isError: false,
           message: "New store branch has been created successfully",
           data: result,
         });
     } catch (error) {
+      await t.rollback()
       console.log(error);
-      res
-        .status(404)
-        .send({ isError: true, message: "Failed to create store branch" });
+      res.status(404).send({ isError: true, message: "Failed to create store branch" });
     }
   },
   editBranch: async (req, res) => {
@@ -141,9 +150,7 @@ module.exports = {
         let { branch_name, address, city, province } = req.body;
         const { id } = req.params;
         if (!branch_name || !address || !city || !province)
-          return res
-            .status(404)
-            .send({
+          return res.status(404).send({
               isError: true,
               message: "Please fill all the required fields",
             });
@@ -165,9 +172,7 @@ module.exports = {
           latitude: latitude,
           longitude: longitude
         }, { where: { id: id } });
-        res
-          .status(201)
-          .send({
+        res.status(201).send({
             isError: false,
             message: "Store branch has been edited successfully",
             data: result,
@@ -182,7 +187,6 @@ module.exports = {
   deleteBranch: async (req, res) => {
     try {
       const { id } = req.params;
-      console.log(id, 'this is id');
       let resultBranch = await branch.findOne({ where: { id: id } });
       if (!resultBranch) {
         return res.status(404).send({ isError: true, message: "branch not found" });

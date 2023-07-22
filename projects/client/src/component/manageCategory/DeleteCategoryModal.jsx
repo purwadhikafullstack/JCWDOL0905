@@ -32,7 +32,6 @@ export default function DeleteCategoryModal({ open, setOpen, onClose, categoryId
       fetchCategories()
       handleClose();
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data);
     }
   };

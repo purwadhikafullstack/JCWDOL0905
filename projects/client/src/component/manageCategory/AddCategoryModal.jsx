@@ -58,7 +58,6 @@ export default function AddCategoryModal({ open, setOpen, onClose, fetchCategori
       onSubmit={(values) => createCategory(values)}
     >
       {(props) => {
-        // console.log(props);
         return (
     <Transition.Root show={modalOpen} as={Fragment}>
       <Dialog

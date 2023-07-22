@@ -2,8 +2,8 @@ import { checkActiveDiscount } from "../function";
 
 export const ProductsList = ({ productsInfo }) => {
 
-  function formatIDR(price) {
-    let idr = Math.round(price).toLocaleString("id-ID");
+  function formatIDR(price=0) {
+    let idr = Math.ceil(price).toLocaleString("id-ID");
     return `Rp ${idr}`;
   }
 
