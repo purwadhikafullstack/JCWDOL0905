@@ -259,7 +259,7 @@ export default function ModalEditBranchStore({ open, setOpen, setEditData, editD
                     }}
                   >
                     {" "}
-                    Edit Admin{" "}
+                    Edit Branch Store{" "}
                   </button>
                   <button
                     type="button"

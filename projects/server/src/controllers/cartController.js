@@ -44,14 +44,6 @@ module.exports = {
                 left join Discounts on Discounts.id_inventory = Inventories.id
                 where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock`
             const [results] = await db.sequelize.query(query);
-
-            const query = `select count(*) as count from Carts
-                join Inventories on Carts.id_inventory = Inventories.id
-                join Store_Branches on Store_Branches.id = Inventories.id_branch
-                join Products on Inventories.id_product = Products.id
-                left join Discounts on Discounts.id_inventory = Inventories.id
-                where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock and Products.deletedAt IS NULL and Store_Branches.deletedAt IS NULL;`
-            const [results] = await db.sequelize.query(query);
             let count = results[0].count
 
             // let count = await carts.count({where:{ id_user: user.id_user }});
