@@ -11,7 +11,7 @@ module.exports = {
             join Products pr on pr.id = Inventories.id_product
             join Store_Branches br on br.id = Inventories.id_branch
             left join Discounts on Discounts.id_inventory = Inventories.id
-            where id_branch=${req.params.id_branch} and stock>0 and pr.deletedAt is null
+            where id_branch=${req.params.id_branch} and stock>0 and pr.deletedAt is null and Discounts.start_date <= CURDATE() and Discounts.end_date >= CURDATE()
             limit 10;`;
         
             const [results] = await db.sequelize.query(query);

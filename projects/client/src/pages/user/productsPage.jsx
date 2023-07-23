@@ -56,6 +56,7 @@ export default function ProductsPage() {
             branchId,
           },
         });
+
         if (searchedName && productData.data.data.length < 1) {
           setNoResult(true);
         }

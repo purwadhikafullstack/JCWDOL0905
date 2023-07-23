@@ -163,7 +163,7 @@ module.exports = {
     LEFT JOIN Inventories ON Vouchers.id_inventory = Inventories.id
     LEFT JOIN Products ON Inventories.id_product = Products.id
     LEFT JOIN Store_Branches On Inventories.id_branch = Store_Branches.id
-    WHERE now() between vouchers.start_date and vouchers.end_date;
+    WHERE now() between Vouchers.start_date and Vouchers.end_date;
     `;
       const [data] = await db.sequelize.query(voucherQuery);
       res.status(200).send({ message: "Successfully fetch user voucher", data: data, });
