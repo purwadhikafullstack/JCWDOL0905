@@ -112,7 +112,7 @@ const DashboardAdmin = () => {
                   <div className="absolute rounded-md bg-indigo-500 p-3">
                     <UsersIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
-                  <p className="ml-8 truncate justify-center text-sm font-medium text-gray-300"> Total Users </p>
+                  <p className="ml-8 truncate justify-center text-sm font-medium text-gray-300"> Total Users of All Time</p>
                 </dt>
                 <dd className="ml-8 flex justify-center items-baseline">
                   <p className="text-2xl font-semibold text-white"> {dashboardData.totalUser || "0"} </p>

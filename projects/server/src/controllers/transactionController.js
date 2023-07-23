@@ -1,5 +1,6 @@
 const db = require("../models");
 const axios = require("axios")
+const {checkDiscount, countDiscount} = require("../helper/function")
 const carts = db.Cart
 const trans_header = db.Transaction_Header;
 const trans_detail = db.Transaction_Detail;
@@ -10,27 +11,6 @@ const voucher = db.Voucher;
 const user_voucher = db.User_Voucher
 const jwt = require("jsonwebtoken");
 const jwtKey = process.env.JWT_SECRET_KEY;
-
-function checkDiscount(item){
-    const today = new Date()
-    const start = new Date(item.start_date)
-    const end = new Date(item.end_date)
-
-    if(start <= today && end >= today && item.product_qty >= item.min_purchase_qty){
-      if(item.discount_type == 'percentage' || item.discount_type == 'amount'){
-        return true
-      }
-    }
-
-    return false
-}
-function countDiscount(item){
-    if(item.discount_type == 'amount'){
-        return item.product_price - item.discount_value
-    } else if(item.discount_type == 'percentage'){
-        return item.product_price - (item.discount_value/100 * item.product_price)
-    }
-}
 
 module.exports = {
     getOrderList: async (req, res) => {
@@ -168,7 +148,7 @@ module.exports = {
             for(let item of cartData){
                 let {product_price, product_qty, bonus_qty, id_inventory, stock, product_name, product_image, weight} = item
 
-                if(checkDiscount(item)){
+                if(checkDiscount(item)=='price'){
                     product_price = countDiscount(item)
                 }
 

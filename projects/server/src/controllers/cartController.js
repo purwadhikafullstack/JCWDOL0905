@@ -12,18 +12,21 @@ module.exports = {
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
 
-            const query = `select Carts.id, Carts.product_qty, Carts.bonus_qty, Carts.id_inventory,
-            Inventories.stock, Inventories.id_branch,
-            Store_Branches.branch_name, Store_Branches.city,
-            Products.id as product_id, Products.product_name, Products.product_price, Products.weight, Products.product_image, Products.product_description,
-            Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date
-            from Carts
-            join Inventories on Carts.id_inventory = Inventories.id
-            join Store_Branches on Store_Branches.id = Inventories.id_branch
-            join Products on Inventories.id_product = Products.id
-            left join Discounts on Discounts.id_inventory = Inventories.id
-            where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock and Products.deletedAt IS NULL and Store_Branches.deletedAt IS NULL
-            order by Carts.createdAt desc;`;
+            const query = `SELECT Carts.id, Carts.product_qty, Carts.bonus_qty, Carts.id_inventory, Inventories.stock, Inventories.id_branch, Store_Branches.branch_name, Store_Branches.city, Products.id AS product_id, Products.product_name, Products.product_price, Products.weight, Products.product_image, Products.product_description,
+                    ActiveDiscounts.discount_type,
+                    ActiveDiscounts.discount_value,
+                    ActiveDiscounts.start_date,
+                    ActiveDiscounts.end_date
+                FROM Carts
+                JOIN Inventories ON Carts.id_inventory = Inventories.id
+                JOIN Store_Branches ON Store_Branches.id = Inventories.id_branch
+                JOIN Products ON Inventories.id_product = Products.id
+                LEFT JOIN (
+                    SELECT Discounts.id_inventory, Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date FROM Discounts
+                    WHERE now() BETWEEN Discounts.start_date AND Discounts.end_date
+                ) AS ActiveDiscounts ON ActiveDiscounts.id_inventory = Inventories.id
+                WHERE id_user = ${user.id_user} AND (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock AND Products.deletedAt IS NULL AND Store_Branches.deletedAt IS NULL
+                ORDER BY Carts.createdAt DESC;`
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({message: "Successfully fetch cart items", results,});
@@ -37,12 +40,15 @@ module.exports = {
             let bearerToken = req.headers['authorization'];
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
-            const query = `select count(*) as count from Carts
-                join Inventories on Carts.id_inventory = Inventories.id
-                join Store_Branches on Store_Branches.id = Inventories.id_branch
-                join Products on Inventories.id_product = Products.id
-                left join Discounts on Discounts.id_inventory = Inventories.id
-                where id_user=${user.id_user} and (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock`
+            
+            const query = `SELECT count(*) as count
+            FROM Carts
+            JOIN Inventories ON Carts.id_inventory = Inventories.id
+            JOIN Store_Branches ON Store_Branches.id = Inventories.id_branch
+            JOIN Products ON Inventories.id_product = Products.id
+            LEFT JOIN ( SELECT Discounts.id_inventory, Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date FROM Discounts WHERE now() BETWEEN Discounts.start_date AND Discounts.end_date ) AS ActiveDiscounts ON ActiveDiscounts.id_inventory = Inventories.id
+            WHERE id_user = ${user.id_user} AND (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock AND Products.deletedAt IS NULL AND Store_Branches.deletedAt IS NULL
+            ORDER BY Carts.createdAt DESC;`
             const [results] = await db.sequelize.query(query);
             let count = results[0].count
             res.status(200).send({message: "Cart successfully counted", data: count,});
