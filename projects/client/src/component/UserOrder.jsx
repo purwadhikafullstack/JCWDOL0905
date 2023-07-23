@@ -168,7 +168,6 @@ export default function UserOrder(props) {
                     </div>
                 }
             </div>
-            <Footer/>
         </>
     )
 }

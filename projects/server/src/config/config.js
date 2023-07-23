@@ -6,7 +6,7 @@ module.exports = {
     username: "jcwdol0905",
     password: "groupol0905",
     database: "jcwdol0905",
-    host: "127.0.0.1",
+    host: "jcwdol0905.purwadhikabootcamp.com",
     dialect: "mysql"
   },
   test: {
