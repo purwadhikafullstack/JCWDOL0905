@@ -1,4 +1,5 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { checkActiveDiscount } from "../../function";
 
 export default function StockTableBody({ inventories, openEditModal }) {
   function formatIDR(price=0) {
@@ -19,24 +20,28 @@ export default function StockTableBody({ inventories, openEditModal }) {
             {inventory.Product.product_name}
           </td>
           <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-            {inventory.Discounts?.[0]?.discount_type === "buy one get one"
-              ? inventory.Discounts?.[0]?.discount_type
-              : inventory.Discounts?.[0]?.discount_type === "percentage"
-              ? `${inventory.Discounts?.[0]?.discount_value}%`
-              : inventory.Discounts?.[0]?.discount_type === "amount"
-              ? `${formatIDR(inventory.Discounts?.[0]?.discount_value)} off`
-              : null}
+              {checkActiveDiscount(inventory.Discounts) ? (
+                inventory.Discounts?.[0]?.discount_type === "buy one get one" ? (
+                  inventory.Discounts?.[0]?.discount_type
+                ) : inventory.Discounts?.[0]?.discount_type === "percentage" ? (
+                  `${inventory.Discounts?.[0]?.discount_value}%`
+                ) : inventory.Discounts?.[0]?.discount_type === "amount" ? (
+                  `${formatIDR(inventory.Discounts?.[0]?.discount_value)} off`
+                ) : null
+              ) : null}
           </td>
           <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-            {formatIDR(inventory.discounted_price)}
-            {inventory.Discounts?.[0]?.discount_type === "amount" ||
-            inventory.Discounts?.[0]?.discount_type === "percentage" ? (
-              <span className="ml-2 text-sm text-gray-400 line-through">
-                {formatIDR(inventory.Product.product_price)}
-              </span>
-            ) : (
-              <></>
-            )}
+            {checkActiveDiscount(inventory.Discounts) ? (
+              <>
+                {formatIDR(inventory.discounted_price)}
+                {inventory.Discounts?.[0]?.discount_type === "amount" ||
+                inventory.Discounts?.[0]?.discount_type === "percentage" ? (
+                  <span className="ml-2 text-sm text-gray-400 line-through">
+                    {formatIDR(inventory.Product.product_price)}
+                  </span>
+                ) : null}
+              </>
+            ) : <>{formatIDR(inventory.discounted_price)}</>}
           </td>
           <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
             {inventory.stock}
