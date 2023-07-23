@@ -12,16 +12,21 @@ module.exports = {
             bearerToken = bearerToken.split(' ')[1]
             const user = jwt.verify(bearerToken, jwtKey);
 
-            const query = `SELECT Carts.id, Carts.product_qty, Carts.bonus_qty, Carts.id_inventory, Inventories.stock, Inventories.id_branch, Store_Branches.branch_name, Store_Branches.city, Products.id AS product_id, Products.product_name,
-                COALESCE( Products.product_price - (Products.product_price * ActiveDiscounts.discount_value / 100), Products.product_price ) AS product_price,
-                Products.weight, Products.product_image, Products.product_description, ActiveDiscounts.discount_type, ActiveDiscounts.discount_value, ActiveDiscounts.start_date, ActiveDiscounts.end_date
-            FROM Carts
-            JOIN Inventories ON Carts.id_inventory = Inventories.id
-            JOIN Store_Branches ON Store_Branches.id = Inventories.id_branch
-            JOIN Products ON Inventories.id_product = Products.id
-            LEFT JOIN ( SELECT Discounts.id_inventory, Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date FROM Discounts WHERE now() BETWEEN Discounts.start_date AND Discounts.end_date ) AS ActiveDiscounts ON ActiveDiscounts.id_inventory = Inventories.id
-            WHERE id_user = ${user.id_user} AND (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock AND Products.deletedAt IS NULL AND Store_Branches.deletedAt IS NULL
-            ORDER BY Carts.createdAt DESC;`
+            const query = `SELECT Carts.id, Carts.product_qty, Carts.bonus_qty, Carts.id_inventory, Inventories.stock, Inventories.id_branch, Store_Branches.branch_name, Store_Branches.city, Products.id AS product_id, Products.product_name, Products.product_price, Products.weight, Products.product_image, Products.product_description,
+                    ActiveDiscounts.discount_type,
+                    ActiveDiscounts.discount_value,
+                    ActiveDiscounts.start_date,
+                    ActiveDiscounts.end_date
+                FROM Carts
+                JOIN Inventories ON Carts.id_inventory = Inventories.id
+                JOIN Store_Branches ON Store_Branches.id = Inventories.id_branch
+                JOIN Products ON Inventories.id_product = Products.id
+                LEFT JOIN (
+                    SELECT Discounts.id_inventory, Discounts.discount_type, Discounts.discount_value, Discounts.start_date, Discounts.end_date FROM Discounts
+                    WHERE now() BETWEEN Discounts.start_date AND Discounts.end_date
+                ) AS ActiveDiscounts ON ActiveDiscounts.id_inventory = Inventories.id
+                WHERE id_user = ${user.id_user} AND (Carts.product_qty + Carts.bonus_qty) <= Inventories.stock AND Products.deletedAt IS NULL AND Store_Branches.deletedAt IS NULL
+                ORDER BY Carts.createdAt DESC;`
         
             const [results] = await db.sequelize.query(query);
             res.status(200).send({message: "Successfully fetch cart items", results,});

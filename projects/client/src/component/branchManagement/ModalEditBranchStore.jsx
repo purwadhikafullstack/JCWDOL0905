@@ -134,7 +134,7 @@ export default function ModalEditBranchStore({ open, setOpen, setEditData, editD
                         {cityList.map((data, index) => (
                           <option
                             key={index}
-                            value={`${data.city_id}-${data.city_name}`}
+                            value={`${data.city_id}-${data.type} ${data.city_name}`}
                           >
                             {data.type} {data.city_name}
                           </option>

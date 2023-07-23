@@ -29,7 +29,7 @@ export default function CreateVoucherModal({ open, setOpen, onClose, fetchVouche
   const cancelButtonRef = useRef(null);
 
   const { role, id_branch } = useSelector((state) => state.adminSlice);
-  let branchId = id_branch;
+  const branchId = role === "BRANCH_ADMIN" ? id_branch : selectedBranch;
 
   let validateValue = (value) => {
     if (value === "" && selectedKind === "amount") {
@@ -96,9 +96,6 @@ export default function CreateVoucherModal({ open, setOpen, onClose, fetchVouche
   
       async function fetchInventories() {
         try {
-          if (role === 'SUPER_ADMIN') {
-            branchId = selectedBranch;
-          } 
           const inventoriesData = await api.get(
             `/inventory/?category=${selectedCategory}&branchId=${branchId}`
           );
@@ -110,7 +107,7 @@ export default function CreateVoucherModal({ open, setOpen, onClose, fetchVouche
       fetchInventories();
     }
     setModalOpen(open);
-  }, [open, selectedType, selectedCategory]);
+  }, [open, selectedType, selectedCategory, selectedBranch]);
 
   const handleClose = () => {
     setModalOpen(false);
